@@ -3,7 +3,6 @@ package com.example.domes
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,23 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DoneOutline
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.CompassCalibration
-import androidx.compose.material.icons.outlined.DoneOutline
 import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.TimeToLeave
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -140,8 +131,8 @@ fun MainScreen() {
                 ) {
                     ListItem(
                         modifier = Modifier.alpha(0.5f),
-                        headlineText = { Text(text = "Fajr") },
-                        supportingText = { Text(text = "5:30 AM") },
+                        headlineContent = { Text(text = "Fajr") },
+                        supportingContent = { Text(text = "5:30 AM") },
                         trailingContent = {
                             IconButton(onClick = { /*TODO*/ }) {
                                 Icon(Icons.Outlined.CheckCircle, contentDescription = "Done")
@@ -150,8 +141,8 @@ fun MainScreen() {
                     )
                     ListItem(
                         modifier = Modifier.alpha(0.5f),
-                        headlineText = { Text(text = "Dhuhr") },
-                        supportingText = { Text(text = "12:30 PM") },
+                        headlineContent = { Text(text = "Dhuhr") },
+                        supportingContent = { Text(text = "12:30 PM") },
                         trailingContent = {
                             IconButton(onClick = { /*TODO*/ }) {
                                 Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Done")
@@ -160,8 +151,8 @@ fun MainScreen() {
                     )
                     ListItem(
                         modifier = Modifier.border(width = 2.dp, color = MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(10.dp)).clip(RoundedCornerShape(10.dp)),
-                        headlineText = { Text(text = "Asr", fontWeight = FontWeight.Medium) },
-                        supportingText = { Text(text = "3:30 PM · Silent") },
+                        headlineContent = { Text(text = "Asr", fontWeight = FontWeight.Medium) },
+                        supportingContent = { Text(text = "3:30 PM · Silent") },
                         trailingContent = {
                             IconButton(onClick = { /*TODO*/ }) {
                                 Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Done")
@@ -174,8 +165,8 @@ fun MainScreen() {
                         )
                     )
                     ListItem(
-                        headlineText = { Text(text = "Maghrib") },
-                        supportingText = { Text(text = "6:00 PM") },
+                        headlineContent = { Text(text = "Maghrib") },
+                        supportingContent = { Text(text = "6:00 PM") },
                         trailingContent = {
                             IconButton(onClick = { /*TODO*/ }, enabled = false) {
                                 Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Done")
@@ -183,8 +174,8 @@ fun MainScreen() {
                         }
                     )
                     ListItem(
-                        headlineText = { Text(text = "Isha") },
-                        supportingText = { Text(text = "7:30 PM") },
+                        headlineContent = { Text(text = "Isha") },
+                        supportingContent = { Text(text = "7:30 PM") },
                         trailingContent = {
                             IconButton(onClick = { /*TODO*/ }, enabled = false) {
                                 Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Done")
