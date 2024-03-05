@@ -1,10 +1,22 @@
 package com.example.domes.util
 
 import android.graphics.PointF
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.graphics.plus
 import androidx.core.graphics.times
 import androidx.graphics.shapes.Cubic
@@ -14,6 +26,7 @@ import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.TransformResult
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 
 internal fun Float.toRadians() = this * PI.toFloat() / 180f
@@ -38,6 +51,49 @@ internal fun radialToCartesian(
 
 internal fun directionVectorPointF(angleRadians: Float) =
     PointF(cos(angleRadians), sin(angleRadians))
+
+@Composable
+fun PolygonComposable(polygon: RoundedPolygon, modifier: Modifier = Modifier) =
+    PolygonComposableImpl(polygon, modifier)
+
+@Composable
+internal fun PolygonComposableImpl(
+    polygon: RoundedPolygon,
+    modifier: Modifier = Modifier,
+) {
+    val sizedShapes = remember(polygon) { mutableMapOf<Size, List<Cubic>>() }
+    Box(
+        modifier
+            .fillMaxSize()
+            .drawWithContent {
+                drawContent()
+                val scale = min(size.width, size.height)
+                val shape = sizedShapes.getOrPut(size) { polygon.cubics.scaled(scale) }
+
+                drawPath(shape.toPath(), Color.White)
+            }
+    )
+}
+
+class RoundedPolygonShape(
+    private val polygon: RoundedPolygon
+) : Shape {
+    private val matrix = Matrix()
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val path = polygon.cubics.toPath()
+        // below assumes that you haven't changed the default radius of 1f, nor the centerX and centerY of 0f
+        // By default this stretches the path to the size of the container, if you don't want stretching, use the same size.width for both x and y.
+        matrix.scale(size.width / 2f, size.height / 2f)
+        matrix.translate(1f, 1f)
+        path.transform(matrix)
+
+        return Outline.Generic(path)
+    }
+}
 
 /**
  * Utility functions providing more idiomatic ways of transforming RoundedPolygons and
