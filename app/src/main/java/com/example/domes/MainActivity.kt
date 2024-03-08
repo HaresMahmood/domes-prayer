@@ -15,36 +15,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.NightsStay
-import androidx.compose.material.icons.outlined.NotificationsPaused
-import androidx.compose.material.icons.outlined.RadioButtonChecked
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.WbSunny
-import androidx.compose.material.icons.outlined.WbTwilight
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -58,8 +56,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -68,16 +64,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.graphics.shapes.Cubic
-import androidx.graphics.shapes.RoundedPolygon
 import com.example.domes.ui.theme.DomesTheme
-import com.example.domes.util.PolygonComposable
 import com.example.domes.util.RoundedPolygonShape
 import com.example.domes.util.ShapeParameters
-import com.example.domes.util.scaled
-import com.example.domes.util.toPath
 import kotlinx.coroutines.launch
-import kotlin.math.min
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,28 +92,16 @@ fun PrayerTimeListItem(
     icon: Any,
     prayerTime: String,
     onClick: () -> Unit = {},
+    isSilent: Boolean = false,
     isPassed: Boolean = false,
     isActive: Boolean = false,
 ) {
     ListItem(
         modifier = Modifier
-            .padding(start = 16.dp, end = if (isActive) 0.dp else 16.dp), // TODO: A bit weird
+            .padding(start = if (isActive) 0.dp else 16.dp, end = 16.dp)
+            .alpha(if (isPassed) 0.5f else 1f),
         leadingContent = {
-            IconButton(onClick) {
-                Icon(Icons.Outlined.RadioButtonUnchecked, "Done")
-            }
-        },
-        headlineContent = {
-            // use the isActive property to conditionally apply the bold font
-            Text(prayerName, style = if (isActive) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge)
-        },
-        supportingContent = {
-            Text(prayerTime) // , style = MaterialTheme.typography.labelSmall
-        },
-        trailingContent = {
-            // use the isActive property to conditionally apply the clip shape or the circle shape
             if (isActive) {
-                // use the clip parameter to clip the icon by the polygon shape
                 val shapeParam = ShapeParameters(
                     sides = 4,
                     innerRadius = .352f,
@@ -152,11 +130,35 @@ fun PrayerTimeListItem(
                     }
                 }
             } else {
-                // use the Box function to draw the circle shape
+//                Box(
+//                    modifier = Modifier
+//                        .size(38.dp)
+//                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    when (icon) {
+//                        is ImageVector -> Icon(icon, prayerName)
+//                        is Painter -> Icon(icon, prayerName)
+//                        else -> throw IllegalArgumentException("Invalid icon type")
+//                    }
+//                }
+
+                val shapeParam = ShapeParameters(
+                    roundness = .4f,
+                    shapeId = ShapeParameters.ShapeId.CornerSE
+                )
+                val shape = remember {
+                    shapeParam.genShape()
+                }
+                val clip = remember(shape) {
+                    RoundedPolygonShape(polygon = shape)
+                }
+
                 Box(
                     modifier = Modifier
+                        .clip(clip)
                         .size(38.dp)
-                        .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape),
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     when (icon) {
@@ -166,6 +168,40 @@ fun PrayerTimeListItem(
                     }
                 }
             }
+        },
+        headlineContent = {
+            Text(prayerName, style = if (isActive) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge)
+        },
+        trailingContent = {
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
+                if (isSilent) {
+                    Icon(
+                        Icons.Outlined.NotificationsOff,
+                        modifier = Modifier.width(18.dp),
+                        contentDescription = "Silent"
+                    )
+                }
+
+                Box(contentAlignment = Alignment.Center) {
+                    if (isActive) {
+                        CircularProgressIndicator(
+                            progress = 0.75f,
+                            modifier = Modifier
+                                .size(40.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    IconButton(onClick) {
+                        Icon(Icons.Outlined.RadioButtonUnchecked, "Done")
+                    }
+                }
+            }
+        },
+        supportingContent = {
+            Text(prayerTime)
         }
     )
 }
@@ -181,6 +217,7 @@ fun MainScreen() {
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetPeekHeight = sheetPeekHeight,
+        sheetShape = RoundedCornerShape(50.dp),
         sheetDragHandle = { null },
         sheetContent = {
             Box(
@@ -281,12 +318,11 @@ fun MainScreen() {
                 topBar = {
                     LargeTopAppBar(
                         title = {
-                            Row(
+                            Column(
                                 modifier = Modifier
                                     .padding(end = 15.dp)
                                     .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Text(
                                     text = "Asr",
@@ -299,7 +335,42 @@ fun MainScreen() {
                                 )
                             }
                         },
-                        actions = {
+//                        actions = {
+//
+//                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent, // MaterialTheme.colorScheme.surfaceContainer,
+                            titleContentColor = MaterialTheme.colorScheme.onSurface,
+                        ),
+                        scrollBehavior = scrollBehavior
+                    )
+                },
+                floatingActionButton = {
+                    LargeFloatingActionButton(
+                        onClick = { },
+                        elevation = FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 0.dp,
+                            pressedElevation = 0.dp,
+                        )
+                    ) {
+                        Icon(Icons.Filled.Explore, "Find Qibla")
+                    }
+                },
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    Column {
+//                        LinearProgressIndicator(
+//                            progress = { 0.65f },
+//                            modifier = Modifier.fillMaxWidth(),
+//                        )
+                        Row(
+
+                        ) {
+                            FilledTonalIconButton(onClick = { /*TODO*/ }) {
+                                Icon(Icons.Outlined.MoreVert, contentDescription = "Settings")
+                            }
                             // TODO: Use something other than chip?
                             AssistChip(
                                 onClick = { /*TODO*/ },
@@ -316,33 +387,7 @@ fun MainScreen() {
                                     leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                                 ),
                             )
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(Icons.Outlined.Settings, contentDescription = "Settings")
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent, // MaterialTheme.colorScheme.surfaceContainer,
-                            titleContentColor = MaterialTheme.colorScheme.onSurface,
-                        ),
-                        scrollBehavior = scrollBehavior
-                    )
-                },
-                floatingActionButton = {
-                    ExtendedFloatingActionButton(
-                        onClick = { },
-                        icon = { Icons.Filled.Explore },
-                        text = { Text(text = "Find Qibla") }
-                    )
-                },
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier.padding(innerPadding)
-                ) {
-                    Column {
-                        LinearProgressIndicator(
-                            progress = { 0.65f },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                        }
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize(),
@@ -369,6 +414,7 @@ fun MainScreen() {
                                         prayerName = "Sunrise",
                                         icon = Icons.Outlined.WbSunny,
                                         prayerTime = "12:30 PM",
+                                        isSilent = true,
                                         isPassed = true,
                                         onClick = { /*TODO*/ }
                                     )
