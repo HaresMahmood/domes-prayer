@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,17 +18,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.NightsStay
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
+import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -39,11 +43,11 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFloatingActionButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -61,9 +65,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.domes.data.PrayerTime
 import com.example.domes.ui.theme.DomesTheme
 import com.example.domes.util.RoundedPolygonShape
 import com.example.domes.util.ShapeParameters
@@ -95,10 +99,22 @@ fun PrayerTimeListItem(
     isSilent: Boolean = false,
     isPassed: Boolean = false,
     isActive: Boolean = false,
+    isFirstItem: Boolean = false,
+    isLastItem: Boolean = false,
 ) {
     ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = Color.Transparent,
+        ),
         modifier = Modifier
-            .padding(start = if (isActive) 0.dp else 16.dp, end = 16.dp)
+            .fillMaxWidth()
+//            .offset(if (isActive) (-16).dp else 0.dp)
+            .padding(
+                start = if (isActive) 0.dp else 12.dp,
+                end = 0.dp,
+                top = if (isFirstItem) 16.dp else 0.dp,
+                bottom = if (isLastItem) 16.dp else 0.dp,
+            )
             .alpha(if (isPassed) 0.5f else 1f),
         leadingContent = {
             if (isActive) {
@@ -145,7 +161,9 @@ fun PrayerTimeListItem(
 
                 val shapeParam = ShapeParameters(
                     roundness = .4f,
-                    shapeId = ShapeParameters.ShapeId.CornerSE
+                    sides = 4,
+                    rotation = 90f,
+                    shapeId = ShapeParameters.ShapeId.Polygon
                 )
                 val shape = remember {
                     shapeParam.genShape()
@@ -157,7 +175,7 @@ fun PrayerTimeListItem(
                 Box(
                     modifier = Modifier
                         .clip(clip)
-                        .size(38.dp)
+                        .size(48.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
@@ -188,7 +206,7 @@ fun PrayerTimeListItem(
                 Box(contentAlignment = Alignment.Center) {
                     if (isActive) {
                         CircularProgressIndicator(
-                            progress = 0.75f,
+                            progress = { 0.75f },
                             modifier = Modifier
                                 .size(40.dp),
                             color = MaterialTheme.colorScheme.primary,
@@ -212,18 +230,67 @@ fun MainScreen() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val sheetPeekHeight = 100.dp;
+    val sheetPeekHeight = 100.dp
+
+    val prayerTimes = listOf(
+        PrayerTime(
+            prayerName = "Fajr",
+            icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
+            prayerTime = "5:30 AM",
+            isPassed = true,
+            onClick = { /*TODO*/ }
+        ),
+        PrayerTime(
+            prayerName = "Sunrise",
+            icon = Icons.Outlined.WbSunny,
+            prayerTime = "12:30 PM",
+            isSilent = true,
+            isPassed = true,
+            onClick = { /*TODO*/ }
+        ),
+        PrayerTime(
+            prayerName = "Dhuhr",
+            icon = Icons.Outlined.WbSunny,
+            prayerTime = "12:30 PM",
+            isPassed = true,
+            onClick = { /*TODO*/ }
+        ),
+        PrayerTime(
+            prayerName = "Asr",
+            icon = Icons.Outlined.WbSunny,
+            prayerTime = "4:30 PM",
+            isActive = true,
+            onClick = { /*TODO*/ }
+        ),
+        PrayerTime(
+            prayerName = "Maghrib",
+            icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
+            prayerTime = "6:30 PM",
+            onClick = { /*TODO*/ }
+        ),
+        PrayerTime(
+            prayerName = "Isha",
+            icon = Icons.Outlined.NightsStay,
+            prayerTime = "8:30 PM",
+            onClick = { /*TODO*/ }
+        )
+    )
+
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
+        sheetContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         sheetPeekHeight = sheetPeekHeight,
-        sheetShape = RoundedCornerShape(50.dp),
+        sheetShape = RoundedCornerShape(35.dp),
         sheetDragHandle = { null },
         sheetContent = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(sheetPeekHeight),
+                    .height(sheetPeekHeight)
+                    .clickable {
+                        scope.launch { scaffoldState.bottomSheetState.expand() }
+                    },
                 contentAlignment = Alignment.Center,
             ) {
                 Row(
@@ -245,19 +312,19 @@ fun MainScreen() {
                             Text(
                                 text = "MON",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.tertiary, // if (entry.date == LocalDate.now()) MaterialTheme.colorScheme.primary else 
+                                color = MaterialTheme.colorScheme.secondary, // if (entry.date == LocalDate.now()) MaterialTheme.colorScheme.primary else
                             )
                             Box(
                                 modifier = Modifier
                                     .size(38.dp)
                                     .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.tertiaryContainer),
+                                    .background(MaterialTheme.colorScheme.secondaryContainer),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
                                     text = "17",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 )
                             }
                         }
@@ -315,39 +382,23 @@ fun MainScreen() {
         ) {
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    LargeTopAppBar(
-                        title = {
-                            Column(
-                                modifier = Modifier
-                                    .padding(end = 15.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(2.dp)
-                            ) {
-                                Text(
-                                    text = "Asr",
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = "2:30 left",
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                            }
-                        },
-//                        actions = {
-//
-//                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent, // MaterialTheme.colorScheme.surfaceContainer,
-                            titleContentColor = MaterialTheme.colorScheme.onSurface,
-                        ),
-                        scrollBehavior = scrollBehavior
-                    )
-                },
+//                topBar = {
+//                    TopAppBar(
+//                        title = {},
+////                        actions = {
+//////                            Icon(Icons.Outlined.Search, "Search")
+////                                  Text(
+////                                      "عصر",
+////                                      style = MaterialTheme.typography.headlineLarge,
+////                                  )
+////                        },
+//                    )
+//                },
                 floatingActionButton = {
-                    LargeFloatingActionButton(
+                    SmallFloatingActionButton(
                         onClick = { },
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         elevation = FloatingActionButtonDefaults.elevation(
                             defaultElevation = 0.dp,
                             pressedElevation = 0.dp,
@@ -360,38 +411,144 @@ fun MainScreen() {
                 Box(
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    Column {
-//                        LinearProgressIndicator(
-//                            progress = { 0.65f },
-//                            modifier = Modifier.fillMaxWidth(),
-//                        )
-                        Row(
-
+                    Column (
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(175.dp)
+                                .padding(horizontal = 26.dp),
                         ) {
-                            FilledTonalIconButton(onClick = { /*TODO*/ }) {
-                                Icon(Icons.Outlined.MoreVert, contentDescription = "Settings")
-                            }
-                            // TODO: Use something other than chip?
-                            AssistChip(
-                                onClick = { /*TODO*/ },
-                                label = { Text(text = "Glasgow, UK") },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Outlined.LocationOn,
-                                        contentDescription = "Location"
-                                    )
-                                },
-                                border = BorderStroke(0.dp, Color.Transparent),
-                                colors = AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                ),
+                            val shapeParam = ShapeParameters(
+                                sides = 15,
+                                innerRadius = .892f,
+                                roundness = 1f,
+                                shapeId = ShapeParameters.ShapeId.Star
                             )
+                            val shape = remember {
+                                shapeParam.genShape()
+                            }
+                            val clip = remember(shape) {
+                                RoundedPolygonShape(polygon = shape)
+                            }
+
+//                            Box(
+//                                modifier = Modifier
+//                                    .clip(clip)
+//                                    .size(150.dp)
+//                                    .align(Alignment.BottomEnd)
+//                                    .background(MaterialTheme.colorScheme.surfaceDim),
+//                            )
+
+                            Column(
+                                modifier = Modifier
+                                    .align(Alignment.BottomStart)
+                            ) {
+                                /*
+                                Box(
+                                    Modifier.height(40.dp)
+                                ) {
+                                    Text(
+                                        text = "عصر",
+                                        style = MaterialTheme.typography.displayLarge,
+                                        color = MaterialTheme.colorScheme.outlineVariant
+                                    )
+                                }
+                                */
+
+                                Box() {
+                                    Text(
+                                        text = "Asr",
+                                        style = MaterialTheme.typography.displayLarge,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                                Text(
+                                    text = "2 hours 30 mins left",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        ) {
+                            item {
+                                FilledTonalIconButton(
+                                    modifier = Modifier
+                                        .padding(start = 12.dp),
+                                    onClick = { /*TODO*/ }
+                                ) {
+                                    Icon(Icons.Outlined.MoreVert, contentDescription = "Settings")
+                                }
+                            }
+                            item {
+                                AssistChip(
+                                    onClick = { /*TODO*/ },
+                                    label = { Text(text = "Glasgow, UK") },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Outlined.LocationOn,
+                                            contentDescription = "Location"
+                                        )
+                                    },
+                                    border = BorderStroke(0.dp, Color.Transparent),
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    ),
+                                )
+                            }
+                            item {
+                                AssistChip(
+                                    onClick = { /*TODO*/ },
+                                    label = { Text(text = "Snooze alert") },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Outlined.Snooze,
+                                            contentDescription = "Snooze"
+                                        )
+                                    },
+                                    border = BorderStroke(0.dp, Color.Transparent),
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    ),
+                                )
+                            }
+                            item {
+                                AssistChip(
+                                    modifier = Modifier
+                                        .padding(end = 12.dp),
+                                    onClick = { /*TODO*/ },
+                                    label = { Text(text = "Period") },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(R.drawable.menstrual_health_fill0_wght400_grad0_opsz24),
+                                            "Period",
+                                        )
+                                    },
+                                    trailingIcon = {
+                                        Icon(
+                                            Icons.Outlined.Check,
+                                            "Selected",
+                                        )
+                                    },
+                                    border = BorderStroke(0.dp, Color.Transparent),
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                        leadingIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                        trailingIconContentColor = MaterialTheme.colorScheme.tertiary,
+                                    ),
+                                )
+                            }
                         }
                         LazyColumn(
                             modifier = Modifier
-                                .fillMaxSize(),
-//                                .padding(start = 16.dp, end = 16.dp, top = 5.dp),
+                                .fillMaxSize()
+                                .padding(horizontal = 12.dp),
                             verticalArrangement = Arrangement.spacedBy(10.dp),
                         ) {
 //                            item {
@@ -402,109 +559,25 @@ fun MainScreen() {
 //                                )
 //                            }
                             item {
-                                Column {
-                                    PrayerTimeListItem(
-                                        prayerName = "Fajr",
-                                        icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
-                                        prayerTime = "5:30 AM",
-                                        isPassed = true,
-                                        onClick = { /*TODO*/ }
-                                    )
-                                    PrayerTimeListItem(
-                                        prayerName = "Sunrise",
-                                        icon = Icons.Outlined.WbSunny,
-                                        prayerTime = "12:30 PM",
-                                        isSilent = true,
-                                        isPassed = true,
-                                        onClick = { /*TODO*/ }
-                                    )
-                                    PrayerTimeListItem(
-                                        prayerName = "Dhuhr",
-                                        icon = Icons.Outlined.WbSunny,
-                                        prayerTime = "12:30 PM",
-                                        isPassed = true,
-                                        onClick = { /*TODO*/ }
-                                    )
-                                    PrayerTimeListItem(
-                                        prayerName = "Asr",
-                                        icon = Icons.Outlined.WbSunny,
-                                        prayerTime = "4:30 PM",
-                                        isActive = true,
-                                        onClick = { /*TODO*/ }
-                                    )
-                                    /*
-                                    OutlinedCard(
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                            contentColor = MaterialTheme.colorScheme.secondary,
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(35.dp)),
+                                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                                ) {
+                                    prayerTimes.forEachIndexed { index, prayerTimeItem ->
+                                        PrayerTimeListItem(
+                                            prayerName = prayerTimeItem.prayerName,
+                                            icon = prayerTimeItem.icon,
+                                            prayerTime = prayerTimeItem.prayerTime,
+                                            onClick = prayerTimeItem.onClick,
+                                            isSilent = prayerTimeItem.isSilent,
+                                            isPassed = prayerTimeItem.isPassed,
+                                            isActive = prayerTimeItem.isActive,
+                                            isFirstItem = index == 0,
+                                            isLastItem = index == prayerTimes.lastIndex
                                         )
-                                    ) {
-                                        ListItem(
-                                            //                            modifier = Modifier
-                                            //                                .border(
-                                            //                                    width = 2.dp,
-                                            //                                    color = MaterialTheme.colorScheme.secondary,
-                                            //                                    shape = RoundedCornerShape(10.dp)
-                                            //                                )
-                                            //                                .clip(RoundedCornerShape(10.dp)),
-                                            leadingContent = {
-                                                Icon(
-                                                    Icons.Outlined.WbSunny,
-                                                    contentDescription = "Location"
-                                                )
-                                            },
-                                            headlineContent = {
-                                                Text(
-                                                    text = "Asr",
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                            },
-                                            //                        supportingContent = { Text(text = "3:30 PM · Silent") },
-                                            trailingContent = {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                                                ) {
-                                                    Text(
-                                                        text = "4:30 PM",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                    )
-                                                    IconButton(onClick = { /*TODO*/ }) {
-                                                        Icon(
-                                                            Icons.Outlined.RadioButtonUnchecked,
-                                                            contentDescription = "Done"
-                                                        )
-                                                    }
-                                                }
-                                            },
-                                            colors = ListItemDefaults.colors(
-                                                containerColor = Color.Transparent,
-                                            )
-                                        )
-
-                                        Row() {
-                                            Button(onClick = { /*TODO*/ }) {
-                                                Icon(
-                                                    Icons.Outlined.NotificationsPaused,
-                                                    contentDescription = "Snooze alert"
-                                                )
-                                                Text(text = "Snooze alert")
-                                            }
-                                        }
                                     }
-                                    */
-                                    PrayerTimeListItem(
-                                        prayerName = "Maghrib",
-                                        icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
-                                        prayerTime = "6:30 PM",
-                                        onClick = { /*TODO*/ }
-                                    )
-                                    PrayerTimeListItem(
-                                        prayerName = "Isha",
-                                        icon = Icons.Outlined.NightsStay,
-                                        prayerTime = "8:30 PM",
-                                        onClick = { /*TODO*/ }
-                                    )
                                 }
                             }
 //                            item {
