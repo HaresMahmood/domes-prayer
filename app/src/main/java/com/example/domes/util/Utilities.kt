@@ -159,28 +159,6 @@ fun List<Cubic>.toPath(path: Path = Path()): Path {
  * Transforms the morph at a given progress into a [Path].
  * It can optionally be scaled, using the origin (0,0) as pivot point.
  */
-fun Morph.toComposePath(progress: Float, scale: Float = 1f, path: Path = Path()): Path {
-    var first = true
-    path.rewind()
-    forEachCubic(progress) { bezier ->
-        if (first) {
-            path.moveTo(bezier.anchor0X * scale, bezier.anchor0Y * scale)
-            first = false
-        }
-        path.cubicTo(
-            bezier.control0X * scale, bezier.control0Y * scale,
-            bezier.control1X * scale, bezier.control1Y * scale,
-            bezier.anchor1X * scale, bezier.anchor1Y * scale
-        )
-    }
-    path.close()
-    return path
-}
-
-/**
- * Transforms the morph at a given progress into a [Path].
- * It can optionally be scaled, using the origin (0,0) as pivot point.
- */
 fun Morph.toAndroidPath(progress: Float, scale: Float = 1f,
                         path: android.graphics.Path = android.graphics.Path()):
         android.graphics.Path {

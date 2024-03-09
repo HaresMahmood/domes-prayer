@@ -1,9 +1,10 @@
 package com.example.domes
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,24 +15,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
-import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.NavigateBefore
+import androidx.compose.material.icons.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.NightsStay
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
-import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -39,23 +37,27 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -65,7 +67,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import com.example.domes.data.PrayerTime
 import com.example.domes.ui.theme.DomesTheme
@@ -74,6 +80,7 @@ import com.example.domes.util.ShapeParameters
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -206,7 +213,7 @@ fun PrayerTimeListItem(
                 Box(contentAlignment = Alignment.Center) {
                     if (isActive) {
                         CircularProgressIndicator(
-                            progress = { 0.75f },
+                            progress = 0.75f,
                             modifier = Modifier
                                 .size(40.dp),
                             color = MaterialTheme.colorScheme.primary,
@@ -279,7 +286,7 @@ fun MainScreen() {
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
-        sheetContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+        sheetContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
         sheetPeekHeight = sheetPeekHeight,
         sheetShape = RoundedCornerShape(35.dp),
         sheetDragHandle = { null },
@@ -344,13 +351,13 @@ fun MainScreen() {
                     Row() {
                         IconButton(onClick = { /*TODO*/ }) {
                             Icon(
-                                Icons.AutoMirrored.Outlined.NavigateBefore,
+                                Icons.Outlined.NavigateBefore,
                                 contentDescription = "Previous month"
                             )
                         }
                         IconButton(onClick = { /*TODO*/ }) {
                             Icon(
-                                Icons.AutoMirrored.Outlined.NavigateNext,
+                                Icons.Outlined.NavigateNext,
                                 contentDescription = "Next month"
                             )
                         }
@@ -380,25 +387,95 @@ fun MainScreen() {
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
+            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-//                topBar = {
-//                    TopAppBar(
-//                        title = {},
-////                        actions = {
-//////                            Icon(Icons.Outlined.Search, "Search")
-////                                  Text(
-////                                      "عصر",
-////                                      style = MaterialTheme.typography.headlineLarge,
-////                                  )
-////                        },
-//                    )
-//                },
+                topBar = {
+                    LargeTopAppBar(
+                        title = {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 16.dp)
+                                    .align(Alignment.BottomStart),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Bottom,
+                            ) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                                ) {
+                                    Box(
+                                        Modifier
+                                            .height(66.dp)
+                                    ) {
+                                        Box(
+                                            Modifier
+                                                //                                            .height(64.0.dp)
+                                                .offset(8.dp, -8.dp)
+                                                .alpha(0.5f),
+    //                                        contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = "عصر",
+                                                style = MaterialTheme.typography.displayLarge,
+                                                color = MaterialTheme.colorScheme.outlineVariant,
+                                                fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                        }
+
+                                        Text(
+                                            text = "Asr",
+                                            style = MaterialTheme.typography.displayLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
+                                            fontWeight = FontWeight.Medium,
+                                        )
+                                    }
+                                    Text(
+                                        text = "2 hours 30 mins left",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+
+                                AssistChip(
+                                    onClick = { /*TODO*/ },
+                                    label = { Text(text = "Glasgow, UK") },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Outlined.LocationOn,
+                                            contentDescription = "Location"
+                                        )
+                                    },
+                                    border = AssistChipDefaults.assistChipBorder(
+                                        Color.Transparent
+                                    ),
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    ),
+                                )
+                            }
+                        },
+//                        actions = {
+//                            OutlinedIconButton(
+//                                    modifier = Modifier
+//                                        .padding(start = 12.dp),
+//                                    onClick = { /*TODO*/ }
+//                            ) {
+//                                Icon(Icons.Outlined.MoreVert, contentDescription = "Settings")
+//                            }
+//                        },
+                        scrollBehavior = scrollBehavior
+                    )
+                },
                 floatingActionButton = {
-                    SmallFloatingActionButton(
+                    FloatingActionButton(
                         onClick = { },
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         elevation = FloatingActionButtonDefaults.elevation(
                             defaultElevation = 0.dp,
                             pressedElevation = 0.dp,
@@ -408,17 +485,30 @@ fun MainScreen() {
                     }
                 },
             ) { innerPadding ->
+                var sliderPosition by remember { mutableFloatStateOf(25f) }
+
                 Box(
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     Column (
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(1.dp)
                     ) {
+//                        Slider(
+//                            value = sliderPosition,
+//                            onValueChange = { sliderPosition = it },
+//                            colors = SliderDefaults.colors(
+//                                thumbColor = MaterialTheme.colorScheme.secondary,
+//                                activeTrackColor = MaterialTheme.colorScheme.secondary,
+//                                inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+//                            ),
+//                            steps = 3,
+//                            valueRange = 0f..50f
+//                        )
+                        /*
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(175.dp)
-                                .padding(horizontal = 26.dp),
                         ) {
                             val shapeParam = ShapeParameters(
                                 sides = 15,
@@ -433,43 +523,13 @@ fun MainScreen() {
                                 RoundedPolygonShape(polygon = shape)
                             }
 
-//                            Box(
-//                                modifier = Modifier
-//                                    .clip(clip)
-//                                    .size(150.dp)
-//                                    .align(Alignment.BottomEnd)
-//                                    .background(MaterialTheme.colorScheme.surfaceDim),
-//                            )
-
-                            Column(
+                            Box(
                                 modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                            ) {
-                                /*
-                                Box(
-                                    Modifier.height(40.dp)
-                                ) {
-                                    Text(
-                                        text = "عصر",
-                                        style = MaterialTheme.typography.displayLarge,
-                                        color = MaterialTheme.colorScheme.outlineVariant
-                                    )
-                                }
-                                */
-
-                                Box() {
-                                    Text(
-                                        text = "Asr",
-                                        style = MaterialTheme.typography.displayLarge,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-                                Text(
-                                    text = "2 hours 30 mins left",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
+                                    .clip(clip)
+                                    .size(150.dp)
+                                    .align(Alignment.BottomEnd)
+                                    .background(MaterialTheme.colorScheme.surfaceTint),
+                            )
                         }
 
                         LazyRow(
@@ -494,7 +554,9 @@ fun MainScreen() {
                                             contentDescription = "Location"
                                         )
                                     },
-                                    border = BorderStroke(0.dp, Color.Transparent),
+                                    border = AssistChipDefaults.assistChipBorder(
+                                        Color.Transparent
+                                    ),
                                     colors = AssistChipDefaults.assistChipColors(
                                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                                         leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -511,7 +573,9 @@ fun MainScreen() {
                                             contentDescription = "Snooze"
                                         )
                                     },
-                                    border = BorderStroke(0.dp, Color.Transparent),
+                                    border = AssistChipDefaults.assistChipBorder(
+                                        Color.Transparent
+                                    ),
                                     colors = AssistChipDefaults.assistChipColors(
                                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                                         leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -536,7 +600,9 @@ fun MainScreen() {
                                             "Selected",
                                         )
                                     },
-                                    border = BorderStroke(0.dp, Color.Transparent),
+                                    border = AssistChipDefaults.assistChipBorder(
+                                        Color.Transparent
+                                    ),
                                     colors = AssistChipDefaults.assistChipColors(
                                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                         leadingIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -545,6 +611,8 @@ fun MainScreen() {
                                 )
                             }
                         }
+                        */
+                        
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -562,7 +630,11 @@ fun MainScreen() {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(35.dp)),
+                                        .background(
+                                            MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                                1.dp
+                                            ), RoundedCornerShape(35.dp)
+                                        ),
                                     verticalArrangement = Arrangement.spacedBy(2.dp),
                                 ) {
                                     prayerTimes.forEachIndexed { index, prayerTimeItem ->
@@ -597,7 +669,11 @@ fun MainScreen() {
     }
 }
 
-@Preview(showBackground = true)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(
+    showBackground = true,
+    wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE
+)
 @Composable
 fun DomesPreview() {
     DomesTheme {
