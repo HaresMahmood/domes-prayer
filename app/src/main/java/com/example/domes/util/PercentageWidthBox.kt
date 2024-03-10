@@ -2,11 +2,9 @@ package com.example.domes.util
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -19,18 +17,21 @@ data class PercentageWidthBoxChild(
 
 @Composable
 fun PercentageWidthBox(
+    modifier: Modifier = Modifier,
     children: List<PercentageWidthBoxChild>
 ) {
-    Row(modifier = Modifier.fillMaxWidth().height(20.dp)) {
+    Box(modifier = modifier.fillMaxWidth()) {
         children.forEach { child ->
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(child.widthFraction)
-                    .height(child.parentContainerHeight)
-                    .weight(1f, fill = false),
-                contentAlignment = Alignment.CenterStart,
+                    .fillMaxWidth(fraction = child.widthFraction)
+                    .offset(x = calculateOffset(child.widthFraction)),
                 content = child.composable
             )
         }
     }
+}
+
+private fun calculateOffset(widthFraction: Float): Dp {
+    return (widthFraction * 100).dp
 }

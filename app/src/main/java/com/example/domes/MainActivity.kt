@@ -75,6 +75,9 @@ import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import com.example.domes.data.PrayerTime
 import com.example.domes.ui.theme.DomesTheme
+import com.example.domes.util.PercentageWidthBox
+import com.example.domes.util.PercentageWidthBoxChild
+import com.example.domes.util.PolygonComposable
 import com.example.domes.util.RoundedPolygonShape
 import com.example.domes.util.ShapeParameters
 import kotlinx.coroutines.launch
@@ -250,7 +253,7 @@ fun MainScreen() {
         PrayerTime(
             prayerName = "Sunrise",
             icon = Icons.Outlined.WbSunny,
-            prayerTime = "12:30 PM",
+            prayerTime = "7:30 PM",
             isSilent = true,
             isPassed = true,
             onClick = { /*TODO*/ }
@@ -632,12 +635,7 @@ fun MainScreen() {
                                     rotation = 90f,
                                     shapeId = ShapeParameters.ShapeId.Polygon
                                 )
-                                val shape = remember {
-                                    shapeParam.genShape()
-                                }
-                                val clip = remember(shape) {
-                                    RoundedPolygonShape(polygon = shape)
-                                }
+                                val shape = shapeParam.genShape().normalized()
 
                                 Column(
                                     modifier = Modifier
@@ -676,41 +674,6 @@ fun MainScreen() {
                                             ),
                                         contentAlignment = Alignment.Center
                                     ) {
-//                                        PercentageWidthBox(
-////                                            modifier = Modifier
-////                                                .fillMaxWidth()
-////                                                .height(20.dp),
-//                                            children = listOf(
-//                                                PercentageWidthBoxChild(
-//                                                    composable = {
-//                                                        Box(
-//                                                            modifier = Modifier
-//                                                                .clip(clip)
-//                                                                .size(20.dp)
-//                                                                .alpha(0.5f)
-//                                                                .background(MaterialTheme.colorScheme.onSecondaryContainer),
-//                                                        )
-//                                                                 },
-//                                                    parentContainerHeight = 50.dp,
-//                                                    widthFraction = 0.23f
-//                                                ),
-//                                                PercentageWidthBoxChild(
-//                                                    composable = {
-//                                                        Box(
-//                                                            modifier = Modifier
-//                                                                .clip(clip)
-//                                                                .size(20.dp)
-//                                                                .alpha(0.5f)
-//                                                                .background(MaterialTheme.colorScheme.onSecondaryContainer),
-//                                                        )
-//                                                    },
-//                                                    parentContainerHeight = 50.dp,
-//                                                    widthFraction = 0.55f
-//                                                ),
-//                                                // Add more children as needed
-//                                            )
-//                                        )
-
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
@@ -755,24 +718,92 @@ fun MainScreen() {
                                             )
                                         }
 
-                                        Row(
+                                        PercentageWidthBox(
                                             modifier = Modifier
-                                                .fillMaxWidth(),
-                                        ) {
-                                            Column(
-                                                modifier = Modifier
-                                                    .fillMaxWidth(0.23f)
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .clip(clip)
-                                                        .size(15.dp)
-                                                        .align(Alignment.End)
-                                                        .alpha(0.5f)
-                                                        .background(MaterialTheme.colorScheme.onSecondaryContainer),
-                                                )
-                                            }
-                                        }
+                                                .fillMaxWidth()
+                                                .height(20.dp),
+                                            children = listOf(
+                                                PercentageWidthBoxChild(
+                                                    composable = {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .size(20.dp)
+                                                        ) {
+                                                            PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer, alpha = 0.35f)
+                                                        }
+                                                    },
+                                                    parentContainerHeight = 20.dp,
+                                                    widthFraction = 0.23f
+                                                ),
+                                                PercentageWidthBoxChild(
+                                                    composable = {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .size(20.dp)
+                                                        ) {
+                                                            PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer, alpha = 0.35f)
+                                                        }
+                                                    },
+                                                    parentContainerHeight = 20.dp,
+                                                    widthFraction = 0.55f
+                                                ),
+                                                PercentageWidthBoxChild(
+                                                    composable = {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .size(20.dp)
+                                                        ) {
+                                                            PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer, alpha = 0.35f)
+                                                        }
+                                                    },
+                                                    parentContainerHeight = 20.dp,
+                                                    widthFraction = 0.75f
+                                                ),
+                                            )
+                                        )
+
+//                                        Row(
+//                                            modifier = Modifier
+//                                                .fillMaxWidth(),
+//                                        ) {
+//                                            Column(
+//                                                modifier = Modifier
+//                                                    .fillMaxWidth(0.23f)
+//                                            ) {
+////                                                Text("f", Modifier.align(Alignment.End))
+//                                                Box(
+//                                                    modifier = Modifier
+//                                                        .align(Alignment.End)
+//                                                        .size(20.dp)
+//                                                ) {
+//                                                    PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer, alpha = 0.35f)
+//                                                }
+//                                            }
+//                                            Column(
+//                                                modifier = Modifier
+//                                                    .fillMaxWidth(0.11f)
+//                                            ) {
+//                                                Box(
+//                                                    modifier = Modifier
+//                                                        .align(Alignment.End)
+//                                                        .size(20.dp)
+//                                                    ) {
+//                                                    PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer)
+//                                                }
+//                                            }
+//                                            Column(
+//                                                modifier = Modifier
+//                                                    .fillMaxWidth(0.18f)
+//                                            ) {
+//                                                Box(
+//                                                    modifier = Modifier
+//                                                        .align(Alignment.End)
+//                                                        .size(20.dp)
+//                                                ) {
+//                                                    PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer)
+//                                                }
+//                                            }
+//                                        }
                                     }
                                 }
                             }
