@@ -266,13 +266,14 @@ fun MainScreen() {
             prayerName = "Asr",
             icon = Icons.Outlined.WbSunny,
             prayerTime = "4:30 PM",
-            isActive = true,
+            isPassed = true,
             onClick = { /*TODO*/ }
         ),
         PrayerTime(
             prayerName = "Maghrib",
             icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
             prayerTime = "6:30 PM",
+            isActive = true,
             onClick = { /*TODO*/ }
         ),
         PrayerTime(
@@ -402,51 +403,48 @@ fun MainScreen() {
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.Bottom,
                             ) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                                Box(
+                                    Modifier
+                                        .height(66.dp)
                                 ) {
                                     Box(
                                         Modifier
-                                            .height(66.dp)
+                                            //                                            .height(64.0.dp)
+                                            .offset(8.dp, 8.dp)
+                                            .alpha(0.5f),
+                                        //                                        contentAlignment = Alignment.Center
                                     ) {
-                                        Box(
-                                            Modifier
-                                                //                                            .height(64.0.dp)
-                                                .offset(8.dp, -8.dp)
-                                                .alpha(0.5f),
-    //                                        contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "عصر",
-                                                style = MaterialTheme.typography.displayLarge,
-                                                color = MaterialTheme.colorScheme.outlineVariant,
-                                                fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
-                                                fontWeight = FontWeight.Bold,
-                                            )
-                                        }
-
                                         Text(
-                                            text = "Asr",
-                                            style = MaterialTheme.typography.displayLarge,
-                                            color = MaterialTheme.colorScheme.onSurface,
+                                            text = "مغرب",
+                                            style = MaterialTheme.typography.displayMedium,
+                                            color = MaterialTheme.colorScheme.outlineVariant,
                                             fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
-                                            fontWeight = FontWeight.Medium,
+                                            fontWeight = FontWeight.Bold,
                                         )
                                     }
+
                                     Text(
-                                        text = "2 hours 30 mins left",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        text = "Maghrib",
+                                        style = MaterialTheme.typography.displayMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
+                                        fontWeight = FontWeight.Medium,
                                     )
                                 }
-
+                            }
+                        },
+                        actions = {
+                            Row(
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                            ) {
                                 AssistChip(
                                     onClick = { /*TODO*/ },
-                                    label = { Text(text = "Glasgow, UK") },
+                                    label = { Text(text = "Glasgow") },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Outlined.LocationOn,
-                                            contentDescription = "Location"
+                                            "Location"
                                         )
                                     },
                                     border = AssistChipDefaults.assistChipBorder(
@@ -457,17 +455,16 @@ fun MainScreen() {
                                         leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                                     ),
                                 )
-                            }
-                        },
-//                        actions = {
-//                            OutlinedIconButton(
+
+//                                IconButton(
 //                                    modifier = Modifier
 //                                        .padding(start = 12.dp),
 //                                    onClick = { /*TODO*/ }
-//                            ) {
-//                                Icon(Icons.Outlined.MoreVert, contentDescription = "Settings")
-//                            }
-//                        },
+//                                ) {
+//                                    Icon(Icons.Outlined.MoreVert, "Options")
+//                                }
+                            }
+                        },
                         scrollBehavior = scrollBehavior
                     )
                 },
@@ -491,6 +488,7 @@ fun MainScreen() {
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     Column (
+                        modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(1.dp)
                     ) {
 //                        Slider(
@@ -617,7 +615,7 @@ fun MainScreen() {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
 //                            item {
 //                                Text(
@@ -626,6 +624,158 @@ fun MainScreen() {
 ////                                    fontWeight = FontWeight.Bold
 //                                )
 //                            }
+
+                            item {
+                                val shapeParam = ShapeParameters(
+                                    roundness = .4f,
+                                    sides = 4,
+                                    rotation = 90f,
+                                    shapeId = ShapeParameters.ShapeId.Polygon
+                                )
+                                val shape = remember {
+                                    shapeParam.genShape()
+                                }
+                                val clip = remember(shape) {
+                                    RoundedPolygonShape(polygon = shape)
+                                }
+
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                                1.dp
+                                            ), RoundedCornerShape(35.dp)
+                                        ),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                                ) {
+//                                    IconToggleButton(
+//                                        onCheckedChange = { /* TODO */ },
+//                                        checked = true,
+//                                        colors = IconButtonDefaults.iconToggleButtonColors(
+//                                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+//                                        ),
+//                                        modifier = Modifier
+//                                            .align(Alignment.End)
+//                                            .padding(end = 8.dp, top = 8.dp),
+//                                    ) {
+//                                        Icon(
+//                                            Icons.Outlined.ZoomIn,
+//                                            "Location"
+//                                        )
+//                                    }
+
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(
+                                                start = 24.dp,
+                                                end = 24.dp,
+                                                top = 16.dp,
+                                                bottom = 16.dp
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+//                                        PercentageWidthBox(
+////                                            modifier = Modifier
+////                                                .fillMaxWidth()
+////                                                .height(20.dp),
+//                                            children = listOf(
+//                                                PercentageWidthBoxChild(
+//                                                    composable = {
+//                                                        Box(
+//                                                            modifier = Modifier
+//                                                                .clip(clip)
+//                                                                .size(20.dp)
+//                                                                .alpha(0.5f)
+//                                                                .background(MaterialTheme.colorScheme.onSecondaryContainer),
+//                                                        )
+//                                                                 },
+//                                                    parentContainerHeight = 50.dp,
+//                                                    widthFraction = 0.23f
+//                                                ),
+//                                                PercentageWidthBoxChild(
+//                                                    composable = {
+//                                                        Box(
+//                                                            modifier = Modifier
+//                                                                .clip(clip)
+//                                                                .size(20.dp)
+//                                                                .alpha(0.5f)
+//                                                                .background(MaterialTheme.colorScheme.onSecondaryContainer),
+//                                                        )
+//                                                    },
+//                                                    parentContainerHeight = 50.dp,
+//                                                    widthFraction = 0.55f
+//                                                ),
+//                                                // Add more children as needed
+//                                            )
+//                                        )
+
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(3.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(0.77f)
+                                                    .height(20.dp)
+                                                    .background(
+                                                        MaterialTheme.colorScheme.secondaryContainer,
+                                                        RoundedCornerShape(35.dp)
+                                                    ),
+                                            )
+                                            Box(
+                                                modifier = Modifier
+                                                    .width(4.dp)
+                                                    .height(32.dp)
+                                                    .background(
+                                                        MaterialTheme.colorScheme.primary,
+                                                        RoundedCornerShape(35.dp)
+                                                    ),
+                                            )
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(20.dp)
+                                                    .background(
+                                                        MaterialTheme.colorScheme.primary,
+                                                        RoundedCornerShape(35.dp)
+                                                    ),
+                                            )
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(20.dp)
+                                                    .background(
+                                                        MaterialTheme.colorScheme.primary,
+                                                        RoundedCornerShape(35.dp)
+                                                    ),
+                                            )
+                                        }
+
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                        ) {
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(0.23f)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(clip)
+                                                        .size(15.dp)
+                                                        .align(Alignment.End)
+                                                        .alpha(0.5f)
+                                                        .background(MaterialTheme.colorScheme.onSecondaryContainer),
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             item {
                                 Column(
                                     modifier = Modifier
