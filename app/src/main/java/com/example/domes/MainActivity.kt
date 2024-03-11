@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.NightsStay
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material.icons.outlined.ZoomIn
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.BottomSheetScaffold
@@ -41,6 +42,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -247,46 +250,45 @@ fun MainScreen() {
             prayerName = "Fajr",
             icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
             prayerTime = "5:30 AM",
+            dayFraction = 0.23f, // 5.5f / 24,
             isPassed = true,
-            onClick = { /*TODO*/ }
         ),
         PrayerTime(
             prayerName = "Sunrise",
             icon = Icons.Outlined.WbSunny,
             prayerTime = "7:30 PM",
             isSilent = true,
+            dayFraction = 0.31f, // 7.5f / 24,
             isPassed = true,
-            onClick = { /*TODO*/ }
         ),
         PrayerTime(
             prayerName = "Dhuhr",
             icon = Icons.Outlined.WbSunny,
             prayerTime = "12:30 PM",
+            dayFraction = 0.52f, // 12.5f / 24,
             isPassed = true,
-            onClick = { /*TODO*/ }
         ),
         PrayerTime(
             prayerName = "Asr",
             icon = Icons.Outlined.WbSunny,
             prayerTime = "4:30 PM",
+            dayFraction = 0.68f, // 16.5f / 24,
             isPassed = true,
-            onClick = { /*TODO*/ }
         ),
         PrayerTime(
             prayerName = "Maghrib",
             icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
             prayerTime = "6:30 PM",
+            dayFraction = 0.78f, // 18.5f / 24,
             isActive = true,
-            onClick = { /*TODO*/ }
         ),
         PrayerTime(
             prayerName = "Isha",
             icon = Icons.Outlined.NightsStay,
+            dayFraction = 0.85f, // 20.5f / 24,
             prayerTime = "8:30 PM",
-            onClick = { /*TODO*/ }
         )
     )
-
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -645,23 +647,53 @@ fun MainScreen() {
                                                 1.dp
                                             ), RoundedCornerShape(35.dp)
                                         ),
-                                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp),
                                 ) {
-//                                    IconToggleButton(
-//                                        onCheckedChange = { /* TODO */ },
-//                                        checked = true,
-//                                        colors = IconButtonDefaults.iconToggleButtonColors(
-//                                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-//                                        ),
-//                                        modifier = Modifier
-//                                            .align(Alignment.End)
-//                                            .padding(end = 8.dp, top = 8.dp),
-//                                    ) {
-//                                        Icon(
-//                                            Icons.Outlined.ZoomIn,
-//                                            "Location"
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(
+                                                top = 8.dp,
+                                                start = 24.dp,
+                                                end = 12.dp,
+                                            ),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Text(
+                                            "2h 30 min left",
+                                            style = MaterialTheme.typography.labelMedium
+                                        )
+
+                                        IconToggleButton(
+                                            onCheckedChange = { /* TODO */ },
+                                            checked = true,
+                                            colors = IconButtonDefaults.iconToggleButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                            ),
+                                            modifier = Modifier
+//                                                .padding(end = 8.dp, top = 8.dp),
+                                        ) {
+                                            Icon(
+                                                Icons.Outlined.ZoomIn,
+                                                "Location"
+                                            )
+                                        }
+                                    }
+
+//                                    PercentageWidthBox(
+//                                        modifier = Modifier.padding(top = 16.dp),
+//                                        children = listOf(
+//                                        PercentageWidthBoxChild(
+//                                            composable = {
+//                                                Text(
+//                                                    "2h 30 min left",
+//                                                    style = MaterialTheme.typography.labelMedium
+//                                                )
+//                                            },
+//                                            widthFraction = 0f
 //                                        )
-//                                    }
+//                                    ))
 
                                     Box(
                                         modifier = Modifier
@@ -669,7 +701,6 @@ fun MainScreen() {
                                             .padding(
                                                 start = 24.dp,
                                                 end = 24.dp,
-                                                top = 16.dp,
                                                 bottom = 16.dp
                                             ),
                                         contentAlignment = Alignment.Center
@@ -722,88 +753,28 @@ fun MainScreen() {
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(20.dp),
-                                            children = listOf(
+                                            children = prayerTimes.map { prayerTime ->
                                                 PercentageWidthBoxChild(
                                                     composable = {
+                                                        // Your composable content here, e.g., an icon with a label
                                                         Box(
                                                             modifier = Modifier
-                                                                .size(20.dp)
+                                                                .size(10.dp)
                                                         ) {
-                                                            PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer, alpha = 0.35f)
+                                                            PolygonComposable(
+                                                                shape,
+                                                                color =
+                                                                    if (prayerTime.isActive) MaterialTheme.colorScheme.onSecondaryContainer
+                                                                    else if (prayerTime.isPassed) MaterialTheme.colorScheme.onSecondaryContainer
+                                                                    else MaterialTheme.colorScheme.secondaryContainer,
+                                                                alpha = if (prayerTime.isActive) 1f else 0.35f
+                                                            )
                                                         }
                                                     },
-                                                    parentContainerHeight = 20.dp,
-                                                    widthFraction = 0.23f
-                                                ),
-                                                PercentageWidthBoxChild(
-                                                    composable = {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .size(20.dp)
-                                                        ) {
-                                                            PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer, alpha = 0.35f)
-                                                        }
-                                                    },
-                                                    parentContainerHeight = 20.dp,
-                                                    widthFraction = 0.55f
-                                                ),
-                                                PercentageWidthBoxChild(
-                                                    composable = {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .size(20.dp)
-                                                        ) {
-                                                            PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer, alpha = 0.35f)
-                                                        }
-                                                    },
-                                                    parentContainerHeight = 20.dp,
-                                                    widthFraction = 0.75f
-                                                ),
-                                            )
+                                                    widthFraction = prayerTime.dayFraction
+                                                )
+                                            }
                                         )
-
-//                                        Row(
-//                                            modifier = Modifier
-//                                                .fillMaxWidth(),
-//                                        ) {
-//                                            Column(
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth(0.23f)
-//                                            ) {
-////                                                Text("f", Modifier.align(Alignment.End))
-//                                                Box(
-//                                                    modifier = Modifier
-//                                                        .align(Alignment.End)
-//                                                        .size(20.dp)
-//                                                ) {
-//                                                    PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer, alpha = 0.35f)
-//                                                }
-//                                            }
-//                                            Column(
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth(0.11f)
-//                                            ) {
-//                                                Box(
-//                                                    modifier = Modifier
-//                                                        .align(Alignment.End)
-//                                                        .size(20.dp)
-//                                                    ) {
-//                                                    PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer)
-//                                                }
-//                                            }
-//                                            Column(
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth(0.18f)
-//                                            ) {
-//                                                Box(
-//                                                    modifier = Modifier
-//                                                        .align(Alignment.End)
-//                                                        .size(20.dp)
-//                                                ) {
-//                                                    PolygonComposable(shape, color = MaterialTheme.colorScheme.onSecondaryContainer)
-//                                                }
-//                                            }
-//                                        }
                                     }
                                 }
                             }
@@ -823,7 +794,7 @@ fun MainScreen() {
                                             prayerName = prayerTimeItem.prayerName,
                                             icon = prayerTimeItem.icon,
                                             prayerTime = prayerTimeItem.prayerTime,
-                                            onClick = prayerTimeItem.onClick,
+                                            onClick = { },
                                             isSilent = prayerTimeItem.isSilent,
                                             isPassed = prayerTimeItem.isPassed,
                                             isActive = prayerTimeItem.isActive,
@@ -853,7 +824,7 @@ fun MainScreen() {
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(
     showBackground = true,
-    wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE
+    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
 )
 @Composable
 fun DomesPreview() {
