@@ -30,8 +30,8 @@ import androidx.compose.material.icons.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.NightsStay
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
+import androidx.compose.material.icons.outlined.ViewDay
 import androidx.compose.material.icons.outlined.WbSunny
-import androidx.compose.material.icons.outlined.ZoomIn
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.BottomSheetScaffold
@@ -78,6 +78,7 @@ import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import com.example.domes.data.PrayerTime
 import com.example.domes.ui.theme.DomesTheme
+import com.example.domes.util.DisplaySlider
 import com.example.domes.util.PercentageWidthBox
 import com.example.domes.util.PercentageWidthBoxChild
 import com.example.domes.util.PolygonComposable
@@ -159,19 +160,6 @@ fun PrayerTimeListItem(
                     }
                 }
             } else {
-//                Box(
-//                    modifier = Modifier
-//                        .size(38.dp)
-//                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    when (icon) {
-//                        is ImageVector -> Icon(icon, prayerName)
-//                        is Painter -> Icon(icon, prayerName)
-//                        else -> throw IllegalArgumentException("Invalid icon type")
-//                    }
-//                }
-
                 val shapeParam = ShapeParameters(
                     roundness = .4f,
                     sides = 4,
@@ -476,8 +464,8 @@ fun MainScreen() {
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = { },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary,
                         elevation = FloatingActionButtonDefaults.elevation(
                             defaultElevation = 0.dp,
                             pressedElevation = 0.dp,
@@ -653,17 +641,29 @@ fun MainScreen() {
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(
-                                                top = 8.dp,
+                                                top = 12.dp,
                                                 start = 24.dp,
                                                 end = 12.dp,
                                             ),
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically,
                                     ) {
-                                        Text(
-                                            "2h 30 min left",
-                                            style = MaterialTheme.typography.labelMedium
-                                        )
+                                        Box(
+                                            modifier = Modifier
+
+                                                .background(
+                                                    MaterialTheme.colorScheme.tertiaryContainer,
+                                                    RoundedCornerShape(topStartPercent = 50, topEndPercent = 50, bottomStartPercent = 15, bottomEndPercent = 50)
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                "2h 30 min left",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                                modifier = Modifier.padding(10.dp)
+                                            )
+                                        }
 
                                         IconToggleButton(
                                             onCheckedChange = { /* TODO */ },
@@ -675,25 +675,11 @@ fun MainScreen() {
 //                                                .padding(end = 8.dp, top = 8.dp),
                                         ) {
                                             Icon(
-                                                Icons.Outlined.ZoomIn,
+                                                Icons.Outlined.ViewDay,
                                                 "Location"
                                             )
                                         }
                                     }
-
-//                                    PercentageWidthBox(
-//                                        modifier = Modifier.padding(top = 16.dp),
-//                                        children = listOf(
-//                                        PercentageWidthBoxChild(
-//                                            composable = {
-//                                                Text(
-//                                                    "2h 30 min left",
-//                                                    style = MaterialTheme.typography.labelMedium
-//                                                )
-//                                            },
-//                                            widthFraction = 0f
-//                                        )
-//                                    ))
 
                                     Box(
                                         modifier = Modifier
@@ -705,49 +691,13 @@ fun MainScreen() {
                                             ),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Row(
+                                        DisplaySlider(
+                                            sliderValue = 0.8f,
+                                            text = "2h 30 min left",
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(3.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth(0.77f)
-                                                    .height(20.dp)
-                                                    .background(
-                                                        MaterialTheme.colorScheme.secondaryContainer,
-                                                        RoundedCornerShape(35.dp)
-                                                    ),
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .width(4.dp)
-                                                    .height(32.dp)
-                                                    .background(
-                                                        MaterialTheme.colorScheme.primary,
-                                                        RoundedCornerShape(35.dp)
-                                                    ),
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(20.dp)
-                                                    .background(
-                                                        MaterialTheme.colorScheme.primary,
-                                                        RoundedCornerShape(35.dp)
-                                                    ),
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(20.dp)
-                                                    .background(
-                                                        MaterialTheme.colorScheme.primary,
-                                                        RoundedCornerShape(35.dp)
-                                                    ),
-                                            )
-                                        }
+                                            onValueChange = { }
+                                        )
 
                                         PercentageWidthBox(
                                             modifier = Modifier
@@ -764,13 +714,12 @@ fun MainScreen() {
                                                             PolygonComposable(
                                                                 shape,
                                                                 color =
-                                                                    if (prayerTime.isActive) MaterialTheme.colorScheme.onSecondaryContainer
-                                                                    else if (prayerTime.isPassed) MaterialTheme.colorScheme.onSecondaryContainer
-                                                                    else MaterialTheme.colorScheme.secondaryContainer,
+                                                                if (prayerTime.isActive) MaterialTheme.colorScheme.onSecondaryContainer
+                                                                else if (prayerTime.isPassed) MaterialTheme.colorScheme.onSecondaryContainer
+                                                                else MaterialTheme.colorScheme.secondaryContainer,
                                                                 alpha = if (prayerTime.isActive) 1f else 0.35f
                                                             )
-                                                        }
-                                                    },
+                                                        } },
                                                     widthFraction = prayerTime.dayFraction
                                                 )
                                             }
@@ -824,7 +773,7 @@ fun MainScreen() {
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(
     showBackground = true,
-    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
+    wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE
 )
 @Composable
 fun DomesPreview() {
