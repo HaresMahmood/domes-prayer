@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,17 +21,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.HourglassTop
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.NavigateBefore
 import androidx.compose.material.icons.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.NightsStay
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
-import androidx.compose.material.icons.outlined.ViewDay
+import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -38,12 +43,11 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -56,11 +60,8 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -189,10 +190,13 @@ fun PrayerTimeListItem(
             }
         },
         headlineContent = {
-            Text(prayerName, style = if (isActive) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge)
+            Text(
+                prayerName,
+                style = if (isActive) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
+            )
         },
         trailingContent = {
-            Row (
+            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
             ) {
@@ -225,7 +229,7 @@ fun PrayerTimeListItem(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen() {
     val scope = rememberCoroutineScope()
@@ -381,7 +385,8 @@ fun MainScreen() {
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+            val scrollBehavior =
+                TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -426,38 +431,38 @@ fun MainScreen() {
                                 }
                             }
                         },
-                        actions = {
-                            Row(
-                                modifier = Modifier
-                                    .padding(end = 16.dp)
-                            ) {
-                                AssistChip(
-                                    onClick = { /*TODO*/ },
-                                    label = { Text(text = "Glasgow") },
-                                    leadingIcon = {
-                                        Icon(
-                                            Icons.Outlined.LocationOn,
-                                            "Location"
-                                        )
-                                    },
-                                    border = AssistChipDefaults.assistChipBorder(
-                                        Color.Transparent
-                                    ),
-                                    colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    ),
-                                )
-
-//                                IconButton(
-//                                    modifier = Modifier
-//                                        .padding(start = 12.dp),
-//                                    onClick = { /*TODO*/ }
-//                                ) {
-//                                    Icon(Icons.Outlined.MoreVert, "Options")
-//                                }
-                            }
-                        },
+//                        actions = {
+//                            Row(
+//                                modifier = Modifier
+//                                    .padding(end = 16.dp)
+//                            ) {
+//                                AssistChip(
+//                                    onClick = { /*TODO*/ },
+//                                    label = { Text(text = "Glasgow") },
+//                                    leadingIcon = {
+//                                        Icon(
+//                                            Icons.Outlined.LocationOn,
+//                                            "Location"
+//                                        )
+//                                    },
+//                                    border = AssistChipDefaults.assistChipBorder(
+//                                        Color.Transparent
+//                                    ),
+//                                    colors = AssistChipDefaults.assistChipColors(
+//                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+//                                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+//                                    ),
+//                                )
+//
+////                                IconButton(
+////                                    modifier = Modifier
+////                                        .padding(start = 12.dp),
+////                                    onClick = { /*TODO*/ }
+////                                ) {
+////                                    Icon(Icons.Outlined.MoreVert, "Options")
+////                                }
+//                            }
+//                        },
                         scrollBehavior = scrollBehavior
                     )
                 },
@@ -475,284 +480,252 @@ fun MainScreen() {
                     }
                 },
             ) { innerPadding ->
-                var sliderPosition by remember { mutableFloatStateOf(25f) }
-
                 Box(
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    Column (
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(1.dp)
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-//                        Slider(
-//                            value = sliderPosition,
-//                            onValueChange = { sliderPosition = it },
-//                            colors = SliderDefaults.colors(
-//                                thumbColor = MaterialTheme.colorScheme.secondary,
-//                                activeTrackColor = MaterialTheme.colorScheme.secondary,
-//                                inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-//                            ),
-//                            steps = 3,
-//                            valueRange = 0f..50f
-//                        )
-                        /*
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(175.dp)
-                        ) {
-                            val shapeParam = ShapeParameters(
-                                sides = 15,
-                                innerRadius = .892f,
-                                roundness = 1f,
-                                shapeId = ShapeParameters.ShapeId.Star
-                            )
-                            val shape = remember {
-                                shapeParam.genShape()
-                            }
-                            val clip = remember(shape) {
-                                RoundedPolygonShape(polygon = shape)
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .clip(clip)
-                                    .size(150.dp)
-                                    .align(Alignment.BottomEnd)
-                                    .background(MaterialTheme.colorScheme.surfaceTint),
-                            )
-                        }
-
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        ) {
-                            item {
-                                FilledTonalIconButton(
-                                    modifier = Modifier
-                                        .padding(start = 12.dp),
-                                    onClick = { /*TODO*/ }
-                                ) {
-                                    Icon(Icons.Outlined.MoreVert, contentDescription = "Settings")
-                                }
-                            }
-                            item {
-                                AssistChip(
-                                    onClick = { /*TODO*/ },
-                                    label = { Text(text = "Glasgow, UK") },
-                                    leadingIcon = {
-                                        Icon(
-                                            Icons.Outlined.LocationOn,
-                                            contentDescription = "Location"
-                                        )
-                                    },
-                                    border = AssistChipDefaults.assistChipBorder(
-                                        Color.Transparent
-                                    ),
-                                    colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    ),
-                                )
-                            }
-                            item {
-                                AssistChip(
-                                    onClick = { /*TODO*/ },
-                                    label = { Text(text = "Snooze alert") },
-                                    leadingIcon = {
-                                        Icon(
-                                            Icons.Outlined.Snooze,
-                                            contentDescription = "Snooze"
-                                        )
-                                    },
-                                    border = AssistChipDefaults.assistChipBorder(
-                                        Color.Transparent
-                                    ),
-                                    colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    ),
-                                )
-                            }
-                            item {
-                                AssistChip(
-                                    modifier = Modifier
-                                        .padding(end = 12.dp),
-                                    onClick = { /*TODO*/ },
-                                    label = { Text(text = "Period") },
-                                    leadingIcon = {
-                                        Icon(
-                                            painterResource(R.drawable.menstrual_health_fill0_wght400_grad0_opsz24),
-                                            "Period",
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        Icon(
-                                            Icons.Outlined.Check,
-                                            "Selected",
-                                        )
-                                    },
-                                    border = AssistChipDefaults.assistChipBorder(
-                                        Color.Transparent
-                                    ),
-                                    colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                        leadingIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                                        trailingIconContentColor = MaterialTheme.colorScheme.tertiary,
-                                    ),
-                                )
-                            }
-                        }
-                        */
-                        
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-//                            item {
-//                                Text(
-//                                    text = "Schedule",
-//                                    style = MaterialTheme.typography.titleLarge,
-////                                    fontWeight = FontWeight.Bold
-//                                )
-//                            }
-
-                            item {
-                                val shapeParam = ShapeParameters(
-                                    roundness = .4f,
-                                    sides = 4,
-                                    rotation = 90f,
-                                    shapeId = ShapeParameters.ShapeId.Polygon
-                                )
-                                val shape = shapeParam.genShape().normalized()
-
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                                1.dp
-                                            ), RoundedCornerShape(35.dp)
-                                        ),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(
-                                                top = 12.dp,
-                                                start = 24.dp,
-                                                end = 12.dp,
-                                            ),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-
-                                                .background(
-                                                    MaterialTheme.colorScheme.tertiaryContainer,
-                                                    RoundedCornerShape(topStartPercent = 50, topEndPercent = 50, bottomStartPercent = 15, bottomEndPercent = 50)
-                                                ),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                "2h 30 min left",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                modifier = Modifier.padding(10.dp)
-                                            )
-                                        }
-
-                                        IconToggleButton(
-                                            onCheckedChange = { /* TODO */ },
-                                            checked = true,
-                                            colors = IconButtonDefaults.iconToggleButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                            ),
-                                            modifier = Modifier
-//                                                .padding(end = 8.dp, top = 8.dp),
-                                        ) {
+                        stickyHeader {
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(7.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                item {
+                                    AssistChip(
+                                        onClick = { /*TODO*/ },
+                                        label = { Text("2h 30 min left") },
+                                        leadingIcon = {
                                             Icon(
-                                                Icons.Outlined.ViewDay,
+                                                Icons.Outlined.HourglassTop,
+                                                "Time left"
+                                            )
+                                        },
+                                        border = AssistChipDefaults.assistChipBorder(
+                                            Color.Transparent
+                                        ),
+                                        colors = AssistChipDefaults.assistChipColors(
+                                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                            leadingIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                        ),
+                                        shape = RoundedCornerShape(topStartPercent = 15, topEndPercent = 40, bottomStartPercent = 40, bottomEndPercent = 40)
+                                    )
+                                }
+                                item {
+                                    AssistChip(
+                                        onClick = { /*TODO*/ },
+                                        label = { Text(text = "Glasgow, UK") },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Outlined.LocationOn,
                                                 "Location"
                                             )
-                                        }
-                                    }
-
-                                    Box(
+                                        },
+                                        border = AssistChipDefaults.assistChipBorder(
+                                            Color.Transparent
+                                        ),
+                                        colors = AssistChipDefaults.assistChipColors(
+                                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                            leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        ),
+                                    )
+                                }
+                                item {
+                                    AssistChip(
+                                        onClick = { /*TODO*/ },
+                                        label = { Text(text = "Snooze alert") },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Outlined.Snooze,
+                                                "Snooze"
+                                            )
+                                        },
+                                        border = AssistChipDefaults.assistChipBorder(
+                                            Color.Transparent
+                                        ),
+                                        colors = AssistChipDefaults.assistChipColors(
+                                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                            leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        ),
+                                    )
+                                }
+                                item {
+                                    AssistChip(
+                                        onClick = { /*TODO*/ },
+                                        label = { Text(text = "Period") },
+                                        leadingIcon = {
+                                            Icon(
+                                                painterResource(R.drawable.menstrual_health_fill0_wght400_grad0_opsz24),
+                                                "Period",
+                                            )
+                                        },
+                                        trailingIcon = {
+                                            Icon(
+                                                Icons.Outlined.Check,
+                                                "Selected",
+                                            )
+                                        },
+                                        border = AssistChipDefaults.assistChipBorder(
+                                            Color.Transparent
+                                        ),
+                                        colors = AssistChipDefaults.assistChipColors(
+                                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                            leadingIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            trailingIconContentColor = MaterialTheme.colorScheme.tertiary,
+                                        ),
+                                    )
+                                }
+                                item {
+                                    FilledTonalIconButton(
                                         modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(
-                                                start = 24.dp,
-                                                end = 24.dp,
-                                                bottom = 16.dp
-                                            ),
-                                        contentAlignment = Alignment.Center
+                                            .padding(end = 12.dp),
+                                        onClick = { /*TODO*/ }
                                     ) {
-                                        DisplaySlider(
-                                            sliderValue = 0.8f,
-                                            text = "2h 30 min left",
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            onValueChange = { }
-                                        )
-
-                                        PercentageWidthBox(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(20.dp),
-                                            children = prayerTimes.map { prayerTime ->
-                                                PercentageWidthBoxChild(
-                                                    composable = {
-                                                        // Your composable content here, e.g., an icon with a label
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .size(10.dp)
-                                                        ) {
-                                                            PolygonComposable(
-                                                                shape,
-                                                                color =
-                                                                if (prayerTime.isActive) MaterialTheme.colorScheme.onSecondaryContainer
-                                                                else if (prayerTime.isPassed) MaterialTheme.colorScheme.onSecondaryContainer
-                                                                else MaterialTheme.colorScheme.secondaryContainer,
-                                                                alpha = if (prayerTime.isActive) 1f else 0.35f
-                                                            )
-                                                        } },
-                                                    widthFraction = prayerTime.dayFraction
-                                                )
-                                            }
-                                        )
+                                        Icon(Icons.Outlined.MoreVert, contentDescription = "Settings")
                                     }
                                 }
                             }
-                            item {
-                                Column(
+                        }
+                        item {
+                            val shapeParam = ShapeParameters(
+                                roundness = .4f,
+                                sides = 4,
+                                rotation = 90f,
+                                shapeId = ShapeParameters.ShapeId.Polygon
+                            )
+                            val shape = shapeParam.genShape().normalized()
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                            1.dp
+                                        ), RoundedCornerShape(35.dp)
+                                    ),
+                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                            ) {
+//                                    Row(
+//                                        modifier = Modifier
+//                                            .fillMaxWidth()
+//                                            .padding(
+//                                                top = 12.dp,
+//                                                start = 24.dp,
+//                                                end = 12.dp,
+//                                            ),
+//                                        horizontalArrangement = Arrangement.SpaceBetween,
+//                                        verticalAlignment = Alignment.CenterVertically,
+//                                    ) {
+//                                        Box(
+//                                            modifier = Modifier
+//
+//                                                .background(
+//                                                    MaterialTheme.colorScheme.tertiaryContainer,
+//                                                    RoundedCornerShape(topStartPercent = 50, topEndPercent = 50, bottomStartPercent = 15, bottomEndPercent = 50)
+//                                                ),
+//                                            contentAlignment = Alignment.Center
+//                                        ) {
+//                                            Text(
+//                                                "2h 30 min left",
+//                                                style = MaterialTheme.typography.labelSmall,
+//                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+//                                                modifier = Modifier.padding(10.dp)
+//                                            )
+//                                        }
+//
+//                                        IconToggleButton(
+//                                            onCheckedChange = { /* TODO */ },
+//                                            checked = true,
+//                                            colors = IconButtonDefaults.iconToggleButtonColors(
+//                                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+//                                            ),
+//                                            modifier = Modifier
+////                                                .padding(end = 8.dp, top = 8.dp),
+//                                        ) {
+//                                            Icon(
+//                                                Icons.Outlined.ViewDay,
+//                                                "Location"
+//                                            )
+//                                        }
+//                                    }
+
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(
-                                            MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                                1.dp
-                                            ), RoundedCornerShape(35.dp)
+                                        .padding(
+                                            top = 16.dp,
+                                            start = 24.dp,
+                                            end = 24.dp,
+                                            bottom = 16.dp
                                         ),
-                                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    prayerTimes.forEachIndexed { index, prayerTimeItem ->
-                                        PrayerTimeListItem(
-                                            prayerName = prayerTimeItem.prayerName,
-                                            icon = prayerTimeItem.icon,
-                                            prayerTime = prayerTimeItem.prayerTime,
-                                            onClick = { },
-                                            isSilent = prayerTimeItem.isSilent,
-                                            isPassed = prayerTimeItem.isPassed,
-                                            isActive = prayerTimeItem.isActive,
-                                            isFirstItem = index == 0,
-                                            isLastItem = index == prayerTimes.lastIndex
-                                        )
-                                    }
+                                    DisplaySlider(
+                                        sliderValue = 0.8f,
+                                        text = "2h 30 min left",
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        onValueChange = { }
+                                    )
+
+                                    PercentageWidthBox(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(20.dp),
+                                        children = prayerTimes.map { prayerTime ->
+                                            PercentageWidthBoxChild(
+                                                composable = {
+                                                    // Your composable content here, e.g., an icon with a label
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(10.dp)
+                                                    ) {
+                                                        PolygonComposable(
+                                                            shape,
+                                                            color =
+                                                            if (prayerTime.isActive) MaterialTheme.colorScheme.onSecondaryContainer
+                                                            else if (prayerTime.isPassed) MaterialTheme.colorScheme.onSecondaryContainer
+                                                            else MaterialTheme.colorScheme.secondaryContainer,
+                                                            alpha = if (prayerTime.isActive) 1f else 0.35f
+                                                        )
+                                                    }
+                                                },
+                                                widthFraction = prayerTime.dayFraction
+                                            )
+                                        }
+                                    )
                                 }
                             }
+                        }
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                            1.dp
+                                        ), RoundedCornerShape(35.dp)
+                                    ),
+                                verticalArrangement = Arrangement.spacedBy(2.dp),
+                            ) {
+                                prayerTimes.forEachIndexed { index, prayerTimeItem ->
+                                    PrayerTimeListItem(
+                                        prayerName = prayerTimeItem.prayerName,
+                                        icon = prayerTimeItem.icon,
+                                        prayerTime = prayerTimeItem.prayerTime,
+                                        onClick = { },
+                                        isSilent = prayerTimeItem.isSilent,
+                                        isPassed = prayerTimeItem.isPassed,
+                                        isActive = prayerTimeItem.isActive,
+                                        isFirstItem = index == 0,
+                                        isLastItem = index == prayerTimes.lastIndex
+                                    )
+                                }
+                            }
+                        }
 //                            item {
 //                                HorizontalDivider()
 //                            }
@@ -762,7 +735,6 @@ fun MainScreen() {
 //                                    style = MaterialTheme.typography.titleLarge,
 //                                )
 //                            }
-                        }
                     }
                 }
             }
