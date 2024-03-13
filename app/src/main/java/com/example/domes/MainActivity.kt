@@ -5,18 +5,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,18 +32,17 @@ import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.HourglassTop
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.NavigateBefore
 import androidx.compose.material.icons.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.NightsStay
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material.icons.outlined.WbSunny
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
@@ -48,7 +50,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -71,9 +72,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
@@ -83,6 +81,7 @@ import com.example.domes.util.DisplaySlider
 import com.example.domes.util.PercentageWidthBox
 import com.example.domes.util.PercentageWidthBoxChild
 import com.example.domes.util.PolygonComposable
+import com.example.domes.util.PrayerTopAppBar
 import com.example.domes.util.RoundedPolygonShape
 import com.example.domes.util.ShapeParameters
 import kotlinx.coroutines.launch
@@ -234,8 +233,17 @@ fun PrayerTimeListItem(
 fun MainScreen() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val sheetPeekHeight = 100.dp
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = rememberTopAppBarState(),
+        canScroll = { true },
+        snapAnimationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        flingAnimationSpec = rememberSplineBasedDecay()
+    )
 
     val prayerTimes = listOf(
         PrayerTime(
@@ -385,87 +393,9 @@ fun MainScreen() {
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            val scrollBehavior =
-                TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    LargeTopAppBar(
-                        title = {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(end = 16.dp)
-                                    .align(Alignment.BottomStart),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Bottom,
-                            ) {
-                                Box(
-                                    Modifier
-                                        .height(66.dp)
-                                ) {
-                                    Box(
-                                        Modifier
-                                            //                                            .height(64.0.dp)
-                                            .offset(8.dp, 8.dp)
-                                            .alpha(0.5f),
-                                        //                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "مغرب",
-                                            style = MaterialTheme.typography.displayMedium,
-                                            color = MaterialTheme.colorScheme.outlineVariant,
-                                            fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                    }
-
-                                    Text(
-                                        text = "Maghrib",
-                                        style = MaterialTheme.typography.displayMedium,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
-                                        fontWeight = FontWeight.Medium,
-                                    )
-                                }
-                            }
-                        },
-//                        actions = {
-//                            Row(
-//                                modifier = Modifier
-//                                    .padding(end = 16.dp)
-//                            ) {
-//                                AssistChip(
-//                                    onClick = { /*TODO*/ },
-//                                    label = { Text(text = "Glasgow") },
-//                                    leadingIcon = {
-//                                        Icon(
-//                                            Icons.Outlined.LocationOn,
-//                                            "Location"
-//                                        )
-//                                    },
-//                                    border = AssistChipDefaults.assistChipBorder(
-//                                        Color.Transparent
-//                                    ),
-//                                    colors = AssistChipDefaults.assistChipColors(
-//                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-//                                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-//                                    ),
-//                                )
-//
-////                                IconButton(
-////                                    modifier = Modifier
-////                                        .padding(start = 12.dp),
-////                                    onClick = { /*TODO*/ }
-////                                ) {
-////                                    Icon(Icons.Outlined.MoreVert, "Options")
-////                                }
-//                            }
-//                        },
-                        scrollBehavior = scrollBehavior
-                    )
-                },
+                topBar = { PrayerTopAppBar("Maghrib", "مغرب", scrollBehavior) },
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = { },
@@ -485,106 +415,87 @@ fun MainScreen() {
                 ) {
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 12.dp),
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 80.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         stickyHeader {
                             LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy(7.dp),
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.background),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
+                                val buttonCornerShapes = RoundedCornerShape(15)
+                                val buttonPaddingValues = PaddingValues(horizontal = 14.dp)
+
                                 item {
-                                    AssistChip(
+                                    Button(
                                         onClick = { /*TODO*/ },
-                                        label = { Text("2h 30 min left") },
-                                        leadingIcon = {
-                                            Icon(
-                                                Icons.Outlined.HourglassTop,
-                                                "Time left"
-                                            )
-                                        },
-                                        border = AssistChipDefaults.assistChipBorder(
-                                            Color.Transparent
-                                        ),
-                                        colors = AssistChipDefaults.assistChipColors(
+                                        shape = RoundedCornerShape(topStartPercent = 12, topEndPercent = 45, bottomStartPercent = 45, bottomEndPercent = 45),
+                                        contentPadding = buttonPaddingValues,
+                                        colors = ButtonDefaults.buttonColors(
                                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                            leadingIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                                         ),
-                                        shape = RoundedCornerShape(topStartPercent = 15, topEndPercent = 40, bottomStartPercent = 40, bottomEndPercent = 40)
-                                    )
+                                    ) {
+                                        Icon(Icons.Outlined.HourglassTop,  "Time left")
+                                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                        Text("2h 30 min left")
+                                    }
                                 }
                                 item {
-                                    AssistChip(
+                                    Button(
                                         onClick = { /*TODO*/ },
-                                        label = { Text(text = "Glasgow, UK") },
-                                        leadingIcon = {
-                                            Icon(
-                                                Icons.Outlined.LocationOn,
-                                                "Location"
-                                            )
-                                        },
-                                        border = AssistChipDefaults.assistChipBorder(
-                                            Color.Transparent
-                                        ),
-                                        colors = AssistChipDefaults.assistChipColors(
+                                        shape = buttonCornerShapes,
+                                        contentPadding = buttonPaddingValues,
+                                        colors = ButtonDefaults.buttonColors(
                                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                            leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                                         ),
-                                    )
+                                    ) {
+                                        Icon(Icons.Outlined.LocationOn, "Location")
+                                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                        Text(text = "Glasgow, UK")
+                                    }
                                 }
                                 item {
-                                    AssistChip(
+                                    Button(
                                         onClick = { /*TODO*/ },
-                                        label = { Text(text = "Snooze alert") },
-                                        leadingIcon = {
-                                            Icon(
-                                                Icons.Outlined.Snooze,
-                                                "Snooze"
-                                            )
-                                        },
-                                        border = AssistChipDefaults.assistChipBorder(
-                                            Color.Transparent
-                                        ),
-                                        colors = AssistChipDefaults.assistChipColors(
+                                        shape = buttonCornerShapes,
+                                        contentPadding = buttonPaddingValues,
+                                        colors = ButtonDefaults.buttonColors(
                                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                            leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                                         ),
-                                    )
+                                    ) {
+                                        Icon(Icons.Outlined.Snooze, "Snooze alert")
+                                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                        Text(text = "Snooze alert")
+                                    }
                                 }
                                 item {
-                                    AssistChip(
+                                    Button(
                                         onClick = { /*TODO*/ },
-                                        label = { Text(text = "Period") },
-                                        leadingIcon = {
-                                            Icon(
-                                                painterResource(R.drawable.menstrual_health_fill0_wght400_grad0_opsz24),
-                                                "Period",
-                                            )
-                                        },
-                                        trailingIcon = {
-                                            Icon(
-                                                Icons.Outlined.Check,
-                                                "Selected",
-                                            )
-                                        },
-                                        border = AssistChipDefaults.assistChipBorder(
-                                            Color.Transparent
+                                        shape = RoundedCornerShape(100),
+                                        contentPadding = buttonPaddingValues,
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                                         ),
-                                        colors = AssistChipDefaults.assistChipColors(
-                                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                            leadingIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                                            trailingIconContentColor = MaterialTheme.colorScheme.tertiary,
-                                        ),
-                                    )
+                                    ) {
+                                        Icon(painterResource(R.drawable.menstrual_health_fill0_wght400_grad0_opsz24), "Period")
+                                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                        Text(text = "Period")
+                                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                        Icon(Icons.Outlined.Check, "Selected")
+                                    }
                                 }
                                 item {
                                     FilledTonalIconButton(
-                                        modifier = Modifier
-                                            .padding(end = 12.dp),
                                         onClick = { /*TODO*/ }
                                     ) {
-                                        Icon(Icons.Outlined.MoreVert, contentDescription = "Settings")
+                                        Icon(Icons.Outlined.Settings, contentDescription = "Settings")
                                     }
                                 }
                             }
@@ -608,33 +519,6 @@ fun MainScreen() {
                                     ),
                                 verticalArrangement = Arrangement.spacedBy(6.dp),
                             ) {
-//                                    Row(
-//                                        modifier = Modifier
-//                                            .fillMaxWidth()
-//                                            .padding(
-//                                                top = 12.dp,
-//                                                start = 24.dp,
-//                                                end = 12.dp,
-//                                            ),
-//                                        horizontalArrangement = Arrangement.SpaceBetween,
-//                                        verticalAlignment = Alignment.CenterVertically,
-//                                    ) {
-//                                        Box(
-//                                            modifier = Modifier
-//
-//                                                .background(
-//                                                    MaterialTheme.colorScheme.tertiaryContainer,
-//                                                    RoundedCornerShape(topStartPercent = 50, topEndPercent = 50, bottomStartPercent = 15, bottomEndPercent = 50)
-//                                                ),
-//                                            contentAlignment = Alignment.Center
-//                                        ) {
-//                                            Text(
-//                                                "2h 30 min left",
-//                                                style = MaterialTheme.typography.labelSmall,
-//                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-//                                                modifier = Modifier.padding(10.dp)
-//                                            )
-//                                        }
 //
 //                                        IconToggleButton(
 //                                            onCheckedChange = { /* TODO */ },
@@ -726,15 +610,6 @@ fun MainScreen() {
                                 }
                             }
                         }
-//                            item {
-//                                HorizontalDivider()
-//                            }
-//                            item {
-//                                Text(
-//                                    text = "Trends",
-//                                    style = MaterialTheme.typography.titleLarge,
-//                                )
-//                            }
                     }
                 }
             }
