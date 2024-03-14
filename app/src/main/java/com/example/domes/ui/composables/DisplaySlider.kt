@@ -1,4 +1,4 @@
-package com.example.domes.util
+package com.example.domes.ui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

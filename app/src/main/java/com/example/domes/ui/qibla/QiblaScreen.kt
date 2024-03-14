@@ -3,7 +3,7 @@ package com.example.domes.ui.qibla
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.domes.util.PolygonComposable
+import com.example.domes.ui.composables.Polygon
 import com.example.domes.util.ShapeParameters
 
 @Preview
@@ -18,6 +18,6 @@ private fun CompassShape() {
 
     Box {
         // draw shape
-        PolygonComposable(shape)
+        Polygon(shape)
     }
 }

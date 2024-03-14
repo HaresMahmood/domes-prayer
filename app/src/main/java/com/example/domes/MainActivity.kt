@@ -77,11 +77,11 @@ import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import com.example.domes.data.PrayerTime
 import com.example.domes.ui.theme.DomesTheme
-import com.example.domes.util.DisplaySlider
-import com.example.domes.util.PercentageWidthBox
-import com.example.domes.util.PercentageWidthBoxChild
-import com.example.domes.util.PolygonComposable
-import com.example.domes.util.PrayerTopAppBar
+import com.example.domes.ui.composables.DisplaySlider
+import com.example.domes.ui.composables.PercentageWidthBox
+import com.example.domes.ui.composables.PercentageWidthBoxChild
+import com.example.domes.ui.composables.Polygon
+import com.example.domes.ui.composables.PrayerTopAppBar
 import com.example.domes.util.RoundedPolygonShape
 import com.example.domes.util.ShapeParameters
 import kotlinx.coroutines.launch
@@ -235,15 +235,7 @@ fun MainScreen() {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val sheetPeekHeight = 100.dp
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
-        state = rememberTopAppBarState(),
-        canScroll = { true },
-        snapAnimationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        flingAnimationSpec = rememberSplineBasedDecay()
-    )
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     val prayerTimes = listOf(
         PrayerTime(
@@ -567,7 +559,7 @@ fun MainScreen() {
                                                         modifier = Modifier
                                                             .size(10.dp)
                                                     ) {
-                                                        PolygonComposable(
+                                                        Polygon(
                                                             shape,
                                                             color =
                                                             if (prayerTime.isActive) MaterialTheme.colorScheme.onSecondaryContainer

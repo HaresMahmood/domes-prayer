@@ -52,31 +52,6 @@ internal fun radialToCartesian(
 internal fun directionVectorPointF(angleRadians: Float) =
     PointF(cos(angleRadians), sin(angleRadians))
 
-@Composable
-fun PolygonComposable(polygon: RoundedPolygon, modifier: Modifier = Modifier, color: Color = Color.White, alpha: Float = 1f,) =
-    PolygonComposableImpl(polygon, modifier, color, alpha)
-
-@Composable
-internal fun PolygonComposableImpl(
-    polygon: RoundedPolygon,
-    modifier: Modifier = Modifier,
-    color: Color = Color.White,
-    alpha: Float = 1f,
-) {
-    val sizedShapes = remember(polygon) { mutableMapOf<Size, List<Cubic>>() }
-    Box(
-        modifier
-            .fillMaxSize()
-            .drawWithContent {
-                drawContent()
-                val scale = min(size.width, size.height)
-                val shape = sizedShapes.getOrPut(size) { polygon.cubics.scaled(scale) }
-
-                drawPath(shape.toPath(), color, alpha)
-            }
-    )
-}
-
 class RoundedPolygonShape(
     private val polygon: RoundedPolygon
 ) : Shape {
