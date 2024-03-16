@@ -44,12 +44,12 @@ fun PrayerTopAppBar(
     LargeTopAppBar(
         title = {
             Box(
-                contentAlignment = if (isCollapsed.value) Alignment.Center else Alignment.TopStart
+                contentAlignment = if (isCollapsed.value) Alignment.Center else Alignment.CenterStart
             ) {
                 if (!isFullyCollapsed.value) {
                     Text(
                         modifier = Modifier
-                            .offset(8.dp, 8.dp)
+                            .offset(8.dp, 10.dp)
                             .alpha(arabicTextOpacity),
                         text = arabicText,
                         style = MaterialTheme.typography.displayMedium,

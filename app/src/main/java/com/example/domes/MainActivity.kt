@@ -2,12 +2,10 @@ package com.example.domes
 
 import android.os.Build
 import android.os.Bundle
+import android.widget.CalendarView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -61,6 +59,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -76,15 +75,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import com.example.domes.data.PrayerTime
-import com.example.domes.ui.theme.DomesTheme
 import com.example.domes.ui.composables.DisplaySlider
 import com.example.domes.ui.composables.PercentageWidthBox
 import com.example.domes.ui.composables.PercentageWidthBoxChild
 import com.example.domes.ui.composables.Polygon
 import com.example.domes.ui.composables.PrayerTopAppBar
+import com.example.domes.ui.theme.DomesTheme
 import com.example.domes.util.RoundedPolygonShape
 import com.example.domes.util.ShapeParameters
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.calendar.CalendarView
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -286,7 +289,7 @@ fun MainScreen() {
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
         sheetPeekHeight = sheetPeekHeight,
-        sheetShape = RoundedCornerShape(35.dp),
+        sheetShape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp),
         sheetDragHandle = { null },
         sheetContent = {
             Box(
@@ -334,7 +337,7 @@ fun MainScreen() {
                             }
                         }
 
-                        Column() {
+                        Column {
                             Text(
                                 text = "August 2024",
                                 style = MaterialTheme.typography.titleMedium,
@@ -346,7 +349,7 @@ fun MainScreen() {
                         }
                     }
 
-                    Row() {
+                    Row {
                         IconButton(onClick = { /*TODO*/ }) {
                             Icon(
                                 Icons.Outlined.NavigateBefore,
@@ -365,18 +368,19 @@ fun MainScreen() {
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .padding(64.dp),
+                    .padding(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Sheet content")
-                Spacer(Modifier.height(20.dp))
-                Button(
-                    onClick = {
-                        scope.launch { scaffoldState.bottomSheetState.partialExpand() }
-                    }
-                ) {
-                    Text("Click to collapse sheet")
-                }
+                val selectedDate = remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
+
+                CalendarView(
+                    useCaseState = rememberUseCaseState(visible = true),
+                    selection = CalendarSelection.Date(
+                        selectedDate = selectedDate.value
+                    ) { newDate ->
+                        selectedDate.value = newDate
+                    },
+                )
             }
         }) { innerPadding ->
         Box(
@@ -612,7 +616,7 @@ fun MainScreen() {
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(
     showBackground = true,
-    wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE
+    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
 )
 @Composable
 fun DomesPreview() {
