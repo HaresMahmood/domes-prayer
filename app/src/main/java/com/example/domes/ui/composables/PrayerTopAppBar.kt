@@ -44,7 +44,7 @@ fun PrayerTopAppBar(
     LargeTopAppBar(
         title = {
             Box(
-                contentAlignment = if (isCollapsed.value) Alignment.Center else Alignment.CenterStart
+                contentAlignment = Alignment.CenterStart,
             ) {
                 if (!isFullyCollapsed.value) {
                     Text(
