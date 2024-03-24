@@ -3,8 +3,8 @@ package com.example.domes.ui.qibla
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.domes.ui.composables.Polygon
-import com.example.domes.util.ShapeParameters
+import com.example.domes.presentation.util.Polygon
+import com.example.domes.presentation.util.ShapeParameters
 
 @Preview
 @Composable

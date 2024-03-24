@@ -1,4 +1,4 @@
-package com.example.domes.ui.composables
+package com.example.domes.presentation.prayers.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
