@@ -58,6 +58,40 @@ fun PrayerListItem(
             )
             .alpha(if (isPassed) 0.5f else 1f),
         leadingContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
+                if (isSilent) {
+                    // Icon(
+                    //     Icons.Outlined.NotificationsOff,
+                    //     modifier = Modifier.width(18.dp),
+                    //     contentDescription = "Silent"
+                    // )
+                }
+
+                Box(contentAlignment = Alignment.Center) {
+                    if (isActive) {
+                        CircularProgressIndicator(
+                            progress = 0.75f,
+                            modifier = Modifier
+                                .size(40.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    IconButton(onClick) {
+                        Icon(Icons.Outlined.RadioButtonUnchecked, "Done")
+                    }
+                }
+            }
+        },
+        headlineContent = {
+            Text(
+                prayerName,
+                style = if (isActive) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
+            )
+        },
+        trailingContent = {
             if (isActive) {
                 val shapeParam = ShapeParameters(
                     sides = 4,
@@ -111,40 +145,6 @@ fun PrayerListItem(
                         is ImageVector -> Icon(icon, prayerName)
                         is Painter -> Icon(icon, prayerName)
                         else -> throw IllegalArgumentException("Invalid icon type")
-                    }
-                }
-            }
-        },
-        headlineContent = {
-            Text(
-                prayerName,
-                style = if (isActive) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
-            )
-        },
-        trailingContent = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-            ) {
-                if (isSilent) {
-                    Icon(
-                        Icons.Outlined.NotificationsOff,
-                        modifier = Modifier.width(18.dp),
-                        contentDescription = "Silent"
-                    )
-                }
-
-                Box(contentAlignment = Alignment.Center) {
-                    if (isActive) {
-                        CircularProgressIndicator(
-                            progress = 0.75f,
-                            modifier = Modifier
-                                .size(40.dp),
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                    IconButton(onClick) {
-                        Icon(Icons.Outlined.RadioButtonUnchecked, "Done")
                     }
                 }
             }
