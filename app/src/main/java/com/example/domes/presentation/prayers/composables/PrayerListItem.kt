@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -51,8 +49,8 @@ fun PrayerListItem(
             .fillMaxWidth()
 //            .offset(if (isActive) (-16).dp else 0.dp)
             .padding(
-                start = if (isActive) 0.dp else 12.dp,
-                end = 0.dp,
+                start = 0.dp,
+//                end = if (isActive) 0.dp else 12.dp,
                 top = if (isFirstItem) 16.dp else 0.dp,
                 bottom = if (isLastItem) 16.dp else 0.dp,
             )

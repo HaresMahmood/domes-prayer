@@ -27,4 +27,8 @@ class Converters {
 @TypeConverters(Converters::class)
 abstract class PrayerRecordDatabase: RoomDatabase() {
     abstract val prayerRecordDao: PrayerRecordDao
+
+    companion object {
+        const val DATABASE_NAME = "prayer_records"
+    }
 }
