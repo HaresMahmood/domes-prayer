@@ -1,27 +1,39 @@
+package com.example.domes.domain.model
+
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDate
-import java.time.LocalDateTime
 
-enum class MissedReason {
-    FORGOT, SLEPT_THROUGH, SICK, TRAVELING, PERIOD, PREGNANT, POSTPARTUM, BREASTFEEDING, INCONTINENCE, OTHER
+/*
+class PrayerRecordConverter {
+    private val json = Json { ignoreUnknownKeys = true }
+
+    @TypeConverter
+    fun fromPrayerRecord(prayerRecord: PrayerRecord): String {
+        return json.encodeToString(prayerRecord)
+    }
+
+    @TypeConverter
+    fun toPrayerRecord(jsonString: String): PrayerRecord {
+        return json.decodeFromString(jsonString)
+    }
 }
+
+class MissedReasonConverter {
+    @TypeConverter
+    fun fromMissedReason(reason: MissedReason?): String? = reason?.name
+
+    @TypeConverter
+    fun toMissedReason(name: String?): MissedReason? = name?.let { MissedReason.valueOf(it) }
+}
+ */
 
 @Entity
 data class PrayerRecord(
     @PrimaryKey val date: LocalDate,
-    val fajr: PrayerRecordData = PrayerRecordData(),
-    val dhuhr: PrayerRecordData = PrayerRecordData(),
-    val asr: PrayerRecordData = PrayerRecordData(),
-    val maghrib: PrayerRecordData = PrayerRecordData(),
-    val isha: PrayerRecordData = PrayerRecordData()
-)
-
-data class PrayerRecordData(
-    val prayed: Boolean = false,
-    val timestamp: LocalDateTime? = null,
-    val notes: String? = null,
-    val missed: Boolean = false,
-    val missedReason: MissedReason? = null,
-    val makeup: Boolean = false
+    val fajr: Boolean,
+    val dhuhr: Boolean,
+    val asr: Boolean,
+    val maghrib: Boolean,
+    val isha: Boolean
 )

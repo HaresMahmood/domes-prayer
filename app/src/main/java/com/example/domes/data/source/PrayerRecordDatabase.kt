@@ -1,13 +1,30 @@
 package com.example.domes.data.source
 
-import PrayerRecord
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import com.example.domes.domain.model.PrayerRecord
+import java.time.LocalDate
+
+
+class Converters {
+    @TypeConverter
+    fun toLocalDate(value: String?): LocalDate? {
+        return value?.let { LocalDate.parse(it) }
+    }
+
+    @TypeConverter
+    fun fromLocalDate(date: LocalDate?): String? {
+        return date?.toString()
+    }
+}
 
 @Database(
     entities = [PrayerRecord::class],
     version = 1
 )
+@TypeConverters(Converters::class)
 abstract class PrayerRecordDatabase: RoomDatabase() {
     abstract val prayerRecordDao: PrayerRecordDao
 }

@@ -1,7 +1,7 @@
 package com.example.domes.data.repository
 
-import PrayerRecord
 import com.example.domes.data.source.PrayerRecordDao
+import com.example.domes.domain.model.PrayerRecord
 import com.example.domes.domain.repository.IPrayerRecordRepository
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
