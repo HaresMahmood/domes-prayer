@@ -45,8 +45,13 @@ class PrayersViewModel @Inject constructor(
     }
 
     private fun getPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
+        val prayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters)
+        
         _state.value = _state.value.copy(
-            prayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters)
+            prayerTimes = prayerTimes,
+            currentPrayer = prayerTimes.find { prayerTime ->
+                prayerTime.isCurrent
+            }
         )
     }
 }

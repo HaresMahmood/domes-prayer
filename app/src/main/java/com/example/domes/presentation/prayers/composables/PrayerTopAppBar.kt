@@ -23,12 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domes.R
+import com.example.domes.domain.model.Prayer
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PrayerTopAppBar(
-    englishText: String,
-    arabicText: String,
+    currentPrayer: Prayer,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     // Determine the text size based on the scroll position
@@ -51,7 +51,7 @@ fun PrayerTopAppBar(
                         modifier = Modifier
                             .offset(8.dp, 10.dp)
                             .alpha(arabicTextOpacity),
-                        text = arabicText,
+                        text = currentPrayer.arabicName,
                         style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colorScheme.outlineVariant,
                         fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
@@ -60,7 +60,7 @@ fun PrayerTopAppBar(
                 }
 
                 Text(
-                    text = englishText,
+                    text = currentPrayer.name,
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = englishTextSize,
@@ -100,6 +100,6 @@ fun LargeTopAppBarPreview() {
     )
 
     MaterialTheme {
-        PrayerTopAppBar("Maghrib", "مغرب", scrollBehavior = scrollBehavior)
+        PrayerTopAppBar(Prayer.MAGHRIB, scrollBehavior = scrollBehavior)
     }
 }

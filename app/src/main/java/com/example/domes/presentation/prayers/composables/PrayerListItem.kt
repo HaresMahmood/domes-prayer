@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BrightnessLow
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,11 +34,11 @@ import com.example.domes.presentation.util.RoundedPolygonShape
 import com.example.domes.presentation.util.ShapeParameters
 import java.time.format.DateTimeFormatter
 
+// TODO: Rewrite to be more compact
 @Composable
 fun PrayerListItem(
     prayerTime: PrayerTime,
     isSilent: Boolean = false,
-    isActive: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
     onClick: () -> Unit = {},
@@ -54,14 +53,14 @@ fun PrayerListItem(
             .fillMaxWidth()
             .padding(
                 start = 0.dp,
-//                end = if (isActive) 0.dp else 12.dp,
+                end = if (prayerTime.isCurrent) 0.dp else 12.dp,
                 top = if (isFirstItem) 16.dp else 0.dp,
                 bottom = if (isLastItem) 16.dp else 0.dp,
             )
             .alpha(if (prayerTime.hasPassed && !prayerTime.isCurrent) 0.5f else 1f),
         leadingContent = {
                 Box(contentAlignment = Alignment.Center) {
-                    if (isActive) {
+                    if (prayerTime.isCurrent) {
                         CircularProgressIndicator(
                             progress = 0.75f,
                             modifier = Modifier
@@ -88,7 +87,7 @@ fun PrayerListItem(
         headlineContent = {
             Text(
                 prayerTime.prayer.name,
-                style = if (isActive) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
+                style = if (prayerTime.isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
             )
         },
         trailingContent = {

@@ -13,6 +13,7 @@ data class PrayersState(
     val selectedHijriDate: HijrahDate = HijrahDate.now(),
     val location: Coordinates = Coordinates(55.825313, -4.293643),
     val prayerTimes: List<PrayerTime> = emptyList(),
+    val currentPrayer: PrayerTime? = null,
     val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,
     val prayerRecords: List<PrayerRecord> = emptyList()
 )

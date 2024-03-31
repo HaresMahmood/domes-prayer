@@ -20,19 +20,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.chrono.HijrahDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoField
 
 @Composable
 fun CurrentDateSection(
     gregorianDate: LocalDate,
     hijriDate: HijrahDate,
 ) {
-    val formatter = DateTimeFormatter.ofPattern("HH:mm a")
+    val formatter = DateTimeFormatter.ofPattern("MMMM dd yyyy")
 
     Row(
         modifier = Modifier

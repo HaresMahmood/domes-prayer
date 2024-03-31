@@ -2,6 +2,7 @@ package com.example.domes.presentation.prayers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,7 +53,9 @@ import com.example.domes.presentation.util.ShapeParameters
 import com.example.domes.ui.theme.DomesTheme
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarView
+import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -78,6 +81,7 @@ fun PrayersScreen(
         sheetContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
         sheetPeekHeight = UIConstants.SHEET_PEEK_HEIGHT,
         sheetShape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp),
+        modifier = Modifier.animateContentSize(),
         sheetDragHandle = { },
         sheetContent = {
             Box(
@@ -97,18 +101,31 @@ fun PrayersScreen(
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .padding(12.dp),
+                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val selectedDate = remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
 
                 CalendarView(
-                    useCaseState = rememberUseCaseState(visible = true),
+                    useCaseState = rememberUseCaseState(
+                        visible = true,
+                        onCloseRequest = {
+                            scope.launch { scaffoldState.bottomSheetState.partialExpand() }
+                        },
+                        onFinishedRequest = {
+                            viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate.value!!))
+                        }
+                    ),
+                    config = CalendarConfig(
+                        yearSelection = true,
+                        monthSelection = true,
+                        style = CalendarStyle.MONTH,
+                    ),
                     selection = CalendarSelection.Date(
-                        selectedDate = state.selectedDate
+                        withButtonView = false,
+                        selectedDate = selectedDate.value,
                     ) { newDate ->
                         selectedDate.value = newDate
-                        viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate.value!!))
                     },
                 )
             }
@@ -122,7 +139,9 @@ fun PrayersScreen(
         ) {
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = { PrayerTopAppBar("Maghrib", "مغرب", scrollBehavior) },
+                topBar = {
+                    state.currentPrayer?.let { PrayerTopAppBar(it.prayer, scrollBehavior) }
+                },
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = { },
@@ -143,7 +162,7 @@ fun PrayersScreen(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize(),
-                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 80.dp),
+                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 90.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         stickyHeader {
@@ -220,7 +239,6 @@ fun PrayersScreen(
                                                             shape,
                                                             color =
                                                             if (prayerTime.isCurrent) MaterialTheme.colorScheme.onSecondaryContainer
-                                                            else if (prayerTime.isCurrent) MaterialTheme.colorScheme.onSecondaryContainer
                                                             else MaterialTheme.colorScheme.secondaryContainer,
                                                             alpha = if (prayerTime.isCurrent) 1f else 0.35f
                                                         )
