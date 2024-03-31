@@ -18,8 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.outlined.NightsStay
-import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,12 +36,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
-import com.example.domes.R
-import com.example.domes.data.PrayerTime
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.domes.presentation.prayers.composables.CurrentDateSection
 import com.example.domes.presentation.prayers.composables.DisplaySlider
 import com.example.domes.presentation.prayers.composables.MainActionSection
@@ -60,71 +56,34 @@ import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+class UIConstants {
+    companion object {
+        val SHEET_PEEK_HEIGHT = 100.dp
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun PrayersScreen() {
+fun PrayersScreen(
+    viewModel: PrayersViewModel = hiltViewModel()
+) {
+    val state = viewModel.state.value
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val sheetPeekHeight = 100.dp
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
-    val prayerTimes = listOf(
-        PrayerTime(
-            prayerName = "Fajr",
-            icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
-            prayerTime = "5:30 AM",
-            dayFraction = 0.23f, // 5.5f / 24,
-            isPassed = true,
-        ),
-        PrayerTime(
-            prayerName = "Sunrise",
-            icon = Icons.Outlined.WbSunny,
-            prayerTime = "7:30 PM",
-            isSilent = true,
-            dayFraction = 0.31f, // 7.5f / 24,
-            isPassed = true,
-        ),
-        PrayerTime(
-            prayerName = "Dhuhr",
-            icon = Icons.Outlined.WbSunny,
-            prayerTime = "12:30 PM",
-            dayFraction = 0.52f, // 12.5f / 24,
-            isPassed = true,
-        ),
-        PrayerTime(
-            prayerName = "Asr",
-            icon = Icons.Outlined.WbSunny,
-            prayerTime = "4:30 PM",
-            dayFraction = 0.68f, // 16.5f / 24,
-            isPassed = true,
-        ),
-        PrayerTime(
-            prayerName = "Maghrib",
-            icon = painterResource(R.drawable.routine_fill0_wght400_grad0_opsz24),
-            prayerTime = "6:30 PM",
-            dayFraction = 0.78f, // 18.5f / 24,
-            isActive = true,
-        ),
-        PrayerTime(
-            prayerName = "Isha",
-            icon = Icons.Outlined.NightsStay,
-            dayFraction = 0.85f, // 20.5f / 24,
-            prayerTime = "8:30 PM",
-        )
-    )
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
-        sheetPeekHeight = sheetPeekHeight,
+        sheetPeekHeight = UIConstants.SHEET_PEEK_HEIGHT,
         sheetShape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp),
         sheetDragHandle = { },
         sheetContent = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(sheetPeekHeight)
+                    .height(UIConstants.SHEET_PEEK_HEIGHT)
                     .clickable {
                         scope.launch { scaffoldState.bottomSheetState.expand() }
                     },
@@ -250,7 +209,7 @@ fun PrayersScreen() {
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(20.dp),
-                                        children = prayerTimes.map { prayerTime ->
+                                        children = state.prayerTimes.map { prayerTime ->
                                             PercentageWidthBoxChild(
                                                 composable = {
                                                     // Your composable content here, e.g., an icon with a label
@@ -261,14 +220,14 @@ fun PrayersScreen() {
                                                         Polygon(
                                                             shape,
                                                             color =
-                                                            if (prayerTime.isActive) MaterialTheme.colorScheme.onSecondaryContainer
-                                                            else if (prayerTime.isPassed) MaterialTheme.colorScheme.onSecondaryContainer
+                                                            if (prayerTime.isCurrent) MaterialTheme.colorScheme.onSecondaryContainer
+                                                            else if (prayerTime.isCurrent) MaterialTheme.colorScheme.onSecondaryContainer
                                                             else MaterialTheme.colorScheme.secondaryContainer,
-                                                            alpha = if (prayerTime.isActive) 1f else 0.35f
+                                                            alpha = if (prayerTime.isCurrent) 1f else 0.35f
                                                         )
                                                     }
                                                 },
-                                                widthFraction = prayerTime.dayFraction
+                                                widthFraction = prayerTime.dayFraction.toFloat()
                                             )
                                         }
                                     )
@@ -286,17 +245,13 @@ fun PrayersScreen() {
                                     ),
                                 verticalArrangement = Arrangement.spacedBy(2.dp),
                             ) {
-                                prayerTimes.forEachIndexed { index, prayerTimeItem ->
+                                state.prayerTimes.forEachIndexed { index, prayerTime ->
                                     PrayerListItem(
-                                        prayerName = prayerTimeItem.prayerName,
-                                        icon = prayerTimeItem.icon,
-                                        prayerTime = prayerTimeItem.prayerTime,
-                                        onClick = { },
-                                        isSilent = prayerTimeItem.isSilent,
-                                        isPassed = prayerTimeItem.isPassed,
-                                        isActive = prayerTimeItem.isActive,
+                                        prayerTime = prayerTime,
+                                        isSilent = false,
                                         isFirstItem = index == 0,
-                                        isLastItem = index == prayerTimes.lastIndex
+                                        isLastItem = index == state.prayerTimes.lastIndex,
+                                        onClick = { },
                                     )
                                 }
                             }
