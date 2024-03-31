@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.domes.data.repository.PrayerRecordRepository
 import com.example.domes.data.source.PrayerRecordDatabase
 import com.example.domes.domain.repository.IPrayerRecordRepository
+import com.example.domes.domain.usecase.GetHijriDate
 import com.example.domes.domain.usecase.GetPrayerTimes
 import com.example.domes.domain.usecase.GetPrayerRecord
 import com.example.domes.domain.usecase.PrayerUseCases
@@ -38,7 +39,8 @@ object AppModule {
     fun providePrayerUseCases(repository: IPrayerRecordRepository) : PrayerUseCases {
         return PrayerUseCases(
             getPrayerTimes = GetPrayerTimes(),
-            getPrayerRecord = GetPrayerRecord(repository)
+            getPrayerRecord = GetPrayerRecord(repository),
+            getHijriDate = GetHijriDate()
         )
     }
 }

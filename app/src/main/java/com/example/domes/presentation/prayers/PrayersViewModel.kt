@@ -1,5 +1,6 @@
 package com.example.domes.presentation.prayers
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -24,8 +25,11 @@ class PrayersViewModel @Inject constructor(
     fun onEvent(event: PrayersEvent) {
         when(event) {
             is PrayersEvent.ChangeDate -> {
+                Log.d("CHANGE-DATE", "Date changed to ${event.date}")
+
                 _state.value = _state.value.copy(
-                    selectedDate = event.date
+                    selectedDate = event.date,
+                    selectedHijriDate = prayersUseCases.getHijriDate(event.date)
                 )
 
                 getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)

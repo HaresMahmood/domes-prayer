@@ -90,10 +90,8 @@ fun PrayersScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 CurrentDateSection(
-                    gregorianDate = "August 2024",
-                    hijriDate = "Muharram 28 1446",
-                    dayOfMonth = "17",
-                    dayOfWeek = "MON"
+                    gregorianDate = state.selectedDate,
+                    hijriDate = state.selectedHijriDate,
                 )
             }
             Column(
@@ -107,9 +105,10 @@ fun PrayersScreen(
                 CalendarView(
                     useCaseState = rememberUseCaseState(visible = true),
                     selection = CalendarSelection.Date(
-                        selectedDate = selectedDate.value
+                        selectedDate = state.selectedDate
                     ) { newDate ->
                         selectedDate.value = newDate
+                        viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate.value!!))
                     },
                 )
             }

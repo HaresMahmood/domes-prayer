@@ -6,9 +6,11 @@ import com.batoulapps.adhan2.Coordinates
 import com.example.domes.domain.model.PrayerRecord
 import com.example.domes.domain.model.PrayerTime
 import java.time.LocalDate
+import java.time.chrono.HijrahDate
 
 data class PrayersState(
     val selectedDate: LocalDate = LocalDate.now(),
+    val selectedHijriDate: HijrahDate = HijrahDate.now(),
     val location: Coordinates = Coordinates(55.825313, -4.293643),
     val prayerTimes: List<PrayerTime> = emptyList(),
     val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,

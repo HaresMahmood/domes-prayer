@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.NavigateBefore
-import androidx.compose.material.icons.outlined.NavigateNext
+import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
+import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -20,15 +20,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
+import java.time.chrono.HijrahDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
 
 @Composable
 fun CurrentDateSection(
-    gregorianDate: String, // "August 2024"
-    hijriDate: String, // "Muharram 28 1446"
-    dayOfMonth: String, // "17"
-    dayOfWeek: String // "MON"
+    gregorianDate: LocalDate,
+    hijriDate: HijrahDate,
 ) {
+    val formatter = DateTimeFormatter.ofPattern("HH:mm a")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,7 +51,7 @@ fun CurrentDateSection(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
-                    text = dayOfWeek,
+                    text = gregorianDate.dayOfWeek.name.take(3),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -58,7 +63,7 @@ fun CurrentDateSection(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = dayOfMonth,
+                        text = "${gregorianDate.dayOfMonth}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
@@ -67,11 +72,11 @@ fun CurrentDateSection(
 
             Column {
                 Text(
-                    text = gregorianDate,
+                    text = "${gregorianDate.month.toString().lowercase().capitalize()} ${gregorianDate.year}",
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    text = hijriDate,
+                    text = formatter.format(hijriDate),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -80,13 +85,13 @@ fun CurrentDateSection(
         Row {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-                    Icons.Outlined.NavigateBefore,
+                    Icons.AutoMirrored.Outlined.NavigateBefore,
                     contentDescription = "Previous month"
                 )
             }
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-                    Icons.Outlined.NavigateNext,
+                    Icons.AutoMirrored.Outlined.NavigateNext,
                     contentDescription = "Next month"
                 )
             }
