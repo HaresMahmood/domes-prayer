@@ -27,18 +27,19 @@ import com.example.domes.domain.model.Prayer
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun PrayerTopAppBar(
-    currentPrayer: Prayer,
+fun LayeredTopAppBar(
+    foregroundText: String,
+    backgroundText: String,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     // Determine the text size based on the scroll position
     val collapsedTextSize = 30
     val expandedTextSize = 45
 
-    val englishTextSize = (collapsedTextSize + (expandedTextSize - collapsedTextSize) * (1 - scrollBehavior.state.collapsedFraction)).sp
-    val arabicTextOpacity = (1 - scrollBehavior.state.collapsedFraction).coerceIn(0f, 0.5f)
+    val foregroundTextSize = (collapsedTextSize + (expandedTextSize - collapsedTextSize) * (1 - scrollBehavior.state.collapsedFraction)).sp
+    val backgroundTextOpacity = (1 - scrollBehavior.state.collapsedFraction).coerceIn(0f, 0.5f)
 
-    val isCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.5f } }
+//    val isCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.5f } }
     val isFullyCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction == 1f } }
 
     LargeTopAppBar(
@@ -50,8 +51,8 @@ fun PrayerTopAppBar(
                     Text(
                         modifier = Modifier
                             .offset(8.dp, 10.dp)
-                            .alpha(arabicTextOpacity),
-                        text = currentPrayer.arabicName,
+                            .alpha(backgroundTextOpacity),
+                        text = backgroundText,
                         style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colorScheme.outlineVariant,
                         fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
@@ -60,10 +61,10 @@ fun PrayerTopAppBar(
                 }
 
                 Text(
-                    text = currentPrayer.name,
+                    text = foregroundText,
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = englishTextSize,
+                    fontSize = foregroundTextSize,
                     fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
                     fontWeight = FontWeight.Medium,
                 )
@@ -100,6 +101,6 @@ fun LargeTopAppBarPreview() {
     )
 
     MaterialTheme {
-        PrayerTopAppBar(Prayer.MAGHRIB, scrollBehavior = scrollBehavior)
+        LayeredTopAppBar(Prayer.MAGHRIB.name, Prayer.MAGHRIB.arabicName, scrollBehavior = scrollBehavior)
     }
 }

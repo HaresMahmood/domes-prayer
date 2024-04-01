@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,8 +30,6 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,26 +38,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.domes.presentation.prayers.composables.CurrentDateSection
+import com.example.domes.presentation.prayers.UIConstants.Companion.getArabicFormatter
+import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.prayers.composables.DisplaySlider
+import com.example.domes.presentation.prayers.composables.LayeredTopAppBar
 import com.example.domes.presentation.prayers.composables.MainActionSection
 import com.example.domes.presentation.prayers.composables.PercentageWidthBox
 import com.example.domes.presentation.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.prayers.composables.PrayerListItem
-import com.example.domes.presentation.prayers.composables.PrayerTopAppBar
+import com.example.domes.presentation.prayers.composables.SelectedDateBottomSheetSection
 import com.example.domes.presentation.util.Polygon
 import com.example.domes.presentation.util.ShapeParameters
 import com.example.domes.ui.theme.DomesTheme
-import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
-import com.maxkeppeler.sheets.calendar.CalendarView
-import com.maxkeppeler.sheets.calendar.models.CalendarConfig
-import com.maxkeppeler.sheets.calendar.models.CalendarSelection
-import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class UIConstants {
     companion object {
+        fun getFormatter(pattern: String): DateTimeFormatter {
+            return DateTimeFormatter.ofPattern(pattern)
+        }
+
+        fun getArabicFormatter(pattern: String): DateTimeFormatter {
+            return DateTimeFormatter.ofPattern(pattern).withLocale(Locale("ar"))
+        }
+
         val SHEET_PEEK_HEIGHT = 100.dp
     }
 }
@@ -84,50 +87,13 @@ fun PrayersScreen(
         modifier = Modifier.animateContentSize(),
         sheetDragHandle = { },
         sheetContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(UIConstants.SHEET_PEEK_HEIGHT)
-                    .clickable {
-                        scope.launch { scaffoldState.bottomSheetState.expand() }
-                    },
-                contentAlignment = Alignment.Center,
-            ) {
-                CurrentDateSection(
-                    gregorianDate = state.selectedDate,
-                    hijriDate = state.selectedHijriDate,
-                )
-            }
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val selectedDate = remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
-
-                CalendarView(
-                    useCaseState = rememberUseCaseState(
-                        visible = true,
-                        onCloseRequest = {
-                            scope.launch { scaffoldState.bottomSheetState.partialExpand() }
-                        },
-                        onFinishedRequest = {
-                            viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate.value!!))
-                        }
-                    ),
-                    config = CalendarConfig(
-                        yearSelection = true,
-                        monthSelection = true,
-                        style = CalendarStyle.MONTH,
-                    ),
-                    selection = CalendarSelection.Date(
-                        withButtonView = false,
-                        selectedDate = selectedDate.value,
-                    ) { newDate ->
-                        selectedDate.value = newDate
-                    },
-                )
+            SelectedDateBottomSheetSection(
+                gregorianDate = state.selectedDate,
+                hijriDate = state.selectedHijriDate,
+                bottomSheetExpandAction = { scope.launch { scaffoldState.bottomSheetState.expand() } },
+                bottomSheetCollapseAction = { scope.launch { scaffoldState.bottomSheetState.partialExpand() } }
+            ) { selectedDate ->
+                viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
             }
         }
     ) { innerPadding ->
@@ -140,7 +106,10 @@ fun PrayersScreen(
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    state.currentPrayer?.let { PrayerTopAppBar(it.prayer, scrollBehavior) }
+                    val foregroundText = state.currentPrayer?.prayer?.name ?: state.selectedDate.format(getFormatter("d MMMM"))
+                    val backgroundText = state.currentPrayer?.prayer?.arabicName ?: getArabicFormatter("MMM d").format(state.selectedHijriDate)
+
+                    LayeredTopAppBar(foregroundText, backgroundText, scrollBehavior)
                 },
                 floatingActionButton = {
                     FloatingActionButton(

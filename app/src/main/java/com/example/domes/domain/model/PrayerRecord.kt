@@ -30,7 +30,8 @@ class MissedReasonConverter {
 
 @Entity
 data class PrayerRecord(
-    @PrimaryKey val date: LocalDate,
+    @PrimaryKey
+    val date: LocalDate,
     val fajr: Boolean,
     val dhuhr: Boolean,
     val asr: Boolean,
