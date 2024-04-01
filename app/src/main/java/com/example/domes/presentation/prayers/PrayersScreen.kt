@@ -135,7 +135,7 @@ fun PrayersScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         stickyHeader {
-                            MainActionSection()
+                            state.timeLeft?.let { MainActionSection(timeLeft = it) }
                         }
                         item {
                             val shapeParam = ShapeParameters(
@@ -196,7 +196,7 @@ fun PrayersScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(20.dp),
-                                        children = state.prayerTimes.map { prayerTime ->
+                                        children = state.currentPrayerTimes.map { prayerTime ->
                                             PercentageWidthBoxChild(
                                                 composable = {
                                                     // Your composable content here, e.g., an icon with a label
@@ -223,7 +223,7 @@ fun PrayersScreen(
                         item {
                             Column(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth() // TODO: Why?
                                     .background(
                                         MaterialTheme.colorScheme.surfaceColorAtElevation(
                                             1.dp
@@ -231,12 +231,12 @@ fun PrayersScreen(
                                     ),
                                 verticalArrangement = Arrangement.spacedBy(2.dp),
                             ) {
-                                state.prayerTimes.forEachIndexed { index, prayerTime ->
+                                state.currentPrayerTimes.forEachIndexed { index, prayerTime ->
                                     PrayerListItem(
                                         prayerTime = prayerTime,
                                         isSilent = false,
                                         isFirstItem = index == 0,
-                                        isLastItem = index == state.prayerTimes.lastIndex,
+                                        isLastItem = index == state.currentPrayerTimes.lastIndex,
                                         onClick = { },
                                     )
                                 }

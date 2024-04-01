@@ -5,6 +5,7 @@ import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
 import com.example.domes.domain.model.PrayerRecord
 import com.example.domes.domain.model.PrayerTime
+import java.time.Duration
 import java.time.LocalDate
 import java.time.chrono.HijrahDate
 
@@ -12,8 +13,12 @@ data class PrayersState(
     val selectedDate: LocalDate = LocalDate.now(),
     val selectedHijriDate: HijrahDate = HijrahDate.now(),
     val location: Coordinates = Coordinates(55.825313, -4.293643),
-    val prayerTimes: List<PrayerTime> = emptyList(),
+    val currentPrayerTimes: List<PrayerTime> = emptyList(),
+    val selectedPrayerTimes: List<PrayerTime> = emptyList(),
+    // TODO: Put currentPrayer and nextPrayer, and prayerTimes list in an overarching `PrayerTimes` class?
     val currentPrayer: PrayerTime? = null,
+    val nextPrayer: PrayerTime? = null,
+    val timeLeft: Duration? = null,
     val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,
     val prayerRecords: List<PrayerRecord> = emptyList()
 )

@@ -1,5 +1,7 @@
 package com.example.domes.presentation.prayers.composables
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,9 +27,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.domes.R
+import java.time.Duration
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun MainActionSection() {
+fun MainActionSection(
+    timeLeft: Duration,
+) {
+    // Make the text more dynamic, i.e. when the hours part is 0, don't show it, and when there is 1 minute left, show "1 min left" instead of "1 mins left"
+    val timeLeftText = when {
+        timeLeft.toHoursPart() == 0 -> "${timeLeft.toMinutesPart()} mins left"
+        timeLeft.toMinutesPart() == 1 -> "${timeLeft.toHoursPart()}h 1 min left"
+        else -> "${timeLeft.toHoursPart()}h ${timeLeft.toMinutesPart()} mins left"
+    }
+
     LazyRow(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background),
@@ -49,7 +62,7 @@ fun MainActionSection() {
             ) {
                 Icon(Icons.Outlined.HourglassTop,  "Time left")
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("2h 30 min left")
+                Text(timeLeftText)
             }
         }
         item {

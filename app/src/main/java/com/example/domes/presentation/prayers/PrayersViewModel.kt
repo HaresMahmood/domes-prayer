@@ -9,6 +9,7 @@ import com.batoulapps.adhan2.Coordinates
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,13 +21,21 @@ class PrayersViewModel @Inject constructor(
 
     init {
         getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
+        onEvent(PrayersEvent.ChangeTime(LocalDateTime.now()))
+
+        Log.d("PRAYER-VIEW-MODEL", "${_state.value.timeLeft}")
     }
 
     fun onEvent(event: PrayersEvent) {
         when(event) {
+            is PrayersEvent.ChangeTime -> {
+                _state.value = _state.value.copy(
+                    timeLeft = _state.value.currentPrayer?.let {
+                        prayersUseCases.getPrayerTimeLeft(event.currentTime, it)
+                    }
+                )
+            }
             is PrayersEvent.ChangeDate -> {
-                Log.d("CHANGE-DATE", "Date changed to ${event.date}")
-
                 _state.value = _state.value.copy(
                     selectedDate = event.date,
                     selectedHijriDate = prayersUseCases.getHijriDate(event.date)
@@ -41,6 +50,7 @@ class PrayersViewModel @Inject constructor(
 
                 getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
             }
+
         }
     }
 
@@ -48,10 +58,9 @@ class PrayersViewModel @Inject constructor(
         val prayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters)
         
         _state.value = _state.value.copy(
-            prayerTimes = prayerTimes,
-            currentPrayer = prayerTimes.find { prayerTime ->
-                prayerTime.isCurrent
-            }
+            currentPrayerTimes = prayerTimes,
+            currentPrayer = prayerTimes.firstOrNull { it.isCurrent },
+            nextPrayer = prayerTimes.firstOrNull { it.isNext }
         )
     }
 }

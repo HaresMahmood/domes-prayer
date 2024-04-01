@@ -6,8 +6,9 @@ import com.example.domes.data.repository.PrayerRecordRepository
 import com.example.domes.data.source.PrayerRecordDatabase
 import com.example.domes.domain.repository.IPrayerRecordRepository
 import com.example.domes.domain.usecase.GetHijriDate
-import com.example.domes.domain.usecase.GetPrayerTimes
 import com.example.domes.domain.usecase.GetPrayerRecord
+import com.example.domes.domain.usecase.GetPrayerTimeLeft
+import com.example.domes.domain.usecase.GetPrayerTimes
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.Module
 import dagger.Provides
@@ -40,7 +41,8 @@ object AppModule {
         return PrayerUseCases(
             getPrayerTimes = GetPrayerTimes(),
             getPrayerRecord = GetPrayerRecord(repository),
-            getHijriDate = GetHijriDate()
+            getHijriDate = GetHijriDate(),
+            getPrayerTimeLeft = GetPrayerTimeLeft()
         )
     }
 }
