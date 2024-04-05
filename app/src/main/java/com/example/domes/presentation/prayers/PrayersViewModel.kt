@@ -1,11 +1,13 @@
 package com.example.domes.presentation.prayers
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
+import com.example.domes.domain.service.AlarmService
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
@@ -14,8 +16,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PrayersViewModel @Inject constructor(
+    private val context: Application,
     private val prayersUseCases: PrayerUseCases
 ) : ViewModel() {
+    private val alarmService = AlarmService(context)
+
     private val _state = mutableStateOf(PrayersState())
     val state: State<PrayersState> = _state
 
@@ -55,6 +60,10 @@ class PrayersViewModel @Inject constructor(
     }
 
     private fun getPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
+        _state.value.currentPrayerTimes.forEach {
+            alarmService.cancel(it)
+        }
+
         val prayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters)
         
         _state.value = _state.value.copy(
@@ -62,5 +71,9 @@ class PrayersViewModel @Inject constructor(
             currentPrayer = prayerTimes.firstOrNull { it.isCurrent },
             nextPrayer = prayerTimes.firstOrNull { it.isNext }
         )
+
+        prayerTimes.forEach {
+            alarmService.schedule(it)
+        }
     }
 }

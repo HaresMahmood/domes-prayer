@@ -1,9 +1,9 @@
 package com.example.domes.domain.model
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.ui.graphics.vector.ImageVector
-import java.time.LocalDateTime
 
 //sealed class Icon {
 //    data class Vector(val imageVector: ImageVector) : Icon()
@@ -23,5 +23,6 @@ data class Prayer(
         val ASR = Prayer("Asr", "عصر", Icons.Outlined.WbSunny)
         val MAGHRIB = Prayer("Maghrib", "مغرب", Icons.Outlined.WbSunny)
         val ISHA = Prayer("Isha", "عشاء", Icons.Outlined.WbSunny)
+        val TEST = Prayer("Test", "فجر", Icons.Outlined.BugReport, false)
     }
 }

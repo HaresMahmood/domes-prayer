@@ -31,13 +31,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePrayerRecordRepository(database: PrayerRecordDatabase) : IPrayerRecordRepository {
+    fun providePrayerRecordRepository(database: PrayerRecordDatabase): IPrayerRecordRepository {
         return PrayerRecordRepository(database.prayerRecordDao)
     }
 
     @Provides
     @Singleton
-    fun providePrayerUseCases(repository: IPrayerRecordRepository) : PrayerUseCases {
+    fun providePrayerUseCases(repository: IPrayerRecordRepository): PrayerUseCases {
         return PrayerUseCases(
             getPrayerTimes = GetPrayerTimes(),
             getPrayerRecord = GetPrayerRecord(repository),

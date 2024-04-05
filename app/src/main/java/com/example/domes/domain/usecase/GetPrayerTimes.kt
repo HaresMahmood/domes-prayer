@@ -12,7 +12,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.time.Duration.Companion.minutes
 
 class GetPrayerTimes {
     companion object {
@@ -46,6 +48,8 @@ class GetPrayerTimes {
             val ishaTime = prayerTimes.isha.toLocalDateTime(systemTimeZone).toJavaLocalDateTime()
             val middleOfTheNightTime = sunnahTimes.middleOfTheNight.toLocalDateTime(systemTimeZone).toJavaLocalDateTime()
 
+            val testTime = LocalDateTime.now().plusMinutes(1)
+
             Log.d("GET-PRAYER-TIMES", sunnahTimes.toString())
             Log.d("GET-PRAYER-TIMES", prayerTimes.toString())
             Log.d("GET-PRAYER-TIMES", currentPrayer.toString())
@@ -53,60 +57,69 @@ class GetPrayerTimes {
                 Log.d("GET-PRAYER-TIMES", middleOfTheNightTime.toString())
 
                 listOf(
-                PrayerTime(
-                    prayer = com.example.domes.domain.model.Prayer.FAJR,
-                    time = fajrTime,
-                    dayFraction = getDayFraction(currentTime, prayerTimes.fajr),
-                    timeWindow = sunriseTime,
-                    isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.FAJR,
-                    isNext = nextPrayer == com.batoulapps.adhan2.Prayer.FAJR,
-                    hasPassed = currentTime.epochSeconds > prayerTimes.fajr.epochSeconds
-                ),
-                PrayerTime(
-                    prayer = com.example.domes.domain.model.Prayer.SUNRISE,
-                    time =  sunriseTime,
-                    dayFraction = getDayFraction(currentTime, prayerTimes.sunrise),
-                    timeWindow = dhuhrTime,
-                    isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.SUNRISE,
-                    isNext = nextPrayer == com.batoulapps.adhan2.Prayer.SUNRISE,
-                    hasPassed = currentTime.epochSeconds > prayerTimes.sunrise.epochSeconds
-                ),
-                PrayerTime(
-                    prayer = com.example.domes.domain.model.Prayer.DHUHR,
-                    time = dhuhrTime,
-                    dayFraction = getDayFraction(currentTime, prayerTimes.dhuhr),
-                    timeWindow = asrTime,
-                    isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.DHUHR,
-                    isNext = nextPrayer == com.batoulapps.adhan2.Prayer.DHUHR,
-                    hasPassed = currentTime.epochSeconds > prayerTimes.dhuhr.epochSeconds
-                ),
-                PrayerTime(
-                    prayer = com.example.domes.domain.model.Prayer.ASR,
-                    time = asrTime,
-                    dayFraction = getDayFraction(currentTime, prayerTimes.asr),
-                    timeWindow = maghribTime,
-                    isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.ASR,
-                    isNext = nextPrayer == com.batoulapps.adhan2.Prayer.ASR,
-                    hasPassed = currentTime.epochSeconds > prayerTimes.asr.epochSeconds
-                ),
-                PrayerTime(
-                    prayer = com.example.domes.domain.model.Prayer.MAGHRIB,
-                    time = maghribTime,
-                    dayFraction = getDayFraction(currentTime, prayerTimes.maghrib),
-                    timeWindow = ishaTime,
-                    isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.MAGHRIB,
-                    isNext = nextPrayer == com.batoulapps.adhan2.Prayer.MAGHRIB,
-                    hasPassed = currentTime.epochSeconds > prayerTimes.maghrib.epochSeconds
-                ),
-                PrayerTime(
-                    prayer = com.example.domes.domain.model.Prayer.ISHA,
-                    time = ishaTime,
-                    dayFraction = getDayFraction(currentTime, prayerTimes.isha),
-                    timeWindow = middleOfTheNightTime,
-                    isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.ISHA,
-                    isNext = nextPrayer == com.batoulapps.adhan2.Prayer.ISHA,
-                    hasPassed = currentTime.epochSeconds > prayerTimes.isha.epochSeconds
-                )
+                    PrayerTime(
+                        prayer = com.example.domes.domain.model.Prayer.FAJR,
+                        time = fajrTime,
+                        dayFraction = getDayFraction(currentTime, prayerTimes.fajr),
+                        timeWindow = sunriseTime,
+                        isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.FAJR,
+                        isNext = nextPrayer == com.batoulapps.adhan2.Prayer.FAJR,
+                        hasPassed = currentTime.epochSeconds > prayerTimes.fajr.epochSeconds
+                    ),
+                    PrayerTime(
+                        prayer = com.example.domes.domain.model.Prayer.SUNRISE,
+                        time =  sunriseTime,
+                        dayFraction = getDayFraction(currentTime, prayerTimes.sunrise),
+                        timeWindow = dhuhrTime,
+                        isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.SUNRISE,
+                        isNext = nextPrayer == com.batoulapps.adhan2.Prayer.SUNRISE,
+                        hasPassed = currentTime.epochSeconds > prayerTimes.sunrise.epochSeconds
+                    ),
+                    PrayerTime(
+                        prayer = com.example.domes.domain.model.Prayer.DHUHR,
+                        time = dhuhrTime,
+                        dayFraction = getDayFraction(currentTime, prayerTimes.dhuhr),
+                        timeWindow = asrTime,
+                        isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.DHUHR,
+                        isNext = nextPrayer == com.batoulapps.adhan2.Prayer.DHUHR,
+                        hasPassed = currentTime.epochSeconds > prayerTimes.dhuhr.epochSeconds
+                    ),
+                    PrayerTime(
+                        prayer = com.example.domes.domain.model.Prayer.ASR,
+                        time = asrTime,
+                        dayFraction = getDayFraction(currentTime, prayerTimes.asr),
+                        timeWindow = maghribTime,
+                        isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.ASR,
+                        isNext = nextPrayer == com.batoulapps.adhan2.Prayer.ASR,
+                        hasPassed = currentTime.epochSeconds > prayerTimes.asr.epochSeconds
+                    ),
+                    PrayerTime(
+                        prayer = com.example.domes.domain.model.Prayer.MAGHRIB,
+                        time = maghribTime,
+                        dayFraction = getDayFraction(currentTime, prayerTimes.maghrib),
+                        timeWindow = ishaTime,
+                        isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.MAGHRIB,
+                        isNext = nextPrayer == com.batoulapps.adhan2.Prayer.MAGHRIB,
+                        hasPassed = currentTime.epochSeconds > prayerTimes.maghrib.epochSeconds
+                    ),
+                    PrayerTime(
+                        prayer = com.example.domes.domain.model.Prayer.ISHA,
+                        time = ishaTime,
+                        dayFraction = getDayFraction(currentTime, prayerTimes.isha),
+                        timeWindow = middleOfTheNightTime,
+                        isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.ISHA,
+                        isNext = nextPrayer == com.batoulapps.adhan2.Prayer.ISHA,
+                        hasPassed = currentTime.epochSeconds > prayerTimes.isha.epochSeconds
+                    ),
+                    PrayerTime(
+                        prayer = com.example.domes.domain.model.Prayer.TEST,
+                        time = testTime,
+                        dayFraction = getDayFraction(currentTime, prayerTimes.isha),
+                        timeWindow = testTime.plusMinutes(3),
+                        isCurrent = currentPrayer == com.batoulapps.adhan2.Prayer.ISHA,
+                        isNext = nextPrayer == com.batoulapps.adhan2.Prayer.ISHA,
+                        hasPassed = currentTime.epochSeconds > currentTime.plus(1.minutes).toEpochMilliseconds()
+                    )
             )
         }
     }
