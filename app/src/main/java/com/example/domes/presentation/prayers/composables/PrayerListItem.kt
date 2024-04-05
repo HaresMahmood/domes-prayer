@@ -29,7 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.example.domes.domain.model.PrayerTime
+import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.presentation.util.RoundedPolygonShape
 import com.example.domes.presentation.util.ShapeParameters
 import java.time.format.DateTimeFormatter

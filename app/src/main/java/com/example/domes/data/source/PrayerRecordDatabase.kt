@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.example.domes.domain.model.PrayerRecord
+import com.example.domes.domain.model.prayer.PrayerRecord
 import java.time.LocalDate
 
 

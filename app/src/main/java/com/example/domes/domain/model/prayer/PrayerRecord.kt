@@ -1,4 +1,4 @@
-package com.example.domes.domain.model
+package com.example.domes.domain.model.prayer
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.domes.domain.model.PrayerRecord
+import com.example.domes.domain.model.prayer.PrayerRecord
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 

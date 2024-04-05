@@ -1,6 +1,6 @@
 package com.example.domes.domain.repository
 
-import com.example.domes.domain.model.PrayerRecord
+import com.example.domes.domain.model.prayer.PrayerRecord
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 

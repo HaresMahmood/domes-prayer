@@ -1,4 +1,4 @@
-package com.example.domes.domain.model
+package com.example.domes.domain.model.prayer
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BugReport

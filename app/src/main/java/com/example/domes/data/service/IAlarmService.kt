@@ -1,6 +1,6 @@
-package com.example.domes.domain.service
+package com.example.domes.data.service
 
-import com.example.domes.domain.model.PrayerTime
+import com.example.domes.domain.model.prayer.PrayerTime
 
 interface IAlarmService {
     fun schedule(prayerTime: PrayerTime)

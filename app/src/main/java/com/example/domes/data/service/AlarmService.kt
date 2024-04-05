@@ -1,23 +1,26 @@
-package com.example.domes.domain.service
+package com.example.domes.data.service
 
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.example.domes.domain.model.PrayerTime
-import com.example.domes.domain.receiver.AlarmReceiver
+import com.example.domes.domain.model.prayer.PrayerTime
 import java.time.ZoneId
 
 class AlarmService(
     private val context: Context
 ): IAlarmService {
+    companion object {
+        const val ALARM_ACTION = "com.example.domes.ALARM"
+    }
+
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 //    private val intent = Intent(context, AlarmReceiver::class.java)
 
     override fun schedule(prayerTime: PrayerTime) {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
+        val intent = Intent(ALARM_ACTION).apply {
             putExtra("PRAYER", prayerTime.prayer.name)
-            putExtra("TIME", prayerTime.time.toString())
+            action = ALARM_ACTION
         }
 
         alarmManager.setExactAndAllowWhileIdle(
@@ -37,7 +40,7 @@ class AlarmService(
             PendingIntent.getBroadcast(
                 context,
                 prayerTime.hashCode(),
-                Intent(context, AlarmReceiver::class.java),
+                Intent(ALARM_ACTION),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )

@@ -1,6 +1,6 @@
 package com.example.domes.domain.usecase
 
-import com.example.domes.domain.model.PrayerTime
+import com.example.domes.domain.model.prayer.PrayerTime
 import java.time.Duration
 import java.time.LocalDateTime
 

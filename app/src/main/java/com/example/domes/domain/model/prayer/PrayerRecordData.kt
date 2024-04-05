@@ -1,4 +1,4 @@
-package com.example.domes.domain.model
+package com.example.domes.domain.model.prayer
 
 enum class MissedReason {
     FORGOT, SLEPT_THROUGH, SICK, TRAVELING, PERIOD, PREGNANT, POSTPARTUM, BREASTFEEDING, INCONTINENCE, OTHER
