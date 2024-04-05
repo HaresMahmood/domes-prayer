@@ -1,13 +1,18 @@
 package com.example.domes.presentation.prayers
 
 import android.app.Application
-import android.util.Log
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
-import com.example.domes.domain.service.AlarmService
+import com.example.domes.data.service.AlarmService
+import com.example.domes.data.service.AlarmService.Companion.ALARM_ACTION
+import com.example.domes.domain.model.service.Notification
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
@@ -24,11 +29,31 @@ class PrayersViewModel @Inject constructor(
     private val _state = mutableStateOf(PrayersState())
     val state: State<PrayersState> = _state
 
+    // Events
+    private val alarmReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            val prayerName = intent?.getStringExtra("PRAYER")  ?: return
+
+            println("NOTIFICATION: $prayerName")
+
+            // If prayer isn't silent
+            prayersUseCases.sendNotification(
+                Notification(
+                    "Time for ${prayerName}",
+                    "Time to pray in ${_state.value.city}"
+                )
+            )
+            
+            onEvent(PrayersEvent.ChangeCurrentPrayer(_state.value.currentPrayerTimes.first { it.prayer.name == prayerName }))
+        }
+    }
+
     init {
+        context.registerReceiver(alarmReceiver, IntentFilter(ALARM_ACTION))
+
         getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
         onEvent(PrayersEvent.ChangeTime(LocalDateTime.now()))
-
-        Log.d("PRAYER-VIEW-MODEL", "${_state.value.timeLeft}")
+        onEvent(PrayersEvent.ChangeLocation(_state.value.location))
     }
 
     fun onEvent(event: PrayersEvent) {
@@ -38,6 +63,11 @@ class PrayersViewModel @Inject constructor(
                     timeLeft = _state.value.currentPrayer?.let {
                         prayersUseCases.getPrayerTimeLeft(event.currentTime, it)
                     }
+                )
+            }
+            is PrayersEvent.ChangeCurrentPrayer -> {
+                _state.value = _state.value.copy(
+                    currentPrayer = event.currentPrayer
                 )
             }
             is PrayersEvent.ChangeDate -> {
@@ -50,7 +80,8 @@ class PrayersViewModel @Inject constructor(
             }
             is PrayersEvent.ChangeLocation -> {
                 _state.value = _state.value.copy(
-                    location = event.coordinates
+                    location = event.coordinates,
+                    city = prayersUseCases.getCity(event.coordinates)
                 )
 
                 getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
