@@ -7,5 +7,6 @@ data class PrayerUseCases(
     val getHijriDate: GetHijriDate,
     val getPrayerTimeLeft: GetPrayerTimeLeft,
     val sendNotification: SendNotification,
-    val getCity: GetCity
+    val getCity: GetCity,
+    val getDayFraction: GetDayFraction
 )

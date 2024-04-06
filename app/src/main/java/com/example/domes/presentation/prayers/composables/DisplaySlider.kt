@@ -19,9 +19,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DisplaySlider(
-    sliderValue: Float, // The current value of the slider
+    sliderValue: Double, // The current value of the slider
     onValueChange: (Float) -> Unit, // Function to handle value changes
-    text: String, // Text to display in the textbox
     modifier: Modifier = Modifier,
     sliderRange: ClosedFloatingPointRange<Float> = 0f..1f, // The range of the slider
 ) {
@@ -45,7 +44,7 @@ fun DisplaySlider(
             if (sliderValue > 0f) {
                 Box(
                     modifier = Modifier
-                        .weight(sliderValue)
+                        .weight(sliderValue.toFloat())
                         .height(20.dp)
                         .background(
                             MaterialTheme.colorScheme.secondaryContainer,
@@ -70,7 +69,7 @@ fun DisplaySlider(
             if (sliderValue < 1f) {
                 Box(
                     modifier = Modifier
-                        .weight(1f - sliderValue)
+                        .weight((1f - sliderValue).toFloat())
                         .height(20.dp)
                         .background(
                             MaterialTheme.colorScheme.primary,
@@ -92,8 +91,7 @@ fun DisplaySlider(
 fun DisplaySliderPreview() {
     // Provide a sample slider value and a no-op for onValueChange
     DisplaySlider(
-        sliderValue = 0.5f,
+        sliderValue = 0.5,
         onValueChange = {},
-        text = "Sample Text"
     )
 }

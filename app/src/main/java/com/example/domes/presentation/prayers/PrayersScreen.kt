@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
@@ -187,8 +188,7 @@ fun PrayersScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     DisplaySlider(
-                                        sliderValue = 0.8f,
-                                        text = "2h 30 min left",
+                                        sliderValue = state.dayFraction,
                                         modifier = Modifier
                                             .fillMaxWidth(),
                                         onValueChange = { }
@@ -198,20 +198,14 @@ fun PrayersScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(20.dp),
-                                        children = state.currentPrayerTimes.map { prayerTime ->
+                                        children = state.currentPrayerTimes.filter { it.prayer.displayable }.map { prayerTime ->
                                             PercentageWidthBoxChild(
                                                 composable = {
-                                                    // Your composable content here, e.g., an icon with a label
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .size(10.dp)
-                                                    ) {
+                                                    Box(modifier = Modifier.size(10.dp)) {
                                                         Polygon(
                                                             shape,
-                                                            color =
-                                                            if (prayerTime == state.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer
-                                                            else MaterialTheme.colorScheme.secondaryContainer,
-                                                            alpha = if (prayerTime == state.currentPrayer) 1f else 0.35f
+                                                            color = if (prayerTime == state.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer else Color.Red,
+//                                                            alpha = if (prayerTime == state.currentPrayer) 1f else 0.35f
                                                         )
                                                     }
                                                 },
@@ -253,7 +247,7 @@ fun PrayersScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.S)
 @Preview(
     showBackground = true,
     wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE

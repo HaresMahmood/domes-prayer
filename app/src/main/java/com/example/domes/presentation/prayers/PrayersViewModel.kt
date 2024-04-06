@@ -41,8 +41,8 @@ class PrayersViewModel @Inject constructor(
             // If prayer isn't silent
             prayersUseCases.sendNotification(
                 Notification(
-                    "Time for ${prayerName}",
-                    "Time to pray in ${_state.value.city}"
+                    prayerName,
+                    _state.value.city,
                 )
             )
             
@@ -52,18 +52,18 @@ class PrayersViewModel @Inject constructor(
 
     init {
         context.registerReceiver(alarmReceiver, IntentFilter(ALARM_ACTION))
+        updateCurrentPrayerTimes(state.value.location, _state.value.calculationParameters)
 
         viewModelScope.launch {
             _state.value = _state.value.copy(
-                selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
                 city = prayersUseCases.getCity(_state.value.location),
+                selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
                 timeLeft = _state.value.currentPrayer?.let {
                     prayersUseCases.getPrayerTimeLeft(LocalDateTime.now(), it)
-                }
+                },
+                dayFraction = prayersUseCases.getDayFraction(_state.value.currentRawPrayerTimes!!, LocalDateTime.now())
             )
         }
-
-        updateCurrentPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
     }
 
     fun onEvent(event: PrayersEvent) {
@@ -72,7 +72,8 @@ class PrayersViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     timeLeft = _state.value.currentPrayer?.let {
                         prayersUseCases.getPrayerTimeLeft(event.currentTime, it)
-                    }
+                    },
+                    dayFraction = prayersUseCases.getDayFraction(_state.value.currentRawPrayerTimes!!, LocalDateTime.now())
                 )
             }
             is PrayersEvent.ChangeCurrentPrayer -> {
@@ -96,26 +97,27 @@ class PrayersViewModel @Inject constructor(
                     )
                 }
 
-                getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
+                updateCurrentPrayerTimes(_state.value.location, _state.value.calculationParameters)
             }
 
         }
     }
 
-    private fun updateCurrentPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
+    private fun updateCurrentPrayerTimes(coordinates: Coordinates, parameters: CalculationParameters) {
         _state.value.currentPrayerTimes.forEach(alarmService::cancel)
+        val currentTime = LocalDateTime.now()
+        val (prayerTimes, rawPrayerTimes) = prayersUseCases.getPrayerTimes(currentTime.toLocalDate(), coordinates, parameters)
 
         _state.value = _state.value.copy(
-            currentPrayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters).also { prayerTimes ->
-                prayerTimes.forEach(alarmService::schedule)
-                _state.value.currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, LocalDateTime.now())
-            }
+            currentPrayerTimes = prayerTimes.onEach(alarmService::schedule),
+            currentRawPrayerTimes = rawPrayerTimes,
+            currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
         )
     }
 
     private fun getPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
         _state.value = _state.value.copy(
-            selectedPrayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters)
+            selectedPrayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters).first
         )
     }
 }

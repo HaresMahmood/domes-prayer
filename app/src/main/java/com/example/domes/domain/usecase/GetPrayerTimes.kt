@@ -2,6 +2,7 @@ package com.example.domes.domain.usecase
 
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
+import com.batoulapps.adhan2.PrayerTimes
 import com.example.domes.data.repository.PrayerTimesRespitory
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerTime
@@ -11,6 +12,7 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.hours
 
 class GetPrayerTimes(
     private val repository: PrayerTimesRespitory
@@ -31,7 +33,7 @@ class GetPrayerTimes(
     
     private val systemTimeZone = TimeZone.currentSystemDefault()
 
-    operator fun invoke(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters): List<PrayerTime> {
+    operator fun invoke(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters): Pair<List<PrayerTime>, PrayerTimes> {
         val (prayerTimes, sunnahTimes) = repository.getAll(date, coordinates, parameters)
 
         val fajrTime = prayerTimes.fajr.toLocalDateTime(systemTimeZone).toJavaLocalDateTime()
@@ -47,8 +49,8 @@ class GetPrayerTimes(
         // i.e.: 0 is an hour before Fajr, 1 is an hour after Isha
         //       0.5 is halfway between Fajr and Isha
         fun getDayFraction(prayer: Instant): Double {
-            val fajr = prayerTimes.fajr
-            val isha = prayerTimes.isha
+            val fajr = prayerTimes.fajr.minus(1.hours)
+            val isha = prayerTimes.isha.plus(1.hours)
 
             val fajrToIsha = isha - fajr
             val fajrToPrayer = prayer - fajr
@@ -56,7 +58,7 @@ class GetPrayerTimes(
             return fajrToPrayer / fajrToIsha
         }
 
-        return listOf(
+        return Pair(listOf(
             PrayerTime(
                 prayer = Prayer.FAJR,
                 time = fajrTime,
@@ -98,6 +100,6 @@ class GetPrayerTimes(
                 time = testTime,
                 timeWindow = testTime.plusMinutes(5)
             )
-        )
+        ), prayerTimes)
     }
 }
