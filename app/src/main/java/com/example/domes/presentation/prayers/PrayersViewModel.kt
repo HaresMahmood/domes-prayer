@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
 import com.example.domes.data.service.AlarmService
@@ -15,6 +16,7 @@ import com.example.domes.data.service.AlarmService.Companion.ALARM_ACTION
 import com.example.domes.domain.model.service.Notification
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -79,10 +81,12 @@ class PrayersViewModel @Inject constructor(
                 getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
             }
             is PrayersEvent.ChangeLocation -> {
-                _state.value = _state.value.copy(
-                    location = event.coordinates,
-                    city = prayersUseCases.getCity(event.coordinates)
-                )
+                viewModelScope.launch {
+                    _state.value = _state.value.copy(
+                        location = event.coordinates,
+                        city = prayersUseCases.getCity(event.coordinates)
+                    )
+                }
 
                 getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
             }
