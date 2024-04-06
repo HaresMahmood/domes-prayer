@@ -12,7 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
 import com.example.domes.data.service.AlarmService
-import com.example.domes.data.service.AlarmService.Companion.ALARM_ACTION
+import com.example.domes.data.service.AlarmService.Companion.ACTION_ALARM
 import com.example.domes.domain.model.service.Notification
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,8 +50,24 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
+    private val timeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            if (intent?.action == Intent.ACTION_TIME_TICK) {
+                println("TICK TACK MR WICK")
+                onEvent(PrayersEvent.ChangeTime(LocalDateTime.now()))
+            }
+        }
+    }
+
     init {
-        context.registerReceiver(alarmReceiver, IntentFilter(ALARM_ACTION))
+        // rest of your init block
+    }
+
+    // Body
+
+    init {
+        context.registerReceiver(timeReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
+        context.registerReceiver(alarmReceiver, IntentFilter(ACTION_ALARM))
         updateCurrentPrayerTimes(state.value.location, _state.value.calculationParameters)
 
         viewModelScope.launch {
@@ -64,6 +80,12 @@ class PrayersViewModel @Inject constructor(
                 dayFraction = prayersUseCases.getDayFraction(_state.value.currentRawPrayerTimes!!, LocalDateTime.now())
             )
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        context.unregisterReceiver(timeReceiver)
+        context.unregisterReceiver(timeReceiver)
     }
 
     fun onEvent(event: PrayersEvent) {

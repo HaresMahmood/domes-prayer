@@ -11,15 +11,15 @@ class AlarmService(
     private val context: Context
 ): IAlarmService {
     companion object {
-        const val ALARM_ACTION = "com.example.domes.ALARM"
+        const val ACTION_ALARM = "com.example.domes.ALARM"
     }
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun schedule(prayerTime: PrayerTime) {
-        val intent = Intent(ALARM_ACTION).apply {
+        val intent = Intent(ACTION_ALARM).apply {
             putExtra("PRAYER", prayerTime.prayer.name)
-            action = ALARM_ACTION
+            action = ACTION_ALARM
         }
 
         alarmManager.setExactAndAllowWhileIdle(
@@ -39,7 +39,7 @@ class AlarmService(
             PendingIntent.getBroadcast(
                 context,
                 prayerTime.hashCode(),
-                Intent(ALARM_ACTION),
+                Intent(ACTION_ALARM),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
