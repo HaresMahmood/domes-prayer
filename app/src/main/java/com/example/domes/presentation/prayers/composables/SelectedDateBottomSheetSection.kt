@@ -1,5 +1,6 @@
 package com.example.domes.presentation.prayers.composables
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +34,12 @@ import com.maxkeppeler.sheets.calendar.CalendarView
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
+import com.maxkeppeler.sheets.calendar.utils.jumpNext
+import com.maxkeppeler.sheets.calendar.utils.jumpPrev
 import java.time.LocalDate
 import java.time.chrono.HijrahDate
 
+@SuppressLint("RestrictedApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectedDateBottomSheetSection(
@@ -46,6 +50,11 @@ fun SelectedDateBottomSheetSection(
     onDateChange: (LocalDate) -> Unit,
 ) {
     val selectedDate = remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
+    val calendarConfig = CalendarConfig(
+        yearSelection = true,
+        monthSelection = true,
+        style = CalendarStyle.MONTH,
+    )
 
     Box(
         modifier = Modifier
@@ -106,13 +115,23 @@ fun SelectedDateBottomSheetSection(
             }
 
             Row {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(
+                    onClick = {
+                        selectedDate.value?.jumpNext(calendarConfig)
+                        onDateChange(selectedDate.value!!)
+                    }
+                ) {
                     Icon(
                         Icons.AutoMirrored.Outlined.NavigateBefore,
                         contentDescription = "Previous month"
                     )
                 }
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(
+                    onClick = {
+                        selectedDate.value?.jumpPrev(calendarConfig)
+                        onDateChange(selectedDate.value!!)
+                    }
+                ) {
                     Icon(
                         Icons.AutoMirrored.Outlined.NavigateNext,
                         contentDescription = "Next month"
@@ -137,11 +156,7 @@ fun SelectedDateBottomSheetSection(
                     onDateChange(selectedDate.value!!)
                 }
             ),
-            config = CalendarConfig(
-                yearSelection = true,
-                monthSelection = true,
-                style = CalendarStyle.MONTH,
-            ),
+            config = calendarConfig,
             selection = CalendarSelection.Date(
                 withButtonView = false,
                 selectedDate = selectedDate.value,
