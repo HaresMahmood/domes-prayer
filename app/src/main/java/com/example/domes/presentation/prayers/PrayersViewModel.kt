@@ -53,9 +53,17 @@ class PrayersViewModel @Inject constructor(
     init {
         context.registerReceiver(alarmReceiver, IntentFilter(ALARM_ACTION))
 
-        getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
-        onEvent(PrayersEvent.ChangeTime(LocalDateTime.now()))
-        onEvent(PrayersEvent.ChangeLocation(_state.value.location))
+        viewModelScope.launch {
+            _state.value = _state.value.copy(
+                selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
+                city = prayersUseCases.getCity(_state.value.location),
+                timeLeft = _state.value.currentPrayer?.let {
+                    prayersUseCases.getPrayerTimeLeft(LocalDateTime.now(), it)
+                }
+            )
+        }
+
+        updateCurrentPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
     }
 
     fun onEvent(event: PrayersEvent) {
@@ -94,21 +102,20 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
-    private fun getPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
-        _state.value.currentPrayerTimes.forEach {
-            alarmService.cancel(it)
-        }
+    private fun updateCurrentPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
+        _state.value.currentPrayerTimes.forEach(alarmService::cancel)
 
-        val prayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters)
-        
         _state.value = _state.value.copy(
-            currentPrayerTimes = prayerTimes,
-            currentPrayer = prayerTimes.firstOrNull { it.isCurrent },
-            nextPrayer = prayerTimes.firstOrNull { it.isNext }
+            currentPrayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters).also { prayerTimes ->
+                prayerTimes.forEach(alarmService::schedule)
+                _state.value.currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, LocalDateTime.now())
+            }
         )
+    }
 
-        prayerTimes.forEach {
-            alarmService.schedule(it)
-        }
+    private fun getPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
+        _state.value = _state.value.copy(
+            selectedPrayerTimes = prayersUseCases.getPrayerTimes(date, coordinates, parameters)
+        )
     }
 }

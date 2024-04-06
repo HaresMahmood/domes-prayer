@@ -38,6 +38,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun PrayerListItem(
     prayerTime: PrayerTime,
+    isCurrent: Boolean = false,
+    hasPassed: Boolean = false,
     isSilent: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
@@ -53,14 +55,14 @@ fun PrayerListItem(
             .fillMaxWidth()
             .padding(
                 start = 0.dp,
-                end = if (prayerTime.isCurrent) 0.dp else 12.dp,
+                end = if (isCurrent) 0.dp else 12.dp,
                 top = if (isFirstItem) 16.dp else 0.dp,
                 bottom = if (isLastItem) 16.dp else 0.dp,
             )
-            .alpha(if (prayerTime.hasPassed && !prayerTime.isCurrent) 0.5f else 1f),
+            .alpha(if (hasPassed && !isCurrent) 0.5f else 1f),
         leadingContent = {
                 Box(contentAlignment = Alignment.Center) {
-                    if (prayerTime.isCurrent) {
+                    if (isCurrent) {
                         CircularProgressIndicator(
                             progress = 0.75f,
                             modifier = Modifier
@@ -87,11 +89,11 @@ fun PrayerListItem(
         headlineContent = {
             Text(
                 prayerTime.prayer.name,
-                style = if (prayerTime.isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
+                style = if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
             )
         },
         trailingContent = {
-            if (prayerTime.isCurrent) {
+            if (isCurrent) {
                 val shapeParam = ShapeParameters(
                     sides = 4,
                     innerRadius = .352f,

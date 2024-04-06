@@ -3,10 +3,12 @@ package com.example.domes.di
 import android.app.Application
 import androidx.room.Room
 import com.example.domes.data.repository.PrayerRecordRepository
+import com.example.domes.data.repository.PrayerTimesRespitory
 import com.example.domes.data.service.NotificationService
 import com.example.domes.data.source.PrayerRecordDatabase
 import com.example.domes.domain.repository.IPrayerRecordRepository
 import com.example.domes.domain.usecase.GetCity
+import com.example.domes.domain.usecase.GetCurrentPrayer
 import com.example.domes.domain.usecase.GetHijriDate
 import com.example.domes.domain.usecase.GetPrayerRecord
 import com.example.domes.domain.usecase.GetPrayerTimeLeft
@@ -47,13 +49,16 @@ object AppModule {
     @Provides
     @Singleton
     fun providePrayerUseCases(
-        repository: IPrayerRecordRepository,
+        prayerRecordRepository: IPrayerRecordRepository,
         notificationService: NotificationService,
         app: Application
     ): PrayerUseCases {
+        val prayerTimesRepository = PrayerTimesRespitory()
+
         return PrayerUseCases(
-            getPrayerTimes = GetPrayerTimes(),
-            getPrayerRecord = GetPrayerRecord(repository),
+            getPrayerTimes = GetPrayerTimes(prayerTimesRepository),
+            getCurrentPrayer = GetCurrentPrayer(),
+            getPrayerRecord = GetPrayerRecord(prayerRecordRepository),
             getHijriDate = GetHijriDate(),
             getPrayerTimeLeft = GetPrayerTimeLeft(),
             sendNotification = SendNotification(notificationService),

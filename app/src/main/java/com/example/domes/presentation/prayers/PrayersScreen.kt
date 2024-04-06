@@ -51,6 +51,7 @@ import com.example.domes.presentation.util.Polygon
 import com.example.domes.presentation.util.ShapeParameters
 import com.example.domes.ui.theme.DomesTheme
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -68,6 +69,7 @@ class UIConstants {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PrayersScreen(
@@ -207,13 +209,13 @@ fun PrayersScreen(
                                                         Polygon(
                                                             shape,
                                                             color =
-                                                            if (prayerTime.isCurrent) MaterialTheme.colorScheme.onSecondaryContainer
+                                                            if (prayerTime == state.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer
                                                             else MaterialTheme.colorScheme.secondaryContainer,
-                                                            alpha = if (prayerTime.isCurrent) 1f else 0.35f
+                                                            alpha = if (prayerTime == state.currentPrayer) 1f else 0.35f
                                                         )
                                                     }
                                                 },
-                                                widthFraction = prayerTime.dayFraction.toFloat()
+                                                widthFraction = prayerTime.dayFraction?.toFloat()
                                             )
                                         }
                                     )
@@ -234,6 +236,8 @@ fun PrayersScreen(
                                 state.currentPrayerTimes.forEachIndexed { index, prayerTime ->
                                     PrayerListItem(
                                         prayerTime = prayerTime,
+                                        isCurrent = prayerTime == state.currentPrayer,
+                                        hasPassed = prayerTime.timeWindow.isBefore(LocalDateTime.now()) && prayerTime != state.currentPrayer,
                                         isSilent = false,
                                         isFirstItem = index == 0,
                                         isLastItem = index == state.currentPrayerTimes.lastIndex,

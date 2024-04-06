@@ -16,9 +16,7 @@ data class PrayersState(
     val city: String = "",
     val currentPrayerTimes: List<PrayerTime> = emptyList(),
     val selectedPrayerTimes: List<PrayerTime> = emptyList(),
-    // TODO: Put currentPrayer and nextPrayer, and prayerTimes list in an overarching `PrayerTimes` class?
-    val currentPrayer: PrayerTime? = null,
-    val nextPrayer: PrayerTime? = null,
+    var currentPrayer: PrayerTime? = null,
     val timeLeft: Duration? = null,
     val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,
     val prayerRecords: List<PrayerRecord> = emptyList()

@@ -15,7 +15,6 @@ class AlarmService(
     }
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
-//    private val intent = Intent(context, AlarmReceiver::class.java)
 
     override fun schedule(prayerTime: PrayerTime) {
         val intent = Intent(ALARM_ACTION).apply {

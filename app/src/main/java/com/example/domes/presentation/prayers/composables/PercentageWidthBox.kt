@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Dp
 data class PercentageWidthBoxChild(
     val composable: @Composable BoxScope.() -> Unit,
     val parentContainerHeight: Dp? = Dp.Unspecified,
-    val widthFraction: Float
+    val widthFraction: Float?
 )
 
 @Composable
@@ -26,14 +26,16 @@ fun PercentageWidthBox(
             .fillMaxWidth()
     ) {
         children.forEach { child ->
-            Box(
-                contentAlignment = BiasAlignment(horizontalBias = child.widthFraction * 2 - 1, verticalBias = 0f),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterStart)
-                    .heightIn(max = child.parentContainerHeight ?: Dp.Unspecified),
-                content = child.composable
-            )
+            child.widthFraction?.let { widthFraction ->
+                Box(
+                    contentAlignment = BiasAlignment(horizontalBias = widthFraction * 2 - 1, verticalBias = 0f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterStart)
+                        .heightIn(max = child.parentContainerHeight ?: Dp.Unspecified),
+                    content = child.composable
+                )
+            }
         }
     }
 }
