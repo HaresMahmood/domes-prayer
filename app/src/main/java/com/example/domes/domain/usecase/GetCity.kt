@@ -2,10 +2,7 @@ package com.example.domes.domain.usecase
 
 import android.content.Context
 import android.location.Geocoder
-import android.os.Build
 import com.batoulapps.adhan2.Coordinates
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.util.Locale
 
 // TODO: Rename to something like `getLocale` and include country since it's required in UI
@@ -14,34 +11,37 @@ class GetCity(
 ) {
     suspend operator fun invoke(coordinates: Coordinates): String {
         val geocoder = Geocoder(context, Locale.getDefault())
-        var city = "Unknown city"
 
-        val geocodeListener = Geocoder.GeocodeListener { addresses ->
-            println("GeocodeListener: $addresses")
+        // if (Build.VERSION.SDK_INT >= 33) {
+        //     val geocodeListener = Geocoder.GeocodeListener { addresses ->
+        //         val city = addresses[0]?.run {
+        //             locality ?: subAdminArea ?: adminArea
+        //         } ?: "Unknown City 1"
 
-            city = addresses[0]?.run {
-                locality ?: subAdminArea ?: subLocality ?: thoroughfare ?: subThoroughfare
-            } ?: "Unknown city"
-        }
+        //         city
+        //     }
 
-        if (Build.VERSION.SDK_INT >= 33) {
-            geocoder.getFromLocation(coordinates.latitude, coordinates.longitude, 1, geocodeListener)
-        } 
-        else {
-            println("GeocodeListener: not supported")
+        //     geocoder.getFromLocation(coordinates.latitude, coordinates.longitude, 1, geocodeListener)
+        // } 
+        // else {
+            
+        // }
 
-            return withContext(Dispatchers.IO) {
-                val addresses = geocoder.getFromLocation(
-                    coordinates.latitude, coordinates.longitude, 1
-                )
+        return geocoder.getFromLocation(
+                coordinates.latitude, coordinates.longitude, 1
+            )?.get(0)?.run {
+                locality ?: subAdminArea ?: adminArea
+            } ?: "Unknown City 2"
 
-                city = addresses?.get(0)?.run {
-                    locality ?: subAdminArea ?: subLocality ?: thoroughfare ?: subThoroughfare
-                } ?: "Unknown city"
-                city
-            }
-        }
+        // return withContext(Dispatchers.IO) {
+        //     val addresses = Geocoder(context).getFromLocation(
+        //         coordinates.latitude, coordinates.longitude, 1
+        //     )
+        //     val city = addresses?.get(0)?.run {
+        //         locality ?: subAdminArea ?: subLocality ?: thoroughfare ?: subThoroughfare
+        //     } ?: "Unknown city"
 
-        return city
+        //     city
+        // }
     }
 }
