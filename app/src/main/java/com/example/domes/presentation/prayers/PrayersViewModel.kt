@@ -59,10 +59,6 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
-    init {
-        // rest of your init block
-    }
-
     // Body
 
     init {
@@ -125,17 +121,26 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
+    // Returns a number between 0 and 1 representing how much of the current prayer has passed
+    // TODO: move to use case
+    fun calculateRemainingPrayerTime() = _state.value.timeLeft?.let { 1 - it.toMinutes().toFloat() / _state.value.totalTime!!.toMinutes() } ?: 0f
+
     private fun updateCurrentPrayerTimes(coordinates: Coordinates, parameters: CalculationParameters) {
         _state.value.currentPrayerTimes.forEach(alarmService::cancel)
         val currentTime = LocalDateTime.now()
         val (prayerTimes, rawPrayerTimes) = prayersUseCases.getPrayerTimes(currentTime.toLocalDate(), coordinates, parameters)
+        val currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
+        val timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer)
 
         _state.value = _state.value.copy(
             currentPrayerTimes = prayerTimes.onEach(alarmService::schedule),
             currentRawPrayerTimes = rawPrayerTimes,
-            currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
+            currentPrayer = currentPrayer,
+            timeLeft = timeLeft,
+            totalTime = timeLeft,
         )
     }
+
 
     private fun getPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
         _state.value = _state.value.copy(

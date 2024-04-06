@@ -235,6 +235,7 @@ fun PrayersScreen(
                                         isSilent = false,
                                         isFirstItem = index == 0,
                                         isLastItem = index == state.currentPrayerTimes.lastIndex,
+                                        calculateProgress = { viewModel.calculateRemainingPrayerTime() },
                                         onClick = { },
                                     )
                                 }

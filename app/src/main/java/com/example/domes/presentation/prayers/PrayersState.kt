@@ -19,6 +19,7 @@ data class PrayersState(
     val currentPrayerTimes: List<PrayerTime> = emptyList(),
     val selectedPrayerTimes: List<PrayerTime> = emptyList(),
     var currentPrayer: PrayerTime? = null,
+    val totalTime: Duration? = null,
     val timeLeft: Duration? = null,
     val dayFraction: Double = 0.0,
     val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,
