@@ -131,6 +131,8 @@ class PrayersViewModel @Inject constructor(
         val (prayerTimes, rawPrayerTimes) = prayersUseCases.getPrayerTimes(currentTime.toLocalDate(), coordinates, parameters)
         val currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
         val timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer)
+        val currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
+        val timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer)
 
         _state.value = _state.value.copy(
             currentPrayerTimes = prayerTimes.onEach(alarmService::schedule),
@@ -138,8 +140,12 @@ class PrayersViewModel @Inject constructor(
             currentPrayer = currentPrayer,
             timeLeft = timeLeft,
             totalTime = timeLeft,
+            currentPrayer = currentPrayer,
+            timeLeft = timeLeft,
+            totalTime = timeLeft,
         )
     }
+
 
 
     private fun getPrayerTimes(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters) {
