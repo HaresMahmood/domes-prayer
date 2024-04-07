@@ -65,17 +65,17 @@ fun PrayerListItem(
         leadingContent = {
                 Box(contentAlignment = Alignment.Center) {
                     if (isCurrent) {
-                        val prayerTimeAnimatedProgress by animateFloatAsState(
+                        val remainingTimeAnimatedProgress by animateFloatAsState(
                             targetValue = calculateProgress(),
                             animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                             label = "prayer-progress"
                         )
                         
                         CircularProgressIndicator(
-                            progress = prayerTimeAnimatedProgress,
+                            progress = remainingTimeAnimatedProgress,
                             modifier = Modifier
                                 .size(40.dp),
-                            color = if (prayerTimeAnimatedProgress < 0.15f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                            color = if (remainingTimeAnimatedProgress < 0.15f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                         )
                     }
                     IconButton(onClick) {

@@ -141,7 +141,9 @@ fun PrayersScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         stickyHeader {
-                            state.timeLeft?.let { MainActionSection(timeLeft = it) }
+                            MainActionSection(state.timeLeft, viewModel.calculateRemainingPrayerTime(), state.city) {
+                                //viewModel.onEvent(PrayersEvent.Snooze)
+                            }
                         }
                         item {
                             val shapeParam = ShapeParameters(

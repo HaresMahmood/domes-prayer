@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.HourglassBottom
+import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.HourglassTop
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Settings
@@ -32,15 +34,11 @@ import java.time.Duration
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MainActionSection(
-    timeLeft: Duration,
+    timeLeft: Duration?,
+    remainingTimePercentage: Float?,
+    city: String,
+    onSnooze: () -> Unit,
 ) {
-    // Make the text more dynamic, i.e. when the hours part is 0, don't show it, and when there is 1 minute left, show "1 min left" instead of "1 mins left"
-    val timeLeftText = when {
-        timeLeft.toHoursPart() == 0 -> "${timeLeft.toMinutesPart()} mins left"
-        timeLeft.toMinutesPart() == 1 -> "${timeLeft.toHoursPart()}h 1 min left"
-        else -> "${timeLeft.toHoursPart()}h ${timeLeft.toMinutesPart()} mins left"
-    }
-
     LazyRow(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background),
@@ -60,9 +58,24 @@ fun MainActionSection(
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 ),
             ) {
-                Icon(Icons.Outlined.HourglassTop,  "Time left")
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(timeLeftText)
+                timeLeft?.let { timeLeft ->
+                    val text = when {
+                        timeLeft.toHoursPart() == 0 -> "${timeLeft.toMinutesPart()} mins left"
+                        timeLeft.toMinutesPart() == 1 -> "${timeLeft.toHoursPart()}h 1 min left"
+                        else -> "${timeLeft.toHoursPart()}h ${timeLeft.toMinutesPart()} mins left"
+                    }
+                    val icon = when {
+                        remainingTimePercentage!! < 0.15 -> Icons.Outlined.HourglassEmpty
+                        remainingTimePercentage < 0.5 -> Icons.Outlined.HourglassBottom
+                        else -> Icons.Outlined.HourglassTop
+                    }
+
+                    println("MAINACTION-REMAINING-TIME: ${remainingTimePercentage}")
+
+                    Icon(icon,  "Remaining time")
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(text)
+                }
             }
         }
         item {
@@ -77,7 +90,7 @@ fun MainActionSection(
             ) {
                 Icon(Icons.Outlined.LocationOn, "Location")
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "Glasgow, UK")
+                Text(text = city)
             }
         }
         item {
