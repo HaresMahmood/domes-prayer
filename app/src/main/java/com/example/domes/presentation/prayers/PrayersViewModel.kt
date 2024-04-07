@@ -1,6 +1,7 @@
 package com.example.domes.presentation.prayers
 
 import android.app.Application
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,10 +14,10 @@ import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
 import com.example.domes.data.service.AlarmService
 import com.example.domes.data.service.AlarmService.Companion.ACTION_ALARM
+import com.example.domes.data.service.NotificationService.Companion.ACTION_NOTIFICATION_ACTION_CLICKED
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
-import com.example.domes.domain.model.service.Notification
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -39,19 +40,16 @@ class PrayersViewModel @Inject constructor(
     // Events
     private val alarmReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
-            val prayerName = intent?.getStringExtra("PRAYER")  ?: return
-
-            println("NOTIFICATION: $prayerName")
+            val prayerTime = intent?.getParcelableExtra<PrayerTime>("PRAYERTIME") ?: return
 
             // If prayer isn't silent
             prayersUseCases.sendNotification(
-                Notification(
-                    prayerName,
-                    _state.value.city,
-                )
+                prayerTime,
+                "in ${_state.value.city}",
+                context
             )
             
-            onEvent(PrayersEvent.ChangeCurrentPrayer(_state.value.currentPrayerTimes.first { it.prayer.name == prayerName }))
+            onEvent(PrayersEvent.ChangeCurrentPrayer(prayerTime))
         }
     }
 
@@ -64,11 +62,33 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
+    // Move to separate class to run in background
+    private val notificationActionReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            intent?.getParcelableExtra<PrayerTime>("PRAYERTIME")?.let { prayerTime ->
+                _state.value.selectedPrayerRecord.takeIf { it.date == prayerTime.time.toLocalDate() }?.let {
+                    onEvent(PrayersEvent.ChangePrayerRecord(prayerTime.prayer, true))
+                } ?: viewModelScope.launch {
+                    prayersUseCases.getPrayerRecord(prayerTime.time.toLocalDate())?.let { fetchedPrayerRecord ->
+                        updatePrayerRecord(fetchedPrayerRecord, prayerTime.prayer, true)
+                    }
+                }
+
+                // TODO: Move into use case and notification service
+                val notificationId = prayerTime.hashCode() // Use the same ID that was used to create the PendingIntent
+                val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.cancel(notificationId)
+            }
+        }
+    }
+
     // Body
 
     init {
         context.registerReceiver(timeReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
         context.registerReceiver(alarmReceiver, IntentFilter(ACTION_ALARM))
+        context.registerReceiver(notificationActionReceiver, IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED))
+
         updateCurrentPrayerTimes(state.value.location, _state.value.calculationParameters)
 
         viewModelScope.launch {
@@ -86,7 +106,8 @@ class PrayersViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         context.unregisterReceiver(timeReceiver)
-        context.unregisterReceiver(timeReceiver)
+        context.unregisterReceiver(alarmReceiver)
+        context.unregisterReceiver(notificationActionReceiver)
     }
 
     fun onEvent(event: PrayersEvent) {
@@ -124,23 +145,10 @@ class PrayersViewModel @Inject constructor(
             }
             // TODO: Simplify
             is PrayersEvent.ChangePrayerRecord -> {
-                val changedPrayer = event.prayer
-                val hasPrayed = event.hasPrayed
-
-                val prayerRecord = _state.value.selectedPrayerRecord.copy(
-                    fajr = if (changedPrayer == Prayer.FAJR) hasPrayed else _state.value.selectedPrayerRecord.fajr,
-                    dhuhr = if (changedPrayer == Prayer.DHUHR) hasPrayed else _state.value.selectedPrayerRecord.dhuhr,
-                    asr = if (changedPrayer == Prayer.ASR) hasPrayed else _state.value.selectedPrayerRecord.asr,
-                    maghrib = if (changedPrayer == Prayer.MAGHRIB) hasPrayed else _state.value.selectedPrayerRecord.maghrib,
-                    isha = if (changedPrayer == Prayer.ISHA) hasPrayed else _state.value.selectedPrayerRecord.isha
-                )
-
-                viewModelScope.launch {
-                    prayersUseCases.addPrayerRecord(prayerRecord)
-                }
+                val updatedPrayerRecord = updatePrayerRecord(_state.value.selectedPrayerRecord, event.prayer, event.hasPrayed)
 
                 _state.value = _state.value.copy(
-                    selectedPrayerRecord = prayerRecord
+                    selectedPrayerRecord = updatedPrayerRecord
                 )
             }
         }
@@ -207,6 +215,22 @@ class PrayersViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun updatePrayerRecord(prayerRecord: PrayerRecord, changedPrayer: Prayer, hasPrayed: Boolean): PrayerRecord {
+        val updatedPrayerRecord = prayerRecord.copy(
+            fajr = if (changedPrayer == Prayer.FAJR) hasPrayed else prayerRecord.fajr,
+            dhuhr = if (changedPrayer == Prayer.DHUHR) hasPrayed else prayerRecord.dhuhr,
+            asr = if (changedPrayer == Prayer.ASR) hasPrayed else prayerRecord.asr,
+            maghrib = if (changedPrayer == Prayer.MAGHRIB) hasPrayed else prayerRecord.maghrib,
+            isha = if (changedPrayer == Prayer.ISHA) hasPrayed else prayerRecord.isha
+        )
+
+        viewModelScope.launch {
+            prayersUseCases.addPrayerRecord(updatedPrayerRecord)
+        }
+
+        return updatedPrayerRecord
     }
 
     // private fun updatePrayerRecord(prayerRecord: PrayerRecord) {

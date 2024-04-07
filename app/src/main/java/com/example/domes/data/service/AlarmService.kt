@@ -18,7 +18,7 @@ class AlarmService(
 
     override fun schedule(prayerTime: PrayerTime) {
         val intent = Intent(ACTION_ALARM).apply {
-            putExtra("PRAYER", prayerTime.prayer.name)
+            putExtra("PRAYERTIME", prayerTime)
             action = ACTION_ALARM
         }
 
@@ -29,7 +29,7 @@ class AlarmService(
                 context,
                 prayerTime.hashCode(),
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_IMMUTABLE
             )
         )
     }

@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
@@ -132,11 +132,7 @@ fun PrayerListItem(
                         .background(MaterialTheme.colorScheme.tertiaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    when (prayerTime.prayer.icon) {
-                        is ImageVector -> Icon(prayerTime.prayer.icon, prayerTime.prayer.name)
-//                        is Painter -> Icon(prayerTime.prayer.icon, prayerTime.prayer.name)
-                        else -> throw IllegalArgumentException("Invalid icon type")
-                    }
+                    Icon(painterResource(prayerTime.prayer.iconResId), prayerTime.prayer.name)
                 }
             } else {
                 val shapeParam = ShapeParameters(
@@ -159,11 +155,7 @@ fun PrayerListItem(
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
-                    when (prayerTime.prayer.icon) {
-                        is ImageVector -> Icon(prayerTime.prayer.icon, prayerTime.prayer.name)
-//                        is Painter -> Icon(prayerTime.prayer.icon, prayerTime.prayer.name)
-                        else -> throw IllegalArgumentException("Invalid icon type")
-                    }
+                    Icon(painterResource(prayerTime.prayer.iconResId), prayerTime.prayer.name)
                 }
             }
         },
