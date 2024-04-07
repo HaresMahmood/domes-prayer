@@ -7,6 +7,7 @@ import com.example.domes.data.repository.PrayerTimesRespitory
 import com.example.domes.data.service.NotificationService
 import com.example.domes.data.source.PrayerRecordDatabase
 import com.example.domes.domain.repository.IPrayerRecordRepository
+import com.example.domes.domain.usecase.AddPrayerRecord
 import com.example.domes.domain.usecase.GetCity
 import com.example.domes.domain.usecase.GetCurrentPrayer
 import com.example.domes.domain.usecase.GetDayFraction
@@ -60,6 +61,7 @@ object AppModule {
             getPrayerTimes = GetPrayerTimes(prayerTimesRepository),
             getCurrentPrayer = GetCurrentPrayer(),
             getPrayerRecord = GetPrayerRecord(prayerRecordRepository),
+            addPrayerRecord = AddPrayerRecord(prayerRecordRepository),
             getHijriDate = GetHijriDate(),
             getPrayerTimeLeft = GetPrayerTimeLeft(),
             sendNotification = SendNotification(notificationService),

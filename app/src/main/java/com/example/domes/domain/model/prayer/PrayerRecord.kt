@@ -32,9 +32,9 @@ class MissedReasonConverter {
 data class PrayerRecord(
     @PrimaryKey
     val date: LocalDate,
-    val fajr: Boolean,
-    val dhuhr: Boolean,
-    val asr: Boolean,
-    val maghrib: Boolean,
-    val isha: Boolean
+    val fajr: Boolean = false,
+    val dhuhr: Boolean = false,
+    val asr: Boolean = false,
+    val maghrib: Boolean = false,
+    val isha: Boolean = false,
 )
