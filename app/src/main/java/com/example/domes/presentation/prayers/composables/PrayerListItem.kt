@@ -1,7 +1,6 @@
 package com.example.domes.presentation.prayers.composables
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,10 +21,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.domes.domain.model.prayer.PrayerTime
-import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.util.RoundedPolygonShape
 import com.example.domes.presentation.util.ShapeParameters
@@ -50,7 +46,6 @@ fun PrayerListItem(
     isSilent: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
-    calculateProgress: () -> Float,
     calculateProgress: () -> Float,
     onClick: () -> Unit = {},
 ) {
@@ -80,7 +75,7 @@ fun PrayerListItem(
                             progress = prayerTimeAnimatedProgress,
                             modifier = Modifier
                                 .size(40.dp),
-                            color = if (prayerTimeAnimatedProgress > 0.75f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                            color = if (prayerTimeAnimatedProgress < 0.15f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                         )
                     }
                     IconButton(onClick) {
@@ -168,7 +163,6 @@ fun PrayerListItem(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(prayerTime.time.format(getFormatter("HH:mm a")))
                 Text(prayerTime.time.format(getFormatter("HH:mm a")))
 
                 if (isSilent) {

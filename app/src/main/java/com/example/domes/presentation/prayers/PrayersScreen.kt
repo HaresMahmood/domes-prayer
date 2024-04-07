@@ -52,6 +52,7 @@ import com.example.domes.presentation.util.Polygon
 import com.example.domes.presentation.util.ShapeParameters
 import com.example.domes.ui.theme.DomesTheme
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -77,6 +78,8 @@ fun PrayersScreen(
     viewModel: PrayersViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
+    val prayerTimes = if (state.selectedDate == LocalDate.now()) state.currentPrayerTimes else state.selectedPrayerTimes
+
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -198,7 +201,7 @@ fun PrayersScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(20.dp),
-                                        children = state.currentPrayerTimes.filter { it.prayer.displayable }.map { prayerTime ->
+                                        children = prayerTimes.filter { it.prayer.displayable }.map { prayerTime ->
                                             PercentageWidthBoxChild(
                                                 composable = {
                                                     Box(modifier = Modifier.size(10.dp)) {
@@ -227,14 +230,14 @@ fun PrayersScreen(
                                     ),
                                 verticalArrangement = Arrangement.spacedBy(2.dp),
                             ) {
-                                state.currentPrayerTimes.forEachIndexed { index, prayerTime ->
+                                prayerTimes.forEachIndexed { index, prayerTime ->
                                     PrayerListItem(
                                         prayerTime = prayerTime,
                                         isCurrent = prayerTime == state.currentPrayer,
                                         hasPassed = prayerTime.timeWindow.isBefore(LocalDateTime.now()) && prayerTime != state.currentPrayer,
                                         isSilent = false,
                                         isFirstItem = index == 0,
-                                        isLastItem = index == state.currentPrayerTimes.lastIndex,
+                                        isLastItem = index == prayerTimes.lastIndex,
                                         calculateProgress = { viewModel.calculateRemainingPrayerTime() },
                                         onClick = { },
                                     )

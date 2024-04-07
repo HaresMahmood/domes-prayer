@@ -122,8 +122,13 @@ class PrayersViewModel @Inject constructor(
     }
 
     // Returns a number between 0 and 1 representing how much of the current prayer has passed
+    // 1 means the prayer has just started, 0 means the prayer has just ended
     // TODO: move to use case
-    fun calculateRemainingPrayerTime() = _state.value.timeLeft?.let { 1 - it.toMinutes().toFloat() / _state.value.totalTime!!.toMinutes() } ?: 0f
+    fun calculateRemainingPrayerTime() = _state.value.timeLeft?.let { timeLeft ->
+        _state.value.totalTime?.let { totalTime ->
+            timeLeft.toMillis().toDouble() / totalTime.toMillis().toDouble()
+        }
+    }?.toFloat() ?: 0.0f
 
     private fun updateCurrentPrayerTimes(coordinates: Coordinates, parameters: CalculationParameters) {
         _state.value.currentPrayerTimes.forEach(alarmService::cancel)
@@ -136,7 +141,8 @@ class PrayersViewModel @Inject constructor(
             currentRawPrayerTimes = rawPrayerTimes,
             currentPrayer = currentPrayer,
             timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer),
-            totalTime = prayersUseCases.getPrayerTimeLeft(currentPrayer.currentPrayer.time, currentPrayer),
+            totalTime = prayersUseCases.getPrayerTimeLeft(currentPrayer.time, currentPrayer),
+        )
     }
 
 

@@ -95,11 +95,11 @@ class GetPrayerTimes(
                 dayFraction = getDayFraction(prayerTimes.isha),
                 timeWindow = middleOfTheNightTime
             ),
-            PrayerTime(
-                prayer = Prayer.TEST,
-                time = testTime,
-                timeWindow = testTime.plusMinutes(5)
-            )
+//            PrayerTime(
+//                prayer = Prayer.TEST,
+//                time = testTime,
+//                timeWindow = testTime.plusMinutes(5)
+//            )
         ), prayerTimes)
     }
 }
