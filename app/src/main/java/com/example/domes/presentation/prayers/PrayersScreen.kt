@@ -33,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
@@ -235,13 +234,17 @@ fun PrayersScreen(
                                 prayerTimes.forEachIndexed { index, prayerTime ->
                                     PrayerListItem(
                                         prayerTime = prayerTime,
+                                        hasPrayed = viewModel.mapPrayerToPrayerRecord(prayerTime),
                                         isCurrent = prayerTime == state.currentPrayer,
                                         hasPassed = prayerTime.timeWindow.isBefore(LocalDateTime.now()) && prayerTime != state.currentPrayer,
                                         isSilent = false,
                                         isFirstItem = index == 0,
                                         isLastItem = index == prayerTimes.lastIndex,
-                                        calculateProgress = { viewModel.calculateRemainingPrayerTime() },
+                                        remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
                                         onClick = { },
+                                        onTick = {
+                                            viewModel.onEvent(PrayersEvent.ChangePrayerRecord(prayerTime.prayer, it))
+                                        }
                                     )
                                 }
                             }

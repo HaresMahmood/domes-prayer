@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,13 +42,15 @@ import com.example.domes.presentation.util.ShapeParameters
 @Composable
 fun PrayerListItem(
     prayerTime: PrayerTime,
+    hasPrayed: Boolean,
     isCurrent: Boolean = false,
     hasPassed: Boolean = false,
     isSilent: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
-    calculateProgress: () -> Float,
+    remainingTimePercentage: Float,
     onClick: () -> Unit = {},
+    onTick: (Boolean) -> Unit = {}
 ) {
     ListItem(
         colors = ListItemDefaults.colors(
@@ -66,7 +69,7 @@ fun PrayerListItem(
                 Box(contentAlignment = Alignment.Center) {
                     if (isCurrent) {
                         val remainingTimeAnimatedProgress by animateFloatAsState(
-                            targetValue = calculateProgress(),
+                            targetValue = remainingTimePercentage,
                             animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                             label = "prayer-progress"
                         )
@@ -75,12 +78,18 @@ fun PrayerListItem(
                             progress = remainingTimeAnimatedProgress,
                             modifier = Modifier
                                 .size(40.dp),
-                            color = if (remainingTimeAnimatedProgress < 0.15f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                            color = if (remainingTimePercentage < 0.15f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                         )
                     }
-                    IconButton(onClick) {
+                    IconButton(
+                        onClick = { onTick(!hasPrayed) }
+                    ) {
                         if (prayerTime.prayer.displayable) {
-                            Icon(Icons.Outlined.RadioButtonUnchecked, "Done")
+                            if (hasPrayed) {
+                                Icon(Icons.Outlined.CheckCircle, "Prayed")
+                            } else {
+                                Icon(Icons.Outlined.RadioButtonUnchecked, "Not prayed")
+                            }
                         }
                         else {
                             Box(

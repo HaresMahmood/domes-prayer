@@ -35,7 +35,7 @@ import java.time.Duration
 @Composable
 fun MainActionSection(
     timeLeft: Duration?,
-    remainingTimePercentage: Float?,
+    remainingTimePercentage: Float,
     city: String,
     onSnooze: () -> Unit,
 ) {
@@ -65,7 +65,7 @@ fun MainActionSection(
                         else -> "${timeLeft.toHoursPart()}h ${timeLeft.toMinutesPart()} mins left"
                     }
                     val icon = when {
-                        remainingTimePercentage!! < 0.15 -> Icons.Outlined.HourglassEmpty
+                        remainingTimePercentage < 0.15 -> Icons.Outlined.HourglassEmpty
                         remainingTimePercentage < 0.5 -> Icons.Outlined.HourglassBottom
                         else -> Icons.Outlined.HourglassTop
                     }
