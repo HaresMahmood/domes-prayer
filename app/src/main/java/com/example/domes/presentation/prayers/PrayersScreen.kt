@@ -209,8 +209,8 @@ fun PrayersScreen(
                                                     Box(modifier = Modifier.size(10.dp)) {
                                                         Polygon(
                                                             shape,
-                                                            color = if (prayerTime == state.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer else Color.Red,
-//                                                            alpha = if (prayerTime == state.currentPrayer) 1f else 0.35f
+                                                            color = if (prayerTime == state.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSecondary,
+                                                            alpha = if (prayerTime == state.currentPrayer) 1f else 0.75f
                                                         )
                                                     }
                                                 },
