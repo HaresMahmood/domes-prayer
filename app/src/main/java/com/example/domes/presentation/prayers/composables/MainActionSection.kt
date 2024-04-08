@@ -28,7 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.domes.R
+import com.example.domes.presentation.common.utility.Screen
 import java.time.Duration
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -37,6 +39,7 @@ fun MainActionSection(
     timeLeft: Duration?,
     remainingTimePercentage: Float,
     city: String,
+    navController: NavController,
     onSnooze: () -> Unit,
 ) {
     LazyRow(
@@ -51,7 +54,12 @@ fun MainActionSection(
         item {
             Button(
                 onClick = { /*TODO*/ },
-                shape = RoundedCornerShape(topStartPercent = 12, topEndPercent = 45, bottomStartPercent = 45, bottomEndPercent = 45),
+                shape = RoundedCornerShape(
+                    topStartPercent = 12,
+                    topEndPercent = 45,
+                    bottomStartPercent = 45,
+                    bottomEndPercent = 45
+                ),
                 contentPadding = buttonPaddingValues,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -72,7 +80,7 @@ fun MainActionSection(
 
                     println("MAINACTION-REMAINING-TIME: ${remainingTimePercentage}")
 
-                    Icon(icon,  "Remaining time")
+                    Icon(icon, "Remaining time")
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text)
                 }
@@ -80,7 +88,9 @@ fun MainActionSection(
         }
         item {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navController.navigate(Screen.Location.route)
+                },
                 shape = buttonCornerShapes,
                 contentPadding = buttonPaddingValues,
                 colors = ButtonDefaults.buttonColors(
@@ -118,7 +128,10 @@ fun MainActionSection(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
             ) {
-                Icon(painterResource(R.drawable.menstrual_health_fill0_wght400_grad0_opsz24), "Period")
+                Icon(
+                    painterResource(R.drawable.menstrual_health_fill0_wght400_grad0_opsz24),
+                    "Period"
+                )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = "Period")
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
@@ -127,7 +140,9 @@ fun MainActionSection(
         }
         item {
             FilledTonalIconButton(
-                onClick = { /*TODO*/ }
+                onClick = {
+                    navController.navigate(Screen.Settings.route)
+                }
             ) {
                 Icon(Icons.Outlined.Settings, contentDescription = "Settings")
             }
