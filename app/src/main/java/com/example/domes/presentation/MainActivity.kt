@@ -12,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.domes.presentation.prayers.PrayersScreen
 import com.example.domes.presentation.common.utility.Screen
+import com.example.domes.presentation.prayers.PrayersScreen
+import com.example.domes.presentation.settings.SettingsScreen
+import com.example.domes.presentation.settings.routes.location.LocationScreen
 import com.example.domes.ui.theme.DomesTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,10 +37,13 @@ class MainActivity : ComponentActivity() {
                         startDestination = Screen.Prayers.route,
                     ) {
                         composable(route = Screen.Prayers.route) {
-                            PrayersScreen()
+                            PrayersScreen(navController)
                         }
                         composable(route = Screen.Settings.route) {
-
+                            SettingsScreen(navController)
+                        }
+                        composable(route = Screen.Location.route) {
+                            LocationScreen()
                         }
                     }
                 }

@@ -34,22 +34,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.domes.presentation.common.composables.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.Polygon
+import com.example.domes.presentation.common.composables.Shape
 import com.example.domes.presentation.prayers.UIConstants.Companion.getArabicFormatter
 import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.prayers.composables.DisplaySlider
-import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.presentation.prayers.composables.MainActionSection
 import com.example.domes.presentation.prayers.composables.PercentageWidthBox
 import com.example.domes.presentation.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.prayers.composables.PrayerListItem
 import com.example.domes.presentation.prayers.composables.SelectedDateBottomSheetSection
-import com.example.domes.presentation.common.composables.Polygon
-import com.example.domes.presentation.common.composables.Shape
-import com.example.domes.ui.theme.DomesTheme
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -74,6 +72,7 @@ class UIConstants {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PrayersScreen(
+    navController: NavController,
     viewModel: PrayersViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
@@ -114,7 +113,11 @@ fun PrayersScreen(
                     val foregroundText = state.currentPrayer?.prayer?.name ?: state.selectedDate.format(getFormatter("d MMMM"))
                     val backgroundText = state.currentPrayer?.prayer?.arabicName ?: getArabicFormatter("MMM d").format(state.selectedHijriDate)
 
-                    LayeredTopAppBar(foregroundText, backgroundText, scrollBehavior)
+                    LayeredTopAppBar(
+                        foregroundText,
+                        backgroundText,
+                        scrollBehavior = scrollBehavior
+                    )
                 },
                 floatingActionButton = {
                     FloatingActionButton(
@@ -137,10 +140,15 @@ fun PrayersScreen(
                         modifier = Modifier
                             .fillMaxSize(),
                         contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 90.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
                     ) {
                         stickyHeader {
-                            MainActionSection(state.timeLeft, viewModel.calculateRemainingPrayerTime(), state.city) {
+                            MainActionSection(
+                                state.timeLeft,
+                                viewModel.calculateRemainingPrayerTime(),
+                                state.city,
+                                navController = navController,
+                            ) {
                                 //viewModel.onEvent(PrayersEvent.Snooze)
                             }
                         }
@@ -256,14 +264,14 @@ fun PrayersScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
-@Preview(
-    showBackground = true,
-    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
-)
-@Composable
-fun DomesPreview() {
-    DomesTheme {
-        PrayersScreen()
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.S)
+//@Preview(
+//    showBackground = true,
+//    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
+//)
+//@Composable
+//fun DomesPreview() {
+//    DomesTheme {
+//        PrayersScreen()
+//    }
+//}
