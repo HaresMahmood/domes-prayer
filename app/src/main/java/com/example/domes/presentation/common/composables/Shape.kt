@@ -1,4 +1,4 @@
-package com.example.domes.presentation.util
+package com.example.domes.presentation.common.composables
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -11,6 +11,10 @@ import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.circle
 import androidx.graphics.shapes.rectangle
 import androidx.graphics.shapes.star
+import com.example.domes.presentation.common.utility.getBounds
+import com.example.domes.presentation.common.utility.radialToCartesian
+import com.example.domes.presentation.common.utility.toRadians
+import com.example.domes.presentation.common.utility.transformed
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -27,7 +31,7 @@ data class ShapeItem(
     val usesInnerParameters: Boolean = true
 )
 
-class ShapeParameters(
+class Shape(
     sides: Int = 5,
     innerRadius: Float = 0.5f,
     roundness: Float = 0f,
@@ -47,7 +51,7 @@ class ShapeParameters(
 
     internal var shapeIx by mutableIntStateOf(shapeId.ordinal)
 
-    fun copy() = ShapeParameters(
+    fun copy() = Shape(
         this.sides.value.roundToInt(),
         this.innerRadius.value,
         this.roundness.value,

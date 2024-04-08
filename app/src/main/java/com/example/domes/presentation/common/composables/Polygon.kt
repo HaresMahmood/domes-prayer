@@ -1,4 +1,4 @@
-package com.example.domes.presentation.util
+package com.example.domes.presentation.common.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +10,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.graphics.shapes.Cubic
 import androidx.graphics.shapes.RoundedPolygon
+import com.example.domes.presentation.common.utility.scaled
+import com.example.domes.presentation.common.utility.toPath
 import kotlin.math.min
 
 @Composable

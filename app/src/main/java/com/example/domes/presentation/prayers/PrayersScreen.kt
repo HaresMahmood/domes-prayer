@@ -41,14 +41,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.domes.presentation.prayers.UIConstants.Companion.getArabicFormatter
 import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.prayers.composables.DisplaySlider
-import com.example.domes.presentation.prayers.composables.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.presentation.prayers.composables.MainActionSection
 import com.example.domes.presentation.prayers.composables.PercentageWidthBox
 import com.example.domes.presentation.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.prayers.composables.PrayerListItem
 import com.example.domes.presentation.prayers.composables.SelectedDateBottomSheetSection
-import com.example.domes.presentation.util.Polygon
-import com.example.domes.presentation.util.ShapeParameters
+import com.example.domes.presentation.common.composables.Polygon
+import com.example.domes.presentation.common.composables.Shape
 import com.example.domes.ui.theme.DomesTheme
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -145,11 +145,11 @@ fun PrayersScreen(
                             }
                         }
                         item {
-                            val shapeParam = ShapeParameters(
+                            val shapeParam = Shape(
                                 roundness = .4f,
                                 sides = 4,
                                 rotation = 90f,
-                                shapeId = ShapeParameters.ShapeId.Polygon
+                                shapeId = Shape.ShapeId.Polygon
                             )
                             val shape = shapeParam.genShape().normalized()
 

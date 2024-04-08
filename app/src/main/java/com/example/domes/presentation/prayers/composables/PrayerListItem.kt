@@ -35,8 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
-import com.example.domes.presentation.util.RoundedPolygonShape
-import com.example.domes.presentation.util.ShapeParameters
+import com.example.domes.presentation.common.utility.RoundedPolygonShape
+import com.example.domes.presentation.common.composables.Shape
 
 // TODO: Rewrite to be more compact
 @Composable
@@ -111,12 +111,12 @@ fun PrayerListItem(
         },
         trailingContent = {
             if (isCurrent) {
-                val shapeParam = ShapeParameters(
+                val shapeParam = Shape(
                     sides = 4,
                     innerRadius = .352f,
                     roundness = .32f,
                     rotation = 45f,
-                    shapeId = ShapeParameters.ShapeId.Star
+                    shapeId = Shape.ShapeId.Star
                 )
                 val shape = remember {
                     shapeParam.genShape()
@@ -135,11 +135,11 @@ fun PrayerListItem(
                     Icon(painterResource(prayerTime.prayer.iconResId), prayerTime.prayer.name)
                 }
             } else {
-                val shapeParam = ShapeParameters(
+                val shapeParam = Shape(
                     roundness = .4f,
                     sides = 4,
                     rotation = 90f,
-                    shapeId = ShapeParameters.ShapeId.Polygon
+                    shapeId = Shape.ShapeId.Polygon
                 )
                 val shape = remember {
                     shapeParam.genShape()

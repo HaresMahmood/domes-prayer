@@ -1,4 +1,4 @@
-package com.example.domes.presentation.util
+package com.example.domes.presentation.common.utility
 
 import android.graphics.PointF
 import androidx.compose.ui.geometry.Offset

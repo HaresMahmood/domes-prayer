@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers.composables
+package com.example.domes.presentation.common.composables
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
