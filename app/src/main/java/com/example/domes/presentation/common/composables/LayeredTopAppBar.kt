@@ -2,8 +2,11 @@ package com.example.domes.presentation.common.composables
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -29,11 +33,12 @@ import com.example.domes.domain.model.prayer.Prayer
 @Composable
 fun LayeredTopAppBar(
     foregroundText: String,
-    backgroundText: String,
+    backgroundText: String? = "",
+    navigationIcon: ImageVector? = null,
+    actions: @Composable (RowScope.() -> Unit) = {},
     scrollBehavior: TopAppBarScrollBehavior
 ) {
-    // Determine the text size based on the scroll position
-    val collapsedTextSize = 30
+    val collapsedTextSize = 25
     val expandedTextSize = 45
 
     val foregroundTextSize = (collapsedTextSize + (expandedTextSize - collapsedTextSize) * (1 - scrollBehavior.state.collapsedFraction)).sp
@@ -48,16 +53,18 @@ fun LayeredTopAppBar(
                 contentAlignment = Alignment.CenterStart,
             ) {
                 if (!isFullyCollapsed.value) {
-                    Text(
-                        modifier = Modifier
-                            .offset(8.dp, 10.dp)
-                            .alpha(backgroundTextOpacity),
-                        text = backgroundText,
-                        style = MaterialTheme.typography.displayMedium,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
-                        fontWeight = FontWeight.Bold,
-                    )
+                    if (backgroundText != null) {
+                        Text(
+                            modifier = Modifier
+                                .offset(8.dp, 10.dp)
+                                .alpha(backgroundTextOpacity),
+                            text = backgroundText,
+                            style = MaterialTheme.typography.displayMedium,
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
 
                 Text(
@@ -70,13 +77,14 @@ fun LayeredTopAppBar(
                 )
             }
         },
-//        actions = {
-//            FilledTonalIconButton(
-//                onClick = { /*TODO*/ }
-//            ) {
-//                Icon(Icons.Outlined.Settings, contentDescription = "Settings")
-//            }
-//        },
+        actions = actions,
+        navigationIcon = {
+            navigationIcon?.let {
+                IconButton(onClick = { /* Handle navigation icon click */ }) {
+                    Icon(imageVector = navigationIcon, contentDescription = "Navigation icon")
+                }
+            }
+        },
         colors = TopAppBarDefaults.largeTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             scrolledContainerColor = MaterialTheme.colorScheme.background,
@@ -85,22 +93,20 @@ fun LayeredTopAppBar(
     )
 }
 
-
-fun lerp(start: Float, stop: Float, fraction: Float): Float {
-    return (1 - fraction) * start + fraction * stop
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun LargeTopAppBarPreview() {
-    // Provide a fake scrollBehavior for the preview
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = rememberTopAppBarState(),
         canScroll = { true }
     )
 
     MaterialTheme {
-        LayeredTopAppBar(Prayer.MAGHRIB.name, Prayer.MAGHRIB.arabicName, scrollBehavior = scrollBehavior)
+        LayeredTopAppBar(
+            Prayer.MAGHRIB.name,
+            Prayer.MAGHRIB.arabicName,
+            scrollBehavior = scrollBehavior
+        )
     }
 }
