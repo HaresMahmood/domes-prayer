@@ -5,7 +5,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 class GetPrayerTimeLeft {
-    operator fun invoke(currentTime: LocalDateTime, nextPrayerTime: PrayerTime): Duration {
-        return Duration.between(currentTime, nextPrayerTime.timeWindow)
+    operator fun invoke(currentTime: LocalDateTime, prayerTime: PrayerTime): Duration {
+        return Duration.between(currentTime, prayerTime.timeWindow)
     }
 }
