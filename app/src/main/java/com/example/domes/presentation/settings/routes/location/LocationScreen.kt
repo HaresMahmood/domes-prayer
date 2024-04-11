@@ -8,10 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,7 +20,10 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -87,16 +91,23 @@ fun LocationScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                    1.dp
-                                ), RoundedCornerShape(35.dp)
-                            ),
+                    Button(
+                        onClick = { /*TODO*/ },
+                        shape = RoundedCornerShape(
+                            topStartPercent = 12,
+                            topEndPercent = 45,
+                            bottomStartPercent = 45,
+                            bottomEndPercent = 45
+                        ),
+                        contentPadding = PaddingValues(horizontal = 14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        ),
                     ) {
-                        Text(state.city, style = MaterialTheme.typography.headlineMedium)
+                        Icon(Icons.Outlined.PinDrop, "Current location")
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(state.city)
                     }
                 }
                 item {
