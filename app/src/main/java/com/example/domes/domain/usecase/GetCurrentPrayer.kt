@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 
 class GetCurrentPrayer {
     operator fun invoke(prayerTimes: List<PrayerTime>, currentTime: LocalDateTime): PrayerTime {
-        return prayerTimes.first {
+        return prayerTimes.firstOrNull {
             currentTime.isAfter(it.time) && currentTime.isBefore(it.timeWindow)
-        }
+        } ?: prayerTimes.first()
     }
 }
