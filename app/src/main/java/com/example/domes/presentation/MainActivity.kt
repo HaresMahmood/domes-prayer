@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.utility.Screen
 import com.example.domes.presentation.prayers.PrayersScreen
 import com.example.domes.presentation.settings.SettingsScreen
+import com.example.domes.presentation.settings.routes.calculation.CalculationScreen
 import com.example.domes.presentation.settings.routes.location.LocationScreen
 import com.example.domes.ui.theme.DomesTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,6 +86,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Location.route) {
                             LocationScreen()
+                        }
+                        composable(route = Screen.Calculation.route) {
+                            CalculationScreen()
                         }
                     }
                 }

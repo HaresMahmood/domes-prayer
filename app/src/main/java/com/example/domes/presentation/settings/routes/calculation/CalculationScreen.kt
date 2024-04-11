@@ -39,9 +39,20 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.batoulapps.adhan2.CalculationMethod
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.maxkeppeker.sheets.core.models.base.Header
+import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeker.sheets.core.models.base.SelectionButton
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.option.OptionDialog
+import com.maxkeppeler.sheets.option.models.DisplayMode
+import com.maxkeppeler.sheets.option.models.Option
+import com.maxkeppeler.sheets.option.models.OptionConfig
+import com.maxkeppeler.sheets.option.models.OptionSelection
 
 class UIConstants {
     companion object {
@@ -53,9 +64,9 @@ class UIConstants {
 @Composable
 fun CalculationScreen(
 //    navController: NavController,
-//    viewModel: CalculationViewModel = hiltViewModel()
+    viewModel: CalculationViewModel = hiltViewModel()
 ) {
-//    val state = viewModel.state.value
+    val state = viewModel.state.value
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -163,7 +174,7 @@ fun CalculationScreen(
                             headlineContent = { Text("Juristic") },
                             supportingContent = {
                                 Text(
-                                    "Hanafi",
+                                    "Shafi",
                                     color = MaterialTheme.colorScheme.tertiary
                                 )
                             },
@@ -172,20 +183,76 @@ fun CalculationScreen(
                 }
             }
         }
+
+        JuristicDialog(
+            true,
+            {},
+            {}
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CalculationMethodDialog(
-
+    visible: Boolean,
+    onDismiss: () -> Unit,
+    onSelection: () -> Unit
 ) {
-    
+    val options = CalculationMethod.entries.map {
+        Option(
+            titleText = it.name,
+//            subtitleText = it.parameters.toString(),
+            selected = it == CalculationMethod.MUSLIM_WORLD_LEAGUE
+        )
+    }
+
+    OptionDialog(
+        state = rememberUseCaseState(visible = visible, onCloseRequest = { onDismiss() }),
+        selection = OptionSelection.Single(options) { index, option ->
+            onSelection()
+        },
+        config = OptionConfig(mode = DisplayMode.LIST)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun JuristicDialog(
+    visible: Boolean,
+    onDismiss: () -> Unit,
+    onSelection: () -> Unit
+) {
+    val options = listOf(
+        Option(
+            titleText = "Shafi'i • Maliki • Hambali",
+            subtitleText = "Earlier Asr • Begins when the shadow of an object equals it's actual length, plus its shadow during noon",
+            selected = true
+        ),
+        Option(
+            titleText = "Hanifi",
+            subtitleText = "Later Asr • Begins when the shadow of an object twice its actual length, plus it's shadow during noon"
+        )
+    )
+
+    OptionDialog(
+        state = rememberUseCaseState(visible = visible, onCloseRequest = { onDismiss() }),
+        header = Header.Default("Juristic", IconSource(Icons.Outlined.AccountBalance)),
+        selection = OptionSelection.Single(
+            options,
+            positiveButton = SelectionButton("Cancel"),
+            negativeButton = null,
+        ) { index, option ->
+            onSelection()
+        },
+        config = OptionConfig(mode = DisplayMode.LIST)
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(
     showBackground = true,
-    wallpaper = Wallpapers.YELLOW_DOMINATED_EXAMPLE
+    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
 )
 @Composable
 fun DomesPreview() {

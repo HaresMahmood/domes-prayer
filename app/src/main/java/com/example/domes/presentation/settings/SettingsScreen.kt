@@ -86,7 +86,8 @@ fun SettingsScreen(
                         SettingsListItem(
                             "Calculation",
                             "Method, corrections",
-                            Icons.Outlined.Calculate
+                            Icons.Outlined.Calculate,
+                            onClick = { navController.navigate(Screen.Calculation.route) },
                         )
                         SettingsListItem(
                             "Notifications",

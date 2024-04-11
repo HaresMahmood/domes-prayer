@@ -52,6 +52,7 @@ android {
 dependencies {
     implementation "com.maxkeppeler.sheets-compose-dialogs:core:1.2.1" // necessary
     implementation "com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.1" // TODO: Outdated but seems to mess up dynamic theming, maybe because of BOM
+    implementation "com.maxkeppeler.sheets-compose-dialogs:option:1.2.1"
 
 //    implementation("com.batoulapps.adhan:adhan2:1.2.1")
 

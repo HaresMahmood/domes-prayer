@@ -5,7 +5,7 @@ import com.batoulapps.adhan2.Madhab
 
 data class CalculationState(
     val calculationMethod: CalculationMethod = CalculationMethod.MUSLIM_WORLD_LEAGUE,
-    val juristic: Madhab = Madhab.HANAFI,
+    val juristic: Madhab = Madhab.SHAFI,
     val showCalculationMethodDialog: Boolean = false,
     val showJuristicDialog: Boolean = false,
 )
