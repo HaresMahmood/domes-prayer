@@ -38,13 +38,13 @@ fun LayeredTopAppBar(
     actions: @Composable (RowScope.() -> Unit) = {},
     scrollBehavior: TopAppBarScrollBehavior
 ) {
-    val collapsedTextSize = 25
-    val expandedTextSize = 45
+    val collapsedTextSize = 22
+    val expandedTextSize = 36
 
     val foregroundTextSize = (collapsedTextSize + (expandedTextSize - collapsedTextSize) * (1 - scrollBehavior.state.collapsedFraction)).sp
     val backgroundTextOpacity = (1 - scrollBehavior.state.collapsedFraction).coerceIn(0f, 0.5f)
 
-//    val isCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.5f } }
+//    val isCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.7f } }
     val isFullyCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction == 1f } }
 
     LargeTopAppBar(
@@ -59,7 +59,7 @@ fun LayeredTopAppBar(
                                 .offset(8.dp, 10.dp)
                                 .alpha(backgroundTextOpacity),
                             text = backgroundText,
-                            style = MaterialTheme.typography.displayMedium,
+                            style = MaterialTheme.typography.displaySmall,
                             color = MaterialTheme.colorScheme.outlineVariant,
                             fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
                             fontWeight = FontWeight.Bold,
@@ -69,11 +69,11 @@ fun LayeredTopAppBar(
 
                 Text(
                     text = foregroundText,
-                    style = MaterialTheme.typography.displayMedium,
+                    style = MaterialTheme.typography.displaySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = foregroundTextSize,
                     fontFamily = FontFamily(Font(R.font.alexandira_arabic_variable)),
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Medium
                 )
             }
         },

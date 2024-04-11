@@ -77,9 +77,6 @@ fun MainActionSection(
                         remainingTimePercentage < 0.5 -> Icons.Outlined.HourglassBottom
                         else -> Icons.Outlined.HourglassTop
                     }
-
-                    println("MAINACTION-REMAINING-TIME: ${remainingTimePercentage}")
-
                     Icon(icon, "Remaining time")
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text)
