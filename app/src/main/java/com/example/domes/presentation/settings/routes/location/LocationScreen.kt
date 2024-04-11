@@ -3,6 +3,7 @@ package com.example.domes.presentation.settings.routes.location
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.ui.theme.DomesTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
 class UIConstants {
     companion object {
@@ -46,7 +50,7 @@ class UIConstants {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun LocationScreen(
 //    navController: NavController,
@@ -54,6 +58,8 @@ fun LocationScreen(
 ) {
     val state = viewModel.state.value
 
+    val locationPermissionState =
+        rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -97,7 +103,14 @@ fun LocationScreen(
                                     top = 8.dp,
                                     start = 5.dp,
                                     end = 5.dp,
-                                ),
+                                )
+                                .clickable {
+                                    if (locationPermissionState.status.isGranted) {
+                                        // TODO: Store location as coordinates
+                                    } else {
+                                        locationPermissionState.launchPermissionRequest()
+                                    }
+                                },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
                             ),
@@ -109,7 +122,12 @@ fun LocationScreen(
                                 )
                             },
                             headlineContent = { Text("Refresh device location") },
-                            supportingContent = { Text("Fetch up-to-date location via GPS", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            supportingContent = {
+                                Text(
+                                    "Fetch up-to-date location via GPS",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                         )
                         ListItem(
                             modifier = Modifier
@@ -130,7 +148,12 @@ fun LocationScreen(
                                 )
                             },
                             headlineContent = { Text("Auto-update") },
-                            supportingContent = { Text("Fetch location in the background", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            supportingContent = {
+                                Text(
+                                    "Fetch location in the background",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                             trailingContent = {
                                 Switch(
                                     checked = state.isAutoUpdateEnabled,
@@ -172,7 +195,12 @@ fun LocationScreen(
                                 )
                             },
                             headlineContent = { Text("Map") },
-                            supportingContent = { Text("Manually search for a location", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            supportingContent = {
+                                Text(
+                                    "Manually search for a location",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                         )
                         ListItem(
                             modifier = Modifier
@@ -193,7 +221,12 @@ fun LocationScreen(
                                 )
                             },
                             headlineContent = { Text("Coordinates") },
-                            supportingContent = { Text("Manually enter latitude and logitude", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            supportingContent = {
+                                Text(
+                                    "Manually enter latitude and logitude",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                         )
                     }
                 }
