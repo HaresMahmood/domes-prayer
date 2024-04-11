@@ -5,6 +5,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseOutExpo
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,6 +40,42 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = Screen.Prayers.route,
+                        enterTransition = {
+                            fadeIn(animationSpec = tween(500, easing = EaseOutExpo)) +
+                            slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(500, easing = EaseOutExpo)
+                            ) { offsetForFullSlide ->
+                                offsetForFullSlide / 8
+                            }
+                        },
+                        exitTransition = {
+                            fadeOut(animationSpec = tween(500, easing = EaseOutExpo)) +
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(500, easing = EaseOutExpo)
+                            ) { offsetForFullSlide ->
+                                offsetForFullSlide / 8
+                            }
+                        },
+                        popEnterTransition = {
+                            fadeIn(animationSpec = tween(500, easing = EaseOutExpo)) +
+                            slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(500, easing = EaseOutExpo)
+                            ) { offsetForFullSlide ->
+                                offsetForFullSlide / 8
+                            }
+                        },
+                        popExitTransition = {
+                            fadeOut(animationSpec = tween(500, easing = EaseOutExpo)) +
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(500, easing = EaseOutExpo)
+                            ) { offsetForFullSlide ->
+                                offsetForFullSlide / 8
+                            }
+                        }
                     ) {
                         composable(route = Screen.Prayers.route) {
                             PrayersScreen(navController)
@@ -60,6 +101,6 @@ class MainActivity : ComponentActivity() {
 //@Composable
 //fun DomesPreview() {
 //    DomesTheme {
-//        MainScreen()
+//
 //    }
 //}
