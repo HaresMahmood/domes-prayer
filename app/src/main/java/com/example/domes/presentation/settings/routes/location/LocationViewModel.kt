@@ -20,7 +20,7 @@ class LocationViewModel @Inject constructor(
         viewModelScope.launch {
             val coordinates = prayersUseCases.getLocation()
 
-            _state.value = state.value.copy(
+            _state.value = _state.value.copy(
                 location = coordinates,
                 city = prayersUseCases.getCity(coordinates)
             )

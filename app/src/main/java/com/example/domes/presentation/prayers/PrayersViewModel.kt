@@ -89,17 +89,25 @@ class PrayersViewModel @Inject constructor(
         context.registerReceiver(alarmReceiver, IntentFilter(ACTION_ALARM))
         context.registerReceiver(notificationActionReceiver, IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED))
 
-        updateCurrentPrayerTimes(state.value.location, _state.value.calculationParameters)
-
         viewModelScope.launch {
+            val coordinates = prayersUseCases.getLocation()
+
             _state.value = _state.value.copy(
-                city = prayersUseCases.getCity(_state.value.location),
-                selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
-                timeLeft = _state.value.currentPrayer?.let {
-                    prayersUseCases.getPrayerTimeLeft(LocalDateTime.now(), it)
-                },
-                dayFraction = prayersUseCases.getDayFraction(_state.value.currentRawPrayerTimes!!, LocalDateTime.now())
+                location = coordinates,
+                city = prayersUseCases.getCity(coordinates),
             )
+
+            _state.value.location?.let { location ->
+                updateCurrentPrayerTimes(location, _state.value.calculationParameters)
+
+                _state.value = _state.value.copy(
+                    selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
+                    timeLeft = _state.value.currentPrayer?.let {
+                        prayersUseCases.getPrayerTimeLeft(LocalDateTime.now(), it)
+                    },
+                    dayFraction = prayersUseCases.getDayFraction(_state.value.currentRawPrayerTimes!!, LocalDateTime.now())
+                )
+            }
         }
     }
 
@@ -131,7 +139,7 @@ class PrayersViewModel @Inject constructor(
                     selectedHijriDate = prayersUseCases.getHijriDate(event.date)
                 )
 
-                getPrayerTimes(_state.value.selectedDate, _state.value.location, _state.value.calculationParameters)
+                getPrayerTimes(_state.value.selectedDate, _state.value.location!!, _state.value.calculationParameters)
             }
             is PrayersEvent.ChangeLocation -> {
                 viewModelScope.launch {
@@ -141,7 +149,7 @@ class PrayersViewModel @Inject constructor(
                     )
                 }
 
-                updateCurrentPrayerTimes(_state.value.location, _state.value.calculationParameters)
+                updateCurrentPrayerTimes(_state.value.location!!, _state.value.calculationParameters)
             }
             // TODO: Simplify
             is PrayersEvent.ChangePrayerRecord -> {

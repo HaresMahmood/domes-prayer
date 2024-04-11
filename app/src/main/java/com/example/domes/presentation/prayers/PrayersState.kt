@@ -13,7 +13,7 @@ import java.time.chrono.HijrahDate
 data class PrayersState(
     val selectedDate: LocalDate = LocalDate.now(),
     val selectedHijriDate: HijrahDate = HijrahDate.now(),
-    val location: Coordinates = Coordinates(55.825313, -4.293643),
+    val location: Coordinates? = null,
     val city: String = "",
     val currentRawPrayerTimes: PrayerTimes? = null,
     val currentPrayerTimes: List<PrayerTime> = emptyList(),
