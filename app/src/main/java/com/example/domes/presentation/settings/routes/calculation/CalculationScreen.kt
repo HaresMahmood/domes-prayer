@@ -19,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Calculate
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,14 +38,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.batoulapps.adhan2.CalculationMethod
+import com.batoulapps.adhan2.Madhab
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.maxkeppeker.sheets.core.models.base.ButtonStyle
 import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.models.base.SelectionButton
@@ -54,12 +59,6 @@ import com.maxkeppeler.sheets.option.models.Option
 import com.maxkeppeler.sheets.option.models.OptionConfig
 import com.maxkeppeler.sheets.option.models.OptionSelection
 
-class UIConstants {
-    companion object {
-
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun CalculationScreen(
@@ -67,9 +66,39 @@ fun CalculationScreen(
     viewModel: CalculationViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    val juristicOptions = listOf(
+        Pair(
+            Option(
+                titleText = "Shafi'i • Maliki • Hambali",
+                customView = { selected ->
+                    OptionView(
+                        "Shafi'i • Maliki • Hambali",
+                        "Begins when the shadow of an object equals it's actual length, plus its shadow during noon",
+                        overline = "EARLIER ASR",
+                        selected = selected
+                    )
+                },
+                selected = state.juristic == Madhab.SHAFI
+            ), Madhab.SHAFI
+        ),
+        Pair(
+            Option(
+                titleText = "Hanifi",
+                customView = { selected ->
+                    OptionView(
+                        "Hanafi",
+                        "Begins when the shadow of an object twice its actual length, plus it's shadow during noon",
+                        overline = "LATER ASR",
+                        selected = selected
+                    )
+                },
+                selected = state.juristic == Madhab.HANAFI
+            ), Madhab.HANAFI
+        ),
+    )
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -160,7 +189,10 @@ fun CalculationScreen(
                                     start = 5.dp,
                                     end = 5.dp,
                                     bottom = 8.dp,
-                                ),
+                                )
+                                .clickable {
+                                    viewModel.onEvent(CalculationEvent.ToggleJuristicDialogVisibility())
+                                },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
                             ),
@@ -174,7 +206,7 @@ fun CalculationScreen(
                             headlineContent = { Text("Juristic") },
                             supportingContent = {
                                 Text(
-                                    "Shafi",
+                                    juristicOptions[state.juristic.ordinal].first.titleText,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )
                             },
@@ -184,19 +216,22 @@ fun CalculationScreen(
             }
         }
 
-        JuristicDialog(
-            true,
-            {},
-            {}
-        )
+        if (state.showJuristicDialog) {
+            JuristicDialog(
+                options = juristicOptions.map { it.first },
+                onDismiss = { viewModel.onEvent(CalculationEvent.ToggleJuristicDialogVisibility()) }
+            ) { index, _ ->
+                viewModel.onEvent(CalculationEvent.ChangeJuristic(juristicOptions[index].second))
+            }
+        }
+
+        println("JURISTIC: ${state.showJuristicDialog}")
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CalculationMethodDialog(
-    visible: Boolean,
-    onDismiss: () -> Unit,
     onSelection: () -> Unit
 ) {
     val options = CalculationMethod.entries.map {
@@ -208,7 +243,7 @@ internal fun CalculationMethodDialog(
     }
 
     OptionDialog(
-        state = rememberUseCaseState(visible = visible, onCloseRequest = { onDismiss() }),
+        state = rememberUseCaseState(visible = true),
         selection = OptionSelection.Single(options) { index, option ->
             onSelection()
         },
@@ -216,35 +251,69 @@ internal fun CalculationMethodDialog(
     )
 }
 
+@Composable
+internal fun OptionView(
+    title: String,
+    description: String,
+    selected: Boolean,
+    overline: String? = null
+) {
+    ListItem(
+        overlineContent = {
+            overline?.let {
+                Text(
+                    it,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
+        headlineContent = {
+            Text(
+                title,
+                color = if (selected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface,
+                fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
+            )
+        },
+        supportingContent = {
+            Text(
+                description,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+        colors = ListItemDefaults.colors(
+            containerColor = if (selected) MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp) else Color.Transparent
+        ),
+        tonalElevation = 5.dp,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun JuristicDialog(
-    visible: Boolean,
+    options: List<Option>,
     onDismiss: () -> Unit,
-    onSelection: () -> Unit
+    onSelection: (index: Int, option: Option) -> Unit
 ) {
-    val options = listOf(
-        Option(
-            titleText = "Shafi'i • Maliki • Hambali",
-            subtitleText = "Earlier Asr • Begins when the shadow of an object equals it's actual length, plus its shadow during noon",
-            selected = true
-        ),
-        Option(
-            titleText = "Hanifi",
-            subtitleText = "Later Asr • Begins when the shadow of an object twice its actual length, plus it's shadow during noon"
-        )
-    )
-
     OptionDialog(
-        state = rememberUseCaseState(visible = visible, onCloseRequest = { onDismiss() }),
+        state = rememberUseCaseState(
+            visible = true,
+            onCloseRequest = { onDismiss() },
+        ),
         header = Header.Default("Juristic", IconSource(Icons.Outlined.AccountBalance)),
         selection = OptionSelection.Single(
             options,
-            positiveButton = SelectionButton("Cancel"),
-            negativeButton = null,
-        ) { index, option ->
-            onSelection()
-        },
+            positiveButton = SelectionButton(
+                "Done",
+                IconSource(Icons.Outlined.Done),
+                ButtonStyle.FILLED
+            ),
+            negativeButton = SelectionButton(
+                "Cancel",
+                IconSource(Icons.Outlined.Close),
+                ButtonStyle.OUTLINED
+            ),
+            onSelectOption = onSelection,
+        ),
         config = OptionConfig(mode = DisplayMode.LIST)
     )
 }
