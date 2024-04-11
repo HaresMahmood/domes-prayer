@@ -9,7 +9,9 @@ import java.util.Locale
 class GetCity(
     private val context: Context
 ) {
-    suspend operator fun invoke(coordinates: Coordinates): String {
+    suspend operator fun invoke(coordinates: Coordinates?): String {
+        coordinates ?: return "Unknown"
+
         val geocoder = Geocoder(context, Locale.getDefault())
 
         // if (Build.VERSION.SDK_INT >= 33) {
@@ -31,7 +33,7 @@ class GetCity(
                 coordinates.latitude, coordinates.longitude, 1
             )?.get(0)?.run {
                 locality ?: subAdminArea ?: adminArea
-            } ?: "Unknown City 2"
+            } ?: "Unknown"
 
         // return withContext(Dispatchers.IO) {
         //     val addresses = Geocoder(context).getFromLocation(

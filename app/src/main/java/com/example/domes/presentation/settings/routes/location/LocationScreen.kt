@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -86,6 +87,19 @@ fun LocationScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                    1.dp
+                                ), RoundedCornerShape(35.dp)
+                            ),
+                    ) {
+                        Text(state.city, style = MaterialTheme.typography.headlineMedium)
+                    }
+                }
+                item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -106,7 +120,7 @@ fun LocationScreen(
                                 )
                                 .clickable {
                                     if (locationPermissionState.status.isGranted) {
-                                        // TODO: Store location as coordinates
+                                        viewModel.onEvent(LocationEvent.RefreshLocation())
                                     } else {
                                         locationPermissionState.launchPermissionRequest()
                                     }
