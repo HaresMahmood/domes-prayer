@@ -46,7 +46,7 @@ fun SelectedDateBottomSheetSection(
     gregorianDate: LocalDate,
     hijriDate: HijrahDate,
     bottomSheetExpandAction: () -> Unit,
-    bottomSheetCollapseAction: () -> Unit,
+    collapseBottomSheet: () -> Unit,
     onDateChange: (LocalDate) -> Unit,
 ) {
     val selectedDate = remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
@@ -150,11 +150,8 @@ fun SelectedDateBottomSheetSection(
             useCaseState = rememberUseCaseState(
                 visible = true,
                 onCloseRequest = {
-                    bottomSheetCollapseAction()
+                    collapseBottomSheet()
                 },
-                onFinishedRequest = {
-                    onDateChange(selectedDate.value!!)
-                }
             ),
             config = calendarConfig,
             selection = CalendarSelection.Date(
@@ -162,6 +159,7 @@ fun SelectedDateBottomSheetSection(
                 selectedDate = selectedDate.value,
             ) { newDate ->
                 selectedDate.value = newDate
+                onDateChange(selectedDate.value!!)
             },
         )
     }

@@ -30,9 +30,9 @@ class CalculationViewModel @Inject constructor(
                     juristic = event.juristic
                 )
             }
-            is CalculationEvent.ToggleJuristicDialogVisibility -> {
+            is CalculationEvent.SetJuristicDialogVisibility -> {
                 _state.value = _state.value.copy(
-                    showJuristicDialog = !_state.value.showJuristicDialog
+                    showJuristicDialog = event.isVisible ?: !_state.value.showJuristicDialog
                 )
             }
         }

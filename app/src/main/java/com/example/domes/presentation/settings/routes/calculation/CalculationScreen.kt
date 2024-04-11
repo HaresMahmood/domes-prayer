@@ -19,8 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Calculate
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,10 +46,8 @@ import com.batoulapps.adhan2.Madhab
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.maxkeppeker.sheets.core.models.base.ButtonStyle
 import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeker.sheets.core.models.base.SelectionButton
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.option.OptionDialog
 import com.maxkeppeler.sheets.option.models.DisplayMode
@@ -95,7 +91,8 @@ fun CalculationScreen(
                         selected = selected
                     )
                 },
-                selected = state.juristic == Madhab.HANAFI
+                selected = state.juristic == Madhab.HANAFI,
+//                disabled = state.juristic == Madhab.HANAFI
             ), Madhab.HANAFI
         ),
     )
@@ -191,7 +188,7 @@ fun CalculationScreen(
                                     bottom = 8.dp,
                                 )
                                 .clickable {
-                                    viewModel.onEvent(CalculationEvent.ToggleJuristicDialogVisibility())
+                                    viewModel.onEvent(CalculationEvent.SetJuristicDialogVisibility())
                                 },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
@@ -219,7 +216,9 @@ fun CalculationScreen(
         if (state.showJuristicDialog) {
             JuristicDialog(
                 options = juristicOptions.map { it.first },
-                onDismiss = { viewModel.onEvent(CalculationEvent.ToggleJuristicDialogVisibility()) }
+                setDialogVisibility = { isVisible ->
+                    viewModel.onEvent(CalculationEvent.SetJuristicDialogVisibility(isVisible))
+                }
             ) { index, _ ->
                 viewModel.onEvent(CalculationEvent.ChangeJuristic(juristicOptions[index].second))
             }
@@ -259,6 +258,8 @@ internal fun OptionView(
     overline: String? = null
 ) {
     ListItem(
+//        modifier = Modifier
+//            .clip(MaterialTheme.shapes.extraLarge),
         overlineContent = {
             overline?.let {
                 Text(
@@ -291,27 +292,28 @@ internal fun OptionView(
 @Composable
 internal fun JuristicDialog(
     options: List<Option>,
-    onDismiss: () -> Unit,
+    setDialogVisibility: (Boolean) -> Unit,
     onSelection: (index: Int, option: Option) -> Unit
 ) {
     OptionDialog(
         state = rememberUseCaseState(
             visible = true,
-            onCloseRequest = { onDismiss() },
+            onCloseRequest = { setDialogVisibility(false) },
         ),
         header = Header.Default("Juristic", IconSource(Icons.Outlined.AccountBalance)),
         selection = OptionSelection.Single(
             options,
-            positiveButton = SelectionButton(
-                "Done",
-                IconSource(Icons.Outlined.Done),
-                ButtonStyle.FILLED
-            ),
-            negativeButton = SelectionButton(
-                "Cancel",
-                IconSource(Icons.Outlined.Close),
-                ButtonStyle.OUTLINED
-            ),
+            withButtonView = false,
+//            positiveButton = SelectionButton(
+//                "Done",
+//                IconSource(Icons.Outlined.Done),
+//                ButtonStyle.FILLED
+//            ),
+//            negativeButton = SelectionButton(
+//                "Cancel",
+//                IconSource(Icons.Outlined.Close),
+//                ButtonStyle.OUTLINED
+//            ),
             onSelectOption = onSelection,
         ),
         config = OptionConfig(mode = DisplayMode.LIST)

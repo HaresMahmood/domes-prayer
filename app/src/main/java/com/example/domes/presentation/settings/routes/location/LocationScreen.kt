@@ -161,7 +161,8 @@ fun LocationScreen(
                                     start = 5.dp,
                                     end = 5.dp,
                                     bottom = 8.dp,
-                                ),
+                                )
+                                .clickable { viewModel.onEvent(LocationEvent.ToggleAutoUpdate()) },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
                             ),
@@ -182,9 +183,7 @@ fun LocationScreen(
                             trailingContent = {
                                 Switch(
                                     checked = state.isAutoUpdateEnabled,
-                                    onCheckedChange = {
-                                        viewModel.onEvent(LocationEvent.ToggleAutoUpdate())
-                                    }
+                                    onCheckedChange = { viewModel.onEvent(LocationEvent.ToggleAutoUpdate()) }
                                 )
                             }
                         )

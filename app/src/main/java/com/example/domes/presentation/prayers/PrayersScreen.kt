@@ -95,7 +95,7 @@ fun PrayersScreen(
                 gregorianDate = state.selectedDate,
                 hijriDate = state.selectedHijriDate,
                 bottomSheetExpandAction = { scope.launch { scaffoldState.bottomSheetState.expand() } },
-                bottomSheetCollapseAction = { scope.launch { scaffoldState.bottomSheetState.partialExpand() } }
+                collapseBottomSheet = { scope.launch { scaffoldState.bottomSheetState.partialExpand() } }
             ) { selectedDate ->
                 viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
             }
