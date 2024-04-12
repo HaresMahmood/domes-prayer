@@ -22,12 +22,14 @@ import com.example.domes.domain.usecase.GetCity
 import com.example.domes.domain.usecase.GetCurrentPrayer
 import com.example.domes.domain.usecase.GetDayFraction
 import com.example.domes.domain.usecase.GetHijriDate
+import com.example.domes.domain.usecase.GetJuristic
 import com.example.domes.domain.usecase.GetLocation
 import com.example.domes.domain.usecase.GetPrayerRecord
 import com.example.domes.domain.usecase.GetPrayerTimeLeft
 import com.example.domes.domain.usecase.GetPrayerTimes
 import com.example.domes.domain.usecase.PrayerUseCases
 import com.example.domes.domain.usecase.SendNotification
+import com.example.domes.domain.usecase.SetJuristic
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
@@ -112,6 +114,8 @@ object AppModule {
             getCity = GetCity(app),
             fetchLocation = FetchLocation(userPreferencesRepository, fusedLocationProviderClient, app),
             getLocation = GetLocation(userPreferencesRepository),
+            setJuristic = SetJuristic(userPreferencesRepository),
+            getJuristic = GetJuristic(userPreferencesRepository),
             getDayFraction = GetDayFraction(),
         )
     }

@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import com.batoulapps.adhan2.Coordinates
 import com.example.domes.domain.repository.IUserPreferencesRepository
 import kotlinx.coroutines.flow.first
@@ -15,9 +16,11 @@ class UserPreferencesRepository @Inject constructor(
     object PreferencesKeys {
         val LOCATION_LATITUDE = doublePreferencesKey("location_latitude")
         val LOCATION_LONGITUDE = doublePreferencesKey("location_longitude")
+
+        val JURISTIC = intPreferencesKey("juristic")
     }
 
-    override suspend fun saveLocation(latitude: Double, longitude: Double) {
+    override suspend fun setLocation(latitude: Double, longitude: Double) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.LOCATION_LATITUDE] = latitude
             preferences[PreferencesKeys.LOCATION_LONGITUDE] = longitude
@@ -34,5 +37,16 @@ class UserPreferencesRepository @Inject constructor(
         }
 
         return null
+    }
+
+    override suspend fun setJuristic(juristic: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.JURISTIC] = juristic
+        }
+    }
+
+    override suspend fun getJuristic(): Int? {
+        val preferences = dataStore.data.first()
+        return preferences[PreferencesKeys.JURISTIC]
     }
 }

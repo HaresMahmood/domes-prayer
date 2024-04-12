@@ -52,7 +52,7 @@ class FetchLocation(
 
     private suspend fun saveLocation(result: Location): Coordinates {
         val coordinates = Coordinates(result.latitude, result.longitude)
-        userPreferencesRepository.saveLocation(result.latitude, result.longitude)
+        userPreferencesRepository.setLocation(result.latitude, result.longitude)
 
         return coordinates
     }

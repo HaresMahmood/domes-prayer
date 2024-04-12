@@ -11,5 +11,7 @@ data class PrayerUseCases(
     val fetchLocation: FetchLocation,
     val getLocation: GetLocation,
     val getCity: GetCity,
+    val setJuristic: SetJuristic,
+    val getJuristic: GetJuristic,
     val getDayFraction: GetDayFraction
 )
