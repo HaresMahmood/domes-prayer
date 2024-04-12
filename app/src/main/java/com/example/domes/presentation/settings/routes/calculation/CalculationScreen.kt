@@ -36,7 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
@@ -44,16 +43,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.Madhab
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.dialog.OptionDialog
+import com.example.domes.presentation.common.composables.dialog.OptionItem
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
-import com.maxkeppeler.sheets.option.OptionDialog
-import com.maxkeppeler.sheets.option.models.DisplayMode
 import com.maxkeppeler.sheets.option.models.Option
-import com.maxkeppeler.sheets.option.models.OptionConfig
-import com.maxkeppeler.sheets.option.models.OptionSelection
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -65,12 +60,158 @@ fun CalculationScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
+    val calculationMethodOptions = listOf(
+        Pair(
+            Option(
+                titleText = "Muslim World League",
+                customView = { selected ->
+                    OptionItem(
+                        "Muslim World League",
+                        "Fajr at ${CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters.fajrAngle}°, Isha at ${CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.MUSLIM_WORLD_LEAGUE
+            ), CalculationMethod.MUSLIM_WORLD_LEAGUE
+        ),
+        Pair(
+            Option(
+                titleText = "Egypt",
+                customView = { selected ->
+                    OptionItem(
+                        "Egypt",
+                        "Egyptian General Authority of Survey • Fajr at ${CalculationMethod.EGYPTIAN.parameters.fajrAngle}°, Isha at ${CalculationMethod.EGYPTIAN.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.EGYPTIAN
+            ), CalculationMethod.EGYPTIAN
+        ),
+        Pair(
+            Option(
+                titleText = "Karachi",
+                customView = { selected ->
+                    OptionItem(
+                        "Karachi",
+                        "University of Islamic Sciences, Karachi • Fajr at ${CalculationMethod.KARACHI.parameters.fajrAngle}°, Isha at ${CalculationMethod.KARACHI.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.KARACHI
+            ), CalculationMethod.KARACHI
+        ),
+        Pair(
+            Option(
+                titleText = "Umm al-Qura",
+                customView = { selected ->
+                    OptionItem(
+                        "Umm al-Qura",
+                        "Umm al-Qura University, Makkah • Fajr at ${CalculationMethod.UMM_AL_QURA.parameters.fajrAngle}°, Isha at ${CalculationMethod.UMM_AL_QURA.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.UMM_AL_QURA
+            ), CalculationMethod.UMM_AL_QURA
+        ),
+        Pair(
+            Option(
+                titleText = "Dubai",
+                customView = { selected ->
+                    OptionItem(
+                        "Dubai",
+                        "The Gulf Region • Fajr at ${CalculationMethod.DUBAI.parameters.fajrAngle}°, Isha at ${CalculationMethod.DUBAI.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.DUBAI
+            ), CalculationMethod.DUBAI
+        ),
+        Pair(
+            Option(
+                titleText = "Moonsighting Committee",
+                customView = { selected ->
+                    OptionItem(
+                        "Moonsighting Committee",
+                        "Fajr at ${CalculationMethod.MOON_SIGHTING_COMMITTEE.parameters.fajrAngle}°, Isha at ${CalculationMethod.MOON_SIGHTING_COMMITTEE.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.MOON_SIGHTING_COMMITTEE
+            ), CalculationMethod.MOON_SIGHTING_COMMITTEE
+        ),
+        Pair(
+            Option(
+                titleText = "North America",
+                customView = { selected ->
+                    OptionItem(
+                        "North America",
+                        "Referred to as the ISNA method • This method is included for completeness, but is not recommended • Fajr at ${CalculationMethod.NORTH_AMERICA.parameters.fajrAngle}°, Isha at ${CalculationMethod.NORTH_AMERICA.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.NORTH_AMERICA
+            ), CalculationMethod.NORTH_AMERICA
+        ),
+        Pair(
+            Option(
+                titleText = "Kuwait",
+                customView = { selected ->
+                    OptionItem(
+                        "Kuwait",
+                        "Fajr at ${CalculationMethod.KUWAIT.parameters.fajrAngle}°, Isha at ${CalculationMethod.KUWAIT.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.KUWAIT
+            ), CalculationMethod.KUWAIT
+        ),
+        Pair(
+            Option(
+                titleText = "Qatar",
+                customView = { selected ->
+                    OptionItem(
+                        "Qatar",
+                        "Fajr at ${CalculationMethod.QATAR.parameters.fajrAngle}°, Isha at ${CalculationMethod.QATAR.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.QATAR
+            ), CalculationMethod.QATAR
+        ),
+        Pair(
+            Option(
+                titleText = "Singapore",
+                customView = { selected ->
+                    OptionItem(
+                        "Singapore",
+                        "Fajr at ${CalculationMethod.SINGAPORE.parameters.fajrAngle}°, Isha at ${CalculationMethod.SINGAPORE.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.SINGAPORE
+            ), CalculationMethod.SINGAPORE
+        ),
+        Pair(
+            Option(
+                titleText = "Turkey",
+                customView = { selected ->
+                    OptionItem(
+                        "Turkey",
+                        "Fajr at ${CalculationMethod.TURKEY.parameters.fajrAngle}°, Isha at ${CalculationMethod.TURKEY.parameters.ishaAngle}°",
+                        selected = selected
+                    )
+                },
+                selected = state.calculationMethod == CalculationMethod.TURKEY
+            ), CalculationMethod.TURKEY
+        ),
+    )
+
     val juristicOptions = listOf(
         Pair(
             Option(
                 titleText = "Shafi'i • Maliki • Hambali",
                 customView = { selected ->
-                    OptionView(
+                    OptionItem(
                         "Shafi'i • Maliki • Hambali",
                         "Begins when the shadow of an object equals it's actual length, plus its shadow during noon",
                         overline = "EARLIER ASR",
@@ -84,7 +225,7 @@ fun CalculationScreen(
             Option(
                 titleText = "Hanifi",
                 customView = { selected ->
-                    OptionView(
+                    OptionItem(
                         "Hanafi",
                         "Begins when the shadow of an object twice its actual length, plus it's shadow during noon",
                         overline = "LATER ASR",
@@ -159,7 +300,7 @@ fun CalculationScreen(
                                     end = 5.dp,
                                 )
                                 .clickable {
-
+                                    viewModel.onEvent(CalculationEvent.SetCalculationMethodDialogVisibility())
                                 },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
@@ -214,7 +355,9 @@ fun CalculationScreen(
         }
 
         if (state.showJuristicDialog) {
-            JuristicDialog(
+            OptionDialog(
+                title = "Juristic",
+                icon = IconSource(Icons.Outlined.AccountBalance),
                 options = juristicOptions.map { it.first },
                 setDialogVisibility = { isVisible ->
                     viewModel.onEvent(CalculationEvent.SetJuristicDialogVisibility(isVisible))
@@ -224,101 +367,42 @@ fun CalculationScreen(
             }
         }
 
-        println("JURISTIC: ${state.showJuristicDialog}")
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun CalculationMethodDialog(
-    onSelection: () -> Unit
-) {
-    val options = CalculationMethod.entries.map {
-        Option(
-            titleText = it.name,
-//            subtitleText = it.parameters.toString(),
-            selected = it == CalculationMethod.MUSLIM_WORLD_LEAGUE
-        )
-    }
-
-    OptionDialog(
-        state = rememberUseCaseState(visible = true),
-        selection = OptionSelection.Single(options) { index, option ->
-            onSelection()
-        },
-        config = OptionConfig(mode = DisplayMode.LIST)
-    )
-}
-
-@Composable
-internal fun OptionView(
-    title: String,
-    description: String,
-    selected: Boolean,
-    overline: String? = null
-) {
-    ListItem(
-//        modifier = Modifier
-//            .clip(MaterialTheme.shapes.extraLarge),
-        overlineContent = {
-            overline?.let {
-                Text(
-                    it,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+        if (state.showCalculationMethodDialog) {
+            OptionDialog(
+                title = "Calculation method",
+                icon = IconSource(Icons.Outlined.Calculate),
+                options = calculationMethodOptions.map { it.first },
+                setDialogVisibility = { isVisible ->
+                    viewModel.onEvent(CalculationEvent.SetCalculationMethodDialogVisibility(isVisible))
+                }
+            ) { index, _ ->
+                viewModel.onEvent(CalculationEvent.ChangeCalculationMethod(calculationMethodOptions[index].second))
             }
-        },
-        headlineContent = {
-            Text(
-                title,
-                color = if (selected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface,
-                fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
-            )
-        },
-        supportingContent = {
-            Text(
-                description,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        },
-        colors = ListItemDefaults.colors(
-            containerColor = if (selected) MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp) else Color.Transparent
-        ),
-        tonalElevation = 5.dp,
-    )
+        }
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun JuristicDialog(
-    options: List<Option>,
-    setDialogVisibility: (Boolean) -> Unit,
-    onSelection: (index: Int, option: Option) -> Unit
-) {
-    OptionDialog(
-        state = rememberUseCaseState(
-            visible = true,
-            onCloseRequest = { setDialogVisibility(false) },
-        ),
-        header = Header.Default("Juristic", IconSource(Icons.Outlined.AccountBalance)),
-        selection = OptionSelection.Single(
-            options,
-            withButtonView = false,
-//            positiveButton = SelectionButton(
-//                "Done",
-//                IconSource(Icons.Outlined.Done),
-//                ButtonStyle.FILLED
-//            ),
-//            negativeButton = SelectionButton(
-//                "Cancel",
-//                IconSource(Icons.Outlined.Close),
-//                ButtonStyle.OUTLINED
-//            ),
-            onSelectOption = onSelection,
-        ),
-        config = OptionConfig(mode = DisplayMode.LIST)
-    )
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//internal fun CalculationMethodDialog(
+//    onSelection: () -> Unit
+//) {
+//    val options = CalculationMethod.entries.map {
+//        Option(
+//            titleText = it.name,
+////            subtitleText = it.parameters.toString(),
+//            selected = it == CalculationMethod.MUSLIM_WORLD_LEAGUE
+//        )
+//    }
+//
+//    OptionDialog(
+//        state = rememberUseCaseState(visible = true),
+//        selection = OptionSelection.Single(options) { index, option ->
+//            onSelection()
+//        },
+//        config = OptionConfig(mode = DisplayMode.LIST)
+//    )
+//}
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(

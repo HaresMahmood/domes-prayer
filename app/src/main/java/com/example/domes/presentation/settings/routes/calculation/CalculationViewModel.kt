@@ -27,6 +27,15 @@ class CalculationViewModel @Inject constructor(
 
     fun onEvent(event: CalculationEvent) {
         when(event) {
+            is CalculationEvent.ChangeCalculationMethod -> {
+                _state.value = _state.value.copy(
+                    calculationMethod = event.calculationMethod
+                )
+
+                viewModelScope.launch {
+                    //prayersUseCases.setJuristic(event.juristic)
+                }
+            }
             is CalculationEvent.ChangeJuristic -> {
                 _state.value = _state.value.copy(
                     juristic = event.juristic
@@ -35,6 +44,11 @@ class CalculationViewModel @Inject constructor(
                 viewModelScope.launch {
                     prayersUseCases.setJuristic(event.juristic)
                 }
+            }
+            is CalculationEvent.SetCalculationMethodDialogVisibility -> {
+                _state.value = _state.value.copy(
+                    showCalculationMethodDialog = event.isVisible ?: !_state.value.showCalculationMethodDialog
+                )
             }
             is CalculationEvent.SetJuristicDialogVisibility -> {
                 _state.value = _state.value.copy(
