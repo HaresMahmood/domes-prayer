@@ -2,6 +2,7 @@ package com.example.domes.presentation.settings.routes.calculation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Calculate
-import androidx.compose.material.icons.outlined.PinDrop
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
@@ -45,12 +47,16 @@ import com.batoulapps.adhan2.Madhab
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.dialog.OptionDialog
 import com.example.domes.presentation.common.composables.dialog.OptionItem
+import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeler.sheets.option.models.Option
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun CalculationScreen(
 //    navController: NavController,
@@ -260,6 +266,29 @@ fun CalculationScreen(
                 contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
+                stickyHeader {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background),
+                    ) {
+                        Button(
+                            onClick = {
+                                viewModel.onEvent(CalculationEvent.ResetSettings())
+                            },
+                            shape = RoundedCornerShape(15),
+                            contentPadding = PaddingValues(horizontal = 14.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                            ),
+                        ) {
+                            Icon(Icons.Outlined.RestartAlt, "Reset to default")
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text("Reset to default")
+                        }
+                    }
+                }
                 item {
                     Column(
                         modifier = Modifier
@@ -331,6 +360,53 @@ fun CalculationScreen(
                         )
                     }
                 }
+                item {
+                    Text(
+                        "Manual adjustments",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                    1.dp
+                                ), RoundedCornerShape(35.dp)
+                            ),
+                    ) {
+                        state.prayerTimes.forEach { prayerTime ->
+                            ListItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = 8.dp,
+                                        start = 5.dp,
+                                        end = 5.dp,
+                                    ),
+                                colors = ListItemDefaults.colors(
+                                    containerColor = Color.Transparent,
+                                ),
+                                leadingContent = {
+                                    Icon(
+                                        painterResource(prayerTime.prayer.iconResId),
+                                        "Prayer time",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                    )
+                                },
+                                headlineContent = { Text(prayerTime.prayer.name) },
+                                supportingContent = {
+                                    Text(
+                                        prayerTime.time.format(getFormatter("HH:mm a")),
+                                        color = MaterialTheme.colorScheme.tertiary
+                                    )
+                                },
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -353,7 +429,11 @@ fun CalculationScreen(
                 icon = IconSource(Icons.Outlined.Calculate),
                 options = calculationMethodOptions.map { it.first },
                 setDialogVisibility = { isVisible ->
-                    viewModel.onEvent(CalculationEvent.SetCalculationMethodDialogVisibility(isVisible))
+                    viewModel.onEvent(
+                        CalculationEvent.SetCalculationMethodDialogVisibility(
+                            isVisible
+                        )
+                    )
                 }
             ) { index, _ ->
                 viewModel.onEvent(CalculationEvent.ChangeCalculationMethod(calculationMethodOptions[index].second))

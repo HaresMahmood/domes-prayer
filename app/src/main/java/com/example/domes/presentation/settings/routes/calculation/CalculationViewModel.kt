@@ -9,6 +9,7 @@ import com.batoulapps.adhan2.Madhab
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,10 +21,22 @@ class CalculationViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            val coordinates = prayersUseCases.getLocation()
+            
             _state.value = _state.value.copy(
                 calculationMethod = prayersUseCases.getCalculationMethod() ?: CalculationMethod.MUSLIM_WORLD_LEAGUE,
                 juristic = prayersUseCases.getJuristic() ?: Madhab.SHAFI,
             )
+
+            coordinates?.let {
+                _state.value = _state.value.copy(
+                    prayerTimes = prayersUseCases.getPrayerTimes(
+                        LocalDate.now(),
+                        it,
+                        _state.value.calculationMethod.parameters.copy(madhab = _state.value.juristic)
+                    ).first
+                )
+            }
         }
     }
 
@@ -45,6 +58,29 @@ class CalculationViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     prayersUseCases.setJuristic(event.juristic)
+                }
+            }
+            is CalculationEvent.ResetSettings -> {
+                viewModelScope.launch {
+                    val coordinates = prayersUseCases.getLocation()
+
+                    _state.value = _state.value.copy(
+                        calculationMethod = CalculationMethod.MUSLIM_WORLD_LEAGUE,
+                        juristic = Madhab.SHAFI,
+                    )
+
+                    prayersUseCases.setCalculationMethod(_state.value.calculationMethod)
+                    prayersUseCases.setJuristic(_state.value.juristic)
+
+                    coordinates?.let {
+                        _state.value = _state.value.copy(
+                            prayerTimes = prayersUseCases.getPrayerTimes(
+                                LocalDate.now(),
+                                it,
+                                _state.value.calculationMethod.parameters.copy(madhab = _state.value.juristic)
+                            ).first
+                        )
+                    }
                 }
             }
             is CalculationEvent.SetCalculationMethodDialogVisibility -> {
