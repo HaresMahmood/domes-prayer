@@ -141,15 +141,21 @@ class PrayersViewModel @Inject constructor(
 
                 getPrayerTimes(_state.value.selectedDate, _state.value.location!!, _state.value.calculationParameters)
             }
-            is PrayersEvent.ChangeLocation -> {
+            is PrayersEvent.RefreshLocation -> {
+                _state.value.isRefreshing = true
+
                 viewModelScope.launch {
+                    val coordinates = prayersUseCases.fetchLocation()
+
                     _state.value = _state.value.copy(
-                        location = event.coordinates,
-                        locale = prayersUseCases.getLocale(event.coordinates)
+                        location = coordinates,
+                        locale = prayersUseCases.getLocale(coordinates)
                     )
                 }
 
                 updateCurrentPrayerTimes(_state.value.location!!, _state.value.calculationParameters)
+
+                _state.value.isRefreshing = false
             }
             // TODO: Simplify
             is PrayersEvent.ChangePrayerRecord -> {

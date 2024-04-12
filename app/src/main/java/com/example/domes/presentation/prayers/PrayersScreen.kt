@@ -16,8 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -69,7 +73,9 @@ class UIConstants {
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalMaterialApi::class
+)
 @Composable
 fun PrayersScreen(
     navController: NavController,
@@ -80,8 +86,11 @@ fun PrayersScreen(
 
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
+    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { viewModel.onEvent(PrayersEvent.RefreshLocation) })
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    println("REFRESHING: ${state.isRefreshing}")
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -104,7 +113,8 @@ fun PrayersScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .pullRefresh(pullRefreshState),
             contentAlignment = Alignment.Center
         ) {
             Scaffold(
@@ -260,6 +270,8 @@ fun PrayersScreen(
                     }
                 }
             }
+
+            PullRefreshIndicator(state.isRefreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }

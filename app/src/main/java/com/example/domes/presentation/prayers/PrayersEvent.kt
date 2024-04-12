@@ -11,5 +11,5 @@ sealed class PrayersEvent {
     data class ChangeCurrentPrayer(val currentPrayer: PrayerTime): PrayersEvent()
     data class ChangePrayerRecord(val prayer: Prayer, val hasPrayed: Boolean): PrayersEvent()
     data class ChangeDate(val date: LocalDate): PrayersEvent()
-    data class ChangeLocation(val coordinates: Coordinates): PrayersEvent()
+    data object RefreshLocation : PrayersEvent()
 }

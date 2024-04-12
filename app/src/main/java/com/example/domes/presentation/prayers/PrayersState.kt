@@ -23,5 +23,6 @@ data class PrayersState(
     val timeLeft: Duration? = null,
     val dayFraction: Double = 0.0,
     val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,
-    val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now())
+    val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now()),
+    var isRefreshing: Boolean = false,
 )
