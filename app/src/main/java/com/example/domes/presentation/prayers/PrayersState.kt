@@ -14,7 +14,7 @@ data class PrayersState(
     val selectedDate: LocalDate = LocalDate.now(),
     val selectedHijriDate: HijrahDate = HijrahDate.now(),
     val location: Coordinates? = null,
-    val city: String = "",
+    val locale: String = "",
     val currentRawPrayerTimes: PrayerTimes? = null,
     val currentPrayerTimes: List<PrayerTime> = emptyList(),
     val selectedPrayerTimes: List<PrayerTime> = emptyList(),

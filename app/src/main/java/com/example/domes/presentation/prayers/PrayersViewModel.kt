@@ -45,7 +45,7 @@ class PrayersViewModel @Inject constructor(
             // If prayer isn't silent
             prayersUseCases.sendNotification(
                 prayerTime,
-                "in ${_state.value.city}",
+                "in ${_state.value.locale}",
                 context
             )
             
@@ -94,7 +94,7 @@ class PrayersViewModel @Inject constructor(
 
             _state.value = _state.value.copy(
                 location = coordinates,
-                city = prayersUseCases.getCity(coordinates),
+                locale = prayersUseCases.getLocale(coordinates),
             )
 
             _state.value.location?.let { location ->
@@ -145,7 +145,7 @@ class PrayersViewModel @Inject constructor(
                 viewModelScope.launch {
                     _state.value = _state.value.copy(
                         location = event.coordinates,
-                        city = prayersUseCases.getCity(event.coordinates)
+                        locale = prayersUseCases.getLocale(event.coordinates)
                     )
                 }
 

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.HourglassBottom
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.HourglassTop
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material3.Button
@@ -38,7 +39,7 @@ import java.time.Duration
 fun MainActionSection(
     timeLeft: Duration?,
     remainingTimePercentage: Float,
-    city: String,
+    locale: String,
     navController: NavController,
     onSnooze: () -> Unit,
 ) {
@@ -95,9 +96,9 @@ fun MainActionSection(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
             ) {
-                Icon(Icons.Outlined.LocationOn, "Location")
+                Icon(Icons.Outlined.PinDrop, "Location")
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = city)
+                Text(text = locale)
             }
         }
         item {

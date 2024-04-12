@@ -146,7 +146,7 @@ fun PrayersScreen(
                             MainActionSection(
                                 state.timeLeft,
                                 viewModel.calculateRemainingPrayerTime(),
-                                state.city,
+                                state.locale,
                                 navController = navController,
                             ) {
                                 //viewModel.onEvent(PrayersEvent.Snooze)

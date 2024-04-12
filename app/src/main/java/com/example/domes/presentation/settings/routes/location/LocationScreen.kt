@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Autorenew
@@ -22,6 +23,8 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.SwapHoriz
+import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,15 +42,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.dialog.InputDialog
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeler.sheets.input.models.InputHeader
+import com.maxkeppeler.sheets.input.models.InputTextField
+import com.maxkeppeler.sheets.input.models.ValidationResult
 
 class UIConstants {
     companion object {
@@ -107,7 +116,7 @@ fun LocationScreen(
                     ) {
                         Icon(Icons.Outlined.PinDrop, "Current location")
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(state.city)
+                        Text(state.locale)
                     }
                 }
                 item {
@@ -131,7 +140,7 @@ fun LocationScreen(
                                 )
                                 .clickable {
                                     if (locationPermissionState.status.isGranted) {
-                                        viewModel.onEvent(LocationEvent.RefreshLocation())
+                                        viewModel.onEvent(LocationEvent.RefreshLocation)
                                     } else {
                                         locationPermissionState.launchPermissionRequest()
                                     }
@@ -162,7 +171,7 @@ fun LocationScreen(
                                     end = 5.dp,
                                     bottom = 8.dp,
                                 )
-                                .clickable { viewModel.onEvent(LocationEvent.ToggleAutoUpdate()) },
+                                .clickable { viewModel.onEvent(LocationEvent.ToggleAutoUpdate) },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
                             ),
@@ -183,7 +192,7 @@ fun LocationScreen(
                             trailingContent = {
                                 Switch(
                                     checked = state.isAutoUpdateEnabled,
-                                    onCheckedChange = { viewModel.onEvent(LocationEvent.ToggleAutoUpdate()) }
+                                    onCheckedChange = { viewModel.onEvent(LocationEvent.ToggleAutoUpdate) }
                                 )
                             }
                         )
@@ -233,7 +242,10 @@ fun LocationScreen(
                                     start = 5.dp,
                                     end = 5.dp,
                                     bottom = 8.dp,
-                                ),
+                                )
+                                .clickable {
+                                           viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
+                                },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
                             ),
@@ -254,6 +266,47 @@ fun LocationScreen(
                         )
                     }
                 }
+            }
+        }
+
+        if (state.showCoordinatesDialog) {
+            InputDialog(
+                title = "Coordinates",
+                icon = IconSource(Icons.Outlined.Language),
+                inputs = listOf(
+                    InputTextField(
+                        header = InputHeader(
+                            title = "Latitude",
+                            icon = IconSource(Icons.Outlined.SwapHoriz)
+                        ),
+                        required = true,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        validationListener = { value ->
+                            if ((value?.toDoubleOrNull() ?: 100.0) <= 50.0 && ((value?.toDoubleOrNull() ?: -100.0) >= -50.0)) ValidationResult.Valid
+                            else ValidationResult.Invalid("Enter a valid value")
+                        }
+                    ),
+                    InputTextField(
+                        header = InputHeader(
+                            title = "Longitude",
+                            icon = IconSource(Icons.Outlined.SwapVert)
+                        ),
+                        required = true,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        validationListener = { value ->
+                            if ((value?.toDoubleOrNull() ?: 100.0) <= 50.0 && ((value?.toDoubleOrNull() ?: -100.0) >= -50.0)) ValidationResult.Valid
+                            else ValidationResult.Invalid("Enter a valid value")
+                        }
+                    )
+                ),
+                setDialogVisibility = { viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility(false)) }
+            ) {
+                viewModel.onEvent(LocationEvent.ChangeCoordinates(
+                    it.getString("0")!!.toDouble(),
+                    it.getString("1")!!.toDouble()
+                ))
             }
         }
     }

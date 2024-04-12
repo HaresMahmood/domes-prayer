@@ -6,7 +6,7 @@ import com.batoulapps.adhan2.Coordinates
 import java.util.Locale
 
 // TODO: Rename to something like `getLocale` and include country since it's required in UI
-class GetCity(
+class GetLocale(
     private val context: Context
 ) {
     suspend operator fun invoke(coordinates: Coordinates?): String {
@@ -32,7 +32,7 @@ class GetCity(
         return geocoder.getFromLocation(
                 coordinates.latitude, coordinates.longitude, 1
             )?.get(0)?.run {
-                locality ?: subAdminArea ?: adminArea
+                "${locality ?: subAdminArea ?: adminArea}, $countryCode"
             } ?: "Unknown"
 
         // return withContext(Dispatchers.IO) {

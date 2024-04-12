@@ -19,7 +19,7 @@ import com.example.domes.domain.repository.IUserPreferencesRepository
 import com.example.domes.domain.usecase.AddPrayerRecord
 import com.example.domes.domain.usecase.FetchLocation
 import com.example.domes.domain.usecase.GetCalculationMethod
-import com.example.domes.domain.usecase.GetCity
+import com.example.domes.domain.usecase.GetLocale
 import com.example.domes.domain.usecase.GetCurrentPrayer
 import com.example.domes.domain.usecase.GetDayFraction
 import com.example.domes.domain.usecase.GetHijriDate
@@ -32,6 +32,7 @@ import com.example.domes.domain.usecase.PrayerUseCases
 import com.example.domes.domain.usecase.SendNotification
 import com.example.domes.domain.usecase.SetCalculationMethod
 import com.example.domes.domain.usecase.SetJuristic
+import com.example.domes.domain.usecase.SetLocation
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
@@ -113,8 +114,9 @@ object AppModule {
             getHijriDate = GetHijriDate(),
             getPrayerTimeLeft = GetPrayerTimeLeft(),
             sendNotification = SendNotification(notificationService),
-            getCity = GetCity(app),
+            getLocale = GetLocale(app),
             fetchLocation = FetchLocation(userPreferencesRepository, fusedLocationProviderClient, app),
+            setLocation = SetLocation(userPreferencesRepository),
             getLocation = GetLocation(userPreferencesRepository),
             setJuristic = SetJuristic(userPreferencesRepository),
             getJuristic = GetJuristic(userPreferencesRepository),
