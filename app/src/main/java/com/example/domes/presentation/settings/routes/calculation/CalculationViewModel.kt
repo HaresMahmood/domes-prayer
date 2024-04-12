@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.Madhab
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ class CalculationViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _state.value = _state.value.copy(
+                calculationMethod = prayersUseCases.getCalculationMethod() ?: CalculationMethod.MUSLIM_WORLD_LEAGUE,
                 juristic = prayersUseCases.getJuristic() ?: Madhab.SHAFI,
             )
         }
@@ -33,7 +35,7 @@ class CalculationViewModel @Inject constructor(
                 )
 
                 viewModelScope.launch {
-                    //prayersUseCases.setJuristic(event.juristic)
+                    prayersUseCases.setCalculationMethod(event.calculationMethod)
                 }
             }
             is CalculationEvent.ChangeJuristic -> {

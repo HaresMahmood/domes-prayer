@@ -261,26 +261,6 @@ fun CalculationScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 item {
-                    Button(
-                        onClick = { /*TODO*/ },
-                        shape = RoundedCornerShape(
-                            topStartPercent = 12,
-                            topEndPercent = 45,
-                            bottomStartPercent = 45,
-                            bottomEndPercent = 45
-                        ),
-                        contentPadding = PaddingValues(horizontal = 14.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        ),
-                    ) {
-                        Icon(Icons.Outlined.PinDrop, "Current location")
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text("State")
-                    }
-                }
-                item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -315,7 +295,7 @@ fun CalculationScreen(
                             headlineContent = { Text("Calculation method") },
                             supportingContent = {
                                 Text(
-                                    "Muslim World League",
+                                    calculationMethodOptions[state.calculationMethod.ordinal].first.titleText,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )
                             },
@@ -381,28 +361,6 @@ fun CalculationScreen(
         }
     }
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//internal fun CalculationMethodDialog(
-//    onSelection: () -> Unit
-//) {
-//    val options = CalculationMethod.entries.map {
-//        Option(
-//            titleText = it.name,
-////            subtitleText = it.parameters.toString(),
-//            selected = it == CalculationMethod.MUSLIM_WORLD_LEAGUE
-//        )
-//    }
-//
-//    OptionDialog(
-//        state = rememberUseCaseState(visible = true),
-//        selection = OptionSelection.Single(options) { index, option ->
-//            onSelection()
-//        },
-//        config = OptionConfig(mode = DisplayMode.LIST)
-//    )
-//}
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(

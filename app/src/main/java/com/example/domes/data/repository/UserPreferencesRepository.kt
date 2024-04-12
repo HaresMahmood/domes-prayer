@@ -17,6 +17,7 @@ class UserPreferencesRepository @Inject constructor(
         val LOCATION_LATITUDE = doublePreferencesKey("location_latitude")
         val LOCATION_LONGITUDE = doublePreferencesKey("location_longitude")
 
+        val CALCULATION_METHOD = intPreferencesKey("calculation_method")
         val JURISTIC = intPreferencesKey("juristic")
     }
 
@@ -37,6 +38,17 @@ class UserPreferencesRepository @Inject constructor(
         }
 
         return null
+    }
+
+    override suspend fun setCalculationMethod(calculationMethod: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.CALCULATION_METHOD] = calculationMethod
+        }
+    }
+
+    override suspend fun getCalculationMethod(): Int? {
+        val preferences = dataStore.data.first()
+        return preferences[PreferencesKeys.CALCULATION_METHOD]
     }
 
     override suspend fun setJuristic(juristic: Int) {

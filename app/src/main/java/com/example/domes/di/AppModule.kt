@@ -18,6 +18,7 @@ import com.example.domes.domain.repository.IPrayerRecordRepository
 import com.example.domes.domain.repository.IUserPreferencesRepository
 import com.example.domes.domain.usecase.AddPrayerRecord
 import com.example.domes.domain.usecase.FetchLocation
+import com.example.domes.domain.usecase.GetCalculationMethod
 import com.example.domes.domain.usecase.GetCity
 import com.example.domes.domain.usecase.GetCurrentPrayer
 import com.example.domes.domain.usecase.GetDayFraction
@@ -29,6 +30,7 @@ import com.example.domes.domain.usecase.GetPrayerTimeLeft
 import com.example.domes.domain.usecase.GetPrayerTimes
 import com.example.domes.domain.usecase.PrayerUseCases
 import com.example.domes.domain.usecase.SendNotification
+import com.example.domes.domain.usecase.SetCalculationMethod
 import com.example.domes.domain.usecase.SetJuristic
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -116,6 +118,8 @@ object AppModule {
             getLocation = GetLocation(userPreferencesRepository),
             setJuristic = SetJuristic(userPreferencesRepository),
             getJuristic = GetJuristic(userPreferencesRepository),
+            setCalculationMethod = SetCalculationMethod(userPreferencesRepository),
+            getCalculationMethod = GetCalculationMethod(userPreferencesRepository),
             getDayFraction = GetDayFraction(),
         )
     }
