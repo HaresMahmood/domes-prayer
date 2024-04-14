@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers.composables
+package com.example.domes.presentation.routes.prayers.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.example.domes.presentation.settings.routes.calculation
+package com.example.domes.presentation.routes.settings.routes.calculation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -47,7 +47,7 @@ import com.batoulapps.adhan2.Madhab
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.dialog.OptionDialog
 import com.example.domes.presentation.common.composables.dialog.OptionItem
-import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
+import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.maxkeppeker.sheets.core.models.base.IconSource

@@ -1,4 +1,4 @@
-package com.example.domes.presentation.settings.routes.location
+package com.example.domes.presentation.routes.settings.routes.location
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -301,12 +301,18 @@ fun LocationScreen(
                         }
                     )
                 ),
-                setDialogVisibility = { viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility(false)) }
+                setDialogVisibility = { viewModel.onEvent(
+                    LocationEvent.SetCoordinatesDialogVisibility(
+                        false
+                    )
+                ) }
             ) {
-                viewModel.onEvent(LocationEvent.ChangeCoordinates(
-                    it.getString("0")!!.toDouble(),
-                    it.getString("1")!!.toDouble()
-                ))
+                viewModel.onEvent(
+                    LocationEvent.ChangeCoordinates(
+                        it.getString("0")!!.toDouble(),
+                        it.getString("1")!!.toDouble()
+                    )
+                )
             }
         }
     }

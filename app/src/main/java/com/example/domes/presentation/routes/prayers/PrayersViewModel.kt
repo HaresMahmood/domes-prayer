@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers
+package com.example.domes.presentation.routes.prayers
 
 import android.app.Application
 import android.app.NotificationManager

@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers
+package com.example.domes.presentation.routes.prayers
 
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.CalculationParameters

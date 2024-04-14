@@ -1,4 +1,4 @@
-package com.example.domes.presentation.settings.routes.calculation
+package com.example.domes.presentation.routes.settings.routes.calculation
 
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.Madhab

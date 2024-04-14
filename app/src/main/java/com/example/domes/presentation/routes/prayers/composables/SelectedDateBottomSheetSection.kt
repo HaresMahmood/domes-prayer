@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers.composables
+package com.example.domes.presentation.routes.prayers.composables
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -27,8 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.example.domes.presentation.prayers.UIConstants
-import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
+import com.example.domes.presentation.routes.prayers.UIConstants
+import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarView
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig

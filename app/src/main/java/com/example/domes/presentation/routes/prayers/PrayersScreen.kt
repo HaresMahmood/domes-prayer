@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers
+package com.example.domes.presentation.routes.prayers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -44,14 +44,14 @@ import androidx.navigation.NavController
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.Polygon
 import com.example.domes.presentation.common.composables.Shape
-import com.example.domes.presentation.prayers.UIConstants.Companion.getArabicFormatter
-import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
-import com.example.domes.presentation.prayers.composables.DisplaySlider
-import com.example.domes.presentation.prayers.composables.MainActionSection
-import com.example.domes.presentation.prayers.composables.PercentageWidthBox
-import com.example.domes.presentation.prayers.composables.PercentageWidthBoxChild
-import com.example.domes.presentation.prayers.composables.PrayerListItem
-import com.example.domes.presentation.prayers.composables.SelectedDateBottomSheetSection
+import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getArabicFormatter
+import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.example.domes.presentation.routes.prayers.composables.DisplaySlider
+import com.example.domes.presentation.routes.prayers.composables.MainActionSection
+import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBox
+import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBoxChild
+import com.example.domes.presentation.routes.prayers.composables.PrayerListItem
+import com.example.domes.presentation.routes.prayers.composables.SelectedDateBottomSheetSection
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -86,7 +86,9 @@ fun PrayersScreen(
 
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { viewModel.onEvent(PrayersEvent.RefreshLocation) })
+    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { viewModel.onEvent(
+        PrayersEvent.RefreshLocation
+    ) })
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 

@@ -1,4 +1,4 @@
-package com.example.domes.presentation.settings.routes.location
+package com.example.domes.presentation.routes.settings.routes.location
 
 sealed class LocationEvent {
     data object RefreshLocation : LocationEvent()

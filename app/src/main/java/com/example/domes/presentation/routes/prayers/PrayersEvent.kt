@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers
+package com.example.domes.presentation.routes.prayers
 
 import com.batoulapps.adhan2.Coordinates
 import com.example.domes.domain.model.prayer.Prayer

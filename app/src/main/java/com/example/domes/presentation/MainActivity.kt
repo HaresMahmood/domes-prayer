@@ -18,10 +18,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.utility.Screen
-import com.example.domes.presentation.prayers.PrayersScreen
-import com.example.domes.presentation.settings.SettingsScreen
-import com.example.domes.presentation.settings.routes.calculation.CalculationScreen
-import com.example.domes.presentation.settings.routes.location.LocationScreen
+import com.example.domes.presentation.routes.prayers.PrayersScreen
+import com.example.domes.presentation.routes.settings.SettingsScreen
+import com.example.domes.presentation.routes.settings.routes.calculation.CalculationScreen
+import com.example.domes.presentation.routes.settings.routes.location.LocationScreen
 import com.example.domes.ui.theme.DomesTheme
 import dagger.hilt.android.AndroidEntryPoint
 

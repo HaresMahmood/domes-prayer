@@ -1,4 +1,4 @@
-package com.example.domes.presentation.settings.composables
+package com.example.domes.presentation.routes.settings.composables
 
 import android.os.Build
 import androidx.annotation.RequiresApi

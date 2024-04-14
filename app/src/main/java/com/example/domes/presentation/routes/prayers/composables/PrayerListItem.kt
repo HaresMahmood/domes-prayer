@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers.composables
+package com.example.domes.presentation.routes.prayers.composables
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.domes.domain.model.prayer.PrayerTime
-import com.example.domes.presentation.prayers.UIConstants.Companion.getFormatter
+import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
 import com.example.domes.presentation.common.composables.Shape
 

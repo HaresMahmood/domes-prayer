@@ -1,4 +1,4 @@
-package com.example.domes.presentation.prayers.composables
+package com.example.domes.presentation.routes.prayers.composables
 
 import android.os.Build
 import androidx.annotation.RequiresApi
