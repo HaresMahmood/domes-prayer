@@ -92,7 +92,8 @@ fun SettingsScreen(
                         SettingsListItem(
                             "Notifications",
                             "Adhan, prayers",
-                            Icons.Outlined.Notifications
+                            Icons.Outlined.Notifications,
+                            onClick = { navController.navigate(Screen.Notifications.route) },
                         )
                         SettingsListItem(
                             "General",

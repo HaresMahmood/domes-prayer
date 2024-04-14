@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -21,8 +19,6 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.RestartAlt
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -48,6 +44,8 @@ import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.dialog.OptionDialog
 import com.example.domes.presentation.common.composables.dialog.OptionItem
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.example.domes.presentation.routes.settings.routes.notifications.CalculationEvent
+import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.maxkeppeker.sheets.core.models.base.IconSource
@@ -60,7 +58,7 @@ import com.maxkeppeler.sheets.option.models.Option
 @Composable
 fun CalculationScreen(
 //    navController: NavController,
-    viewModel: CalculationViewModel = hiltViewModel()
+    viewModel: NotificationsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
     val scrollBehavior =

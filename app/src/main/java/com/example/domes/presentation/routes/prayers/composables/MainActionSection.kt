@@ -85,6 +85,15 @@ fun MainActionSection(
             }
         }
         item {
+            FilledTonalIconButton(
+                onClick = {
+                    navController.navigate(Screen.Settings.route)
+                }
+            ) {
+                Icon(Icons.Outlined.Settings, contentDescription = "Settings")
+            }
+        }
+        item {
             Button(
                 onClick = {
                     navController.navigate(Screen.Location.route)
@@ -134,15 +143,6 @@ fun MainActionSection(
                 Text(text = "Period")
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Icon(Icons.Outlined.Check, "Selected")
-            }
-        }
-        item {
-            FilledTonalIconButton(
-                onClick = {
-                    navController.navigate(Screen.Settings.route)
-                }
-            ) {
-                Icon(Icons.Outlined.Settings, contentDescription = "Settings")
             }
         }
     }

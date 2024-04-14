@@ -1,8 +1,10 @@
 package com.example.domes.presentation.common.utility
 
 sealed class Screen(val route: String) {
-    object Prayers: Screen("prayers")
-    object Settings: Screen("settings")
-    object Location: Screen("location")
-    object Calculation: Screen("calculation")
+    data object Prayers: Screen("prayers")
+    data object Settings: Screen("settings")
+    data object Location: Screen("location")
+    data object Calculation: Screen("calculation")
+    data object Notifications: Screen("notifications")
+    data object ManagePrayer: Screen("manage-prayer")
 }

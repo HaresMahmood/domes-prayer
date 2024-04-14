@@ -25,5 +25,19 @@ data class Prayer(
         val MAGHRIB = Prayer("Maghrib", "مغرب", R.drawable.routine_fill0_wght400_grad0_opsz24)
         val ISHA = Prayer("Isha", "عشاء", R.drawable.routine_fill0_wght400_grad0_opsz24)
         val TEST = Prayer("Test", "فجر", R.drawable.routine_fill0_wght400_grad0_opsz24, false)
+
+        val ALL = listOf(FAJR, SUNRISE, DHUHR, ASR, MAGHRIB, ISHA)
+
+        fun fromString(prayer: String?): Prayer {
+            return when (prayer?.lowercase()) {
+                "fajr" -> FAJR
+                "sunrise" -> SUNRISE
+                "dhuhr" -> DHUHR
+                "asr" -> ASR
+                "maghrib" -> MAGHRIB
+                "isha" -> ISHA
+                else -> throw IllegalArgumentException("Unknown prayer: $prayer")
+            }
+        }
     }
 }
