@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.Prayers.route) {
                             PrayersScreen(navController)
                         }
-                        composable(route = Screen.Prayers.route) {
+                        composable(route = Screen.Qibla.route) {
                             QiblaScreen()
                         }
                         composable(route = Screen.Settings.route) {
