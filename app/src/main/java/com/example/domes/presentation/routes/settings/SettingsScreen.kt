@@ -13,8 +13,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Calculate
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.QuestionAnswer
+import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -79,26 +83,54 @@ fun SettingsScreen(
                     ) {
                         SettingsListItem(
                             "Location",
-                            "Auto-update, set manually",
+                            "Auto-update • set manually",
                             Icons.Outlined.LocationOn,
                             onClick = { navController.navigate(Screen.Location.route) },
                         )
                         SettingsListItem(
                             "Calculation",
-                            "Method, corrections",
+                            "Method • corrections",
                             Icons.Outlined.Calculate,
                             onClick = { navController.navigate(Screen.Calculation.route) },
                         )
                         SettingsListItem(
                             "Notifications",
-                            "Adhan, prayers",
+                            "Adhan • prayers",
                             Icons.Outlined.Notifications,
                             onClick = { navController.navigate(Screen.Notifications.route) },
                         )
                         SettingsListItem(
-                            "General",
-                            "Theme, language, format",
-                            Icons.Outlined.Notifications,
+                            "Appearance",
+                            "Theme • language • format",
+                            Icons.Outlined.Palette,
+                        )
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                    1.dp
+                                ), RoundedCornerShape(35.dp)
+                            ),
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
+                    ) {
+                        SettingsListItem(
+                            "About",
+                            "App version • contact",
+                            Icons.Outlined.Info,
+                        )
+                        SettingsListItem(
+                            "Privacy",
+                            "Policy • terms",
+                            Icons.Outlined.Security,
+                        )
+                        SettingsListItem(
+                            "Feedback",
+                            "Report a bug • suggest a feature",
+                            Icons.Outlined.QuestionAnswer,
                         )
                     }
                 }
