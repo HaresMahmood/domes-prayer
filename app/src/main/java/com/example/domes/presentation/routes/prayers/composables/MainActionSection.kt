@@ -14,7 +14,6 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.HourglassBottom
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.HourglassTop
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Snooze
@@ -31,7 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.domes.R
-import com.example.domes.presentation.common.utility.Screen
+import com.example.domes.presentation.routes.Screen
 import java.time.Duration
 
 @RequiresApi(Build.VERSION_CODES.S)

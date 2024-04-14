@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.Polygon
 import com.example.domes.presentation.common.composables.Shape
+import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getArabicFormatter
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.routes.prayers.composables.DisplaySlider
@@ -73,7 +74,8 @@ class UIConstants {
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
     ExperimentalMaterialApi::class
 )
 @Composable
@@ -82,15 +84,19 @@ fun PrayersScreen(
     viewModel: PrayersViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-    val prayerTimes = if (state.selectedDate == LocalDate.now()) state.currentPrayerTimes else state.selectedPrayerTimes
+    val prayerTimes =
+        if (state.selectedDate == LocalDate.now()) state.currentPrayerTimes else state.selectedPrayerTimes
 
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { viewModel.onEvent(
-        PrayersEvent.RefreshLocation
-    ) })
+    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = {
+        viewModel.onEvent(
+            PrayersEvent.RefreshLocation
+        )
+    })
 
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     println("REFRESHING: ${state.isRefreshing}")
 
@@ -122,8 +128,12 @@ fun PrayersScreen(
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    val foregroundText = state.currentPrayer?.prayer?.name ?: state.selectedDate.format(getFormatter("d MMMM"))
-                    val backgroundText = state.currentPrayer?.prayer?.arabicName ?: getArabicFormatter("MMM d").format(state.selectedHijriDate)
+                    val foregroundText =
+                        state.currentPrayer?.prayer?.name ?: state.selectedDate.format(
+                            getFormatter("d MMMM")
+                        )
+                    val backgroundText = state.currentPrayer?.prayer?.arabicName
+                        ?: getArabicFormatter("MMM d").format(state.selectedHijriDate)
 
                     LayeredTopAppBar(
                         foregroundText,
@@ -133,7 +143,9 @@ fun PrayersScreen(
                 },
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = { },
+                        onClick = {
+                            navController.navigate(Screen.Qibla.route)
+                        },
                         containerColor = MaterialTheme.colorScheme.tertiary,
                         contentColor = MaterialTheme.colorScheme.onTertiary,
                         elevation = FloatingActionButtonDefaults.elevation(
@@ -222,20 +234,21 @@ fun PrayersScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(20.dp),
-                                        children = prayerTimes.filter { it.prayer.displayable }.map { prayerTime ->
-                                            PercentageWidthBoxChild(
-                                                composable = {
-                                                    Box(modifier = Modifier.size(10.dp)) {
-                                                        Polygon(
-                                                            shape,
-                                                            color = if (prayerTime == state.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSecondary,
-                                                            alpha = if (prayerTime == state.currentPrayer) 1f else 0.75f
-                                                        )
-                                                    }
-                                                },
-                                                widthFraction = prayerTime.dayFraction?.toFloat()
-                                            )
-                                        }
+                                        children = prayerTimes.filter { it.prayer.displayable }
+                                            .map { prayerTime ->
+                                                PercentageWidthBoxChild(
+                                                    composable = {
+                                                        Box(modifier = Modifier.size(10.dp)) {
+                                                            Polygon(
+                                                                shape,
+                                                                color = if (prayerTime == state.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSecondary,
+                                                                alpha = if (prayerTime == state.currentPrayer) 1f else 0.75f
+                                                            )
+                                                        }
+                                                    },
+                                                    widthFraction = prayerTime.dayFraction?.toFloat()
+                                                )
+                                            }
                                     )
                                 }
                             }
@@ -263,7 +276,12 @@ fun PrayersScreen(
                                         remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
                                         onClick = { },
                                         onTick = {
-                                            viewModel.onEvent(PrayersEvent.ChangePrayerRecord(prayerTime.prayer, it))
+                                            viewModel.onEvent(
+                                                PrayersEvent.ChangePrayerRecord(
+                                                    prayerTime.prayer,
+                                                    it
+                                                )
+                                            )
                                         }
                                     )
                                 }
@@ -273,7 +291,11 @@ fun PrayersScreen(
                 }
             }
 
-            PullRefreshIndicator(state.isRefreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
+            PullRefreshIndicator(
+                state.isRefreshing,
+                pullRefreshState,
+                Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }

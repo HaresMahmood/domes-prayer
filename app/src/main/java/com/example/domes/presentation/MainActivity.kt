@@ -20,8 +20,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.domes.domain.model.prayer.Prayer
-import com.example.domes.presentation.common.utility.Screen
+import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.PrayersScreen
+import com.example.domes.presentation.routes.qibla.QiblaScreen
 import com.example.domes.presentation.routes.settings.SettingsScreen
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationScreen
 import com.example.domes.presentation.routes.settings.routes.location.LocationScreen
@@ -85,6 +86,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(route = Screen.Prayers.route) {
                             PrayersScreen(navController)
+                        }
+                        composable(route = Screen.Prayers.route) {
+                            QiblaScreen()
                         }
                         composable(route = Screen.Settings.route) {
                             SettingsScreen(navController)

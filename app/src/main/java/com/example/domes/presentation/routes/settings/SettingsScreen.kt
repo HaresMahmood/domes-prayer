@@ -31,7 +31,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.domes.presentation.common.composables.LayeredTopAppBar
-import com.example.domes.presentation.common.utility.Screen
+import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 
 class UIConstants {

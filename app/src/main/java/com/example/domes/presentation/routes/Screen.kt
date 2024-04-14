@@ -1,4 +1,4 @@
-package com.example.domes.presentation.common.utility
+package com.example.domes.presentation.routes
 
 sealed class Screen(val route: String) {
     data object Prayers: Screen("prayers")
@@ -7,4 +7,6 @@ sealed class Screen(val route: String) {
     data object Calculation: Screen("calculation")
     data object Notifications: Screen("notifications")
     data object ManagePrayer: Screen("manage-prayer")
+
+    data object Qibla: Screen("qibla")
 }
