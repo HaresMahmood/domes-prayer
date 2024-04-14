@@ -266,29 +266,6 @@ fun CalculationScreen(
                 contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                stickyHeader {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background),
-                    ) {
-                        Button(
-                            onClick = {
-                                viewModel.onEvent(CalculationEvent.ResetSettings())
-                            },
-                            shape = RoundedCornerShape(15),
-                            contentPadding = PaddingValues(horizontal = 14.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                            ),
-                        ) {
-                            Icon(Icons.Outlined.RestartAlt, "Reset to default")
-                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text("Reset to default")
-                        }
-                    }
-                }
                 item {
                     Column(
                         modifier = Modifier
@@ -405,6 +382,42 @@ fun CalculationScreen(
                                 },
                             )
                         }
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(35.dp)
+                            ),
+                    ) {
+                        // TODO: Add confirmation dialog
+                        ListItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    top = 8.dp,
+                                    start = 5.dp,
+                                    end = 5.dp,
+                                    bottom = 8.dp
+                                )
+                                .clickable {
+                                    viewModel.onEvent(CalculationEvent.ResetSettings())
+                                },
+                            colors = ListItemDefaults.colors(
+                                containerColor = Color.Transparent,
+                                headlineColor = MaterialTheme.colorScheme.onErrorContainer
+                            ),
+                            leadingContent = {
+                                Icon(
+                                    Icons.Outlined.RestartAlt,
+                                    "Reset to default",
+                                    tint = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            headlineContent = { Text("Reset to default") },
+                        )
                     }
                 }
             }
