@@ -1,6 +1,13 @@
 package com.example.domes.presentation.common.utility
 
 import android.graphics.PointF
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -17,6 +24,7 @@ import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.MutableCubic
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.TransformResult
+import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -146,6 +154,37 @@ fun Morph.toAndroidPath(progress: Float, scale: Float = 1f,
     }
     path.close()
     return path
+}
+
+fun angleToCoordinates(angleDegrees: Float): BiasAlignment {
+    val correctedAngleDegrees = (angleDegrees - 90f) % 360f
+    val angleRadians = Math.toRadians(correctedAngleDegrees.toDouble())
+    val x = cos(angleRadians).toFloat()
+    val y = sin(angleRadians).toFloat()
+    val biasX = x.coerceIn(-1f, 1f)
+    val biasY = y.coerceIn(-1f, 1f)
+
+    return BiasAlignment(biasX, biasY)
+}
+
+@Composable
+fun SmoothRotation(rotation: Float): MutableState<Float> {
+    val storedRotation = remember { mutableFloatStateOf(rotation) }
+
+    LaunchedEffect(rotation){
+        snapshotFlow { rotation  }
+            .collectLatest { newRotation ->
+                val diff = newRotation - storedRotation.floatValue
+                val shortestDiff = when{
+                    diff > 180 -> diff - 360
+                    diff < -180 -> diff + 360
+                    else -> diff
+                }
+                storedRotation.floatValue += shortestDiff
+            }
+    }
+
+    return storedRotation
 }
 
 internal const val DEBUG = false
