@@ -43,8 +43,6 @@ class QiblaViewModel@Inject constructor(
                     azimuth = azimuth,
                     isFacingQibla = azimuth in _state.value.qiblaDirection - DEVIATION.._state.value.qiblaDirection + DEVIATION,
                 )
-
-                println("QIBLA STATE: ${state.value}")
             }
         }
     }

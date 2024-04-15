@@ -2,15 +2,18 @@ package com.example.domes.presentation.routes.qibla
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +25,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.CompassCalibration
 import androidx.compose.material.icons.outlined.PinDrop
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.surfaceColorAtElevation
@@ -40,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
@@ -71,6 +77,9 @@ fun QiblaScreen(
     val baseClip = remember(base) {
         RoundedPolygonShape(polygon = base)
     }
+    val fillClip = remember(base) {
+        RoundedPolygonShape(polygon = base)
+    }
     val needleParameters = Shape(
         innerRadius = 0.1f,
         roundness = 0.22f,
@@ -78,6 +87,8 @@ fun QiblaScreen(
     )
     val needle = remember { needleParameters.genShape() }
     val needleClip = remember(needle) { RoundedPolygonShape(polygon = needle) }
+
+    val qiblaSymbolCoordinates = remember { angleToCoordinates(state.qiblaDirection) }
 
     val currentRotation = smoothRotation(-state.azimuth)
     val rotation by animateFloatAsState(
@@ -122,7 +133,7 @@ fun QiblaScreen(
                     Icon(Icons.Outlined.PinDrop, contentDescription = "Location")
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
-                        "Glasgow City, UK",
+                        state.locale,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -149,84 +160,111 @@ fun QiblaScreen(
                     .padding(20.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(modifier = Modifier.rotate(rotation)) {
-                        Box(
-                            modifier = Modifier
-                                .clip(baseClip)
-                                .fillMaxWidth()
-                                .aspectRatio(1f, true)
-                                .background(MaterialTheme.colorScheme.tertiaryContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // North-east-south-west and Qibla (Q) labels
-                            Text(
-                                text = "N",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(modifier = Modifier.rotate(rotation)) {
+                            Box(
                                 modifier = Modifier
-                                    .padding(15.dp)
-                                    .align(Alignment.TopCenter)
-                            )
-                            Text(
-                                text = "E",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier
-                                    .rotate(90f)
-                                    .padding(15.dp)
-                                    .align(Alignment.CenterEnd)
-                            )
-                            Text(
-                                text = "S",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier
-                                    .rotate(180f)
-                                    .padding(15.dp)
-                                    .align(Alignment.BottomCenter)
-                            )
-                            Text(
-                                text = "W",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier
-                                    .rotate(270f)
-                                    .padding(15.dp)
-                                    .align(Alignment.CenterStart)
-                            )
-                            Text(
-                                text = "Q",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier
-                                    .rotate(state.qiblaDirection)
-                                    .padding(15.dp)
-                                    .align(angleToCoordinates(state.qiblaDirection))
-                            )
+                                    .clip(baseClip)
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f, true)
+                                    .background(MaterialTheme.colorScheme.tertiaryContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "N",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .padding(15.dp)
+                                        .align(Alignment.TopCenter)
+                                )
+                                Text(
+                                    text = "E",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .rotate(90f)
+                                        .padding(15.dp)
+                                        .align(Alignment.CenterEnd)
+                                )
+                                Text(
+                                    text = "S",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .rotate(180f)
+                                        .padding(15.dp)
+                                        .align(Alignment.BottomCenter)
+                                )
+                                Text(
+                                    text = "W",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .rotate(270f)
+                                        .padding(15.dp)
+                                        .align(Alignment.CenterStart)
+                                )
+                                Text(
+                                    text = "Q",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier
+                                        .rotate(state.qiblaDirection)
+                                        .padding(15.dp)
+                                        .align(qiblaSymbolCoordinates)
+                                )
+
+                                Box(
+//                                  polygon = base,
+//                                  color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier
+                                        .clip(fillClip)
+                                        .fillMaxHeight(0.5f)
+                                        .align(Alignment.Center)
+                                        .aspectRatio(1f, true)
+                                        .background(MaterialTheme.colorScheme.tertiary),
+                                )
+                            }
                         }
-                    }
-                    // Needle
+
+                        // Needle
                         Box(
                             modifier = Modifier
                                 .clip(needleClip)
-                                .height(130.dp)
+                                .height(100.dp)
                                 .aspectRatio(1f, true)
-                                .background(MaterialTheme.colorScheme.tertiary),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                "${abs(currentRotation.value.toInt())}°",
-                                modifier = Modifier.padding(bottom = 15.dp),
-                                color = MaterialTheme.colorScheme.onTertiary,
-                                style = MaterialTheme.typography.headlineMedium
-                            )
-                        }
+                                .background(MaterialTheme.colorScheme.onTertiary),
+                        )
                     }
+                    Spacer(Modifier.size(25.dp))
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Badge(
+                            modifier = Modifier.animateContentSize(),
+                            containerColor = TooltipDefaults.plainTooltipContainerColor,
+                            contentColor = TooltipDefaults.plainTooltipContentColor
+                        ) {
+                            Text("${abs(currentRotation.value.toInt())}°", textAlign = TextAlign.Center)
+                        }
+
+                        Text(
+                            text = if (state.isFacingQibla) "You're facing the Qibla!" else "Turn to your right",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
+                }
             }
         }
     }
