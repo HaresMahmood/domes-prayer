@@ -45,12 +45,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.batoulapps.adhan2.Coordinates
-import com.batoulapps.adhan2.Qibla
 import com.example.domes.presentation.common.composables.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
-import com.example.domes.presentation.common.utility.SmoothRotation
 import com.example.domes.presentation.common.utility.angleToCoordinates
+import com.example.domes.presentation.common.utility.smoothRotation
 import com.example.domes.ui.theme.DomesTheme
 import kotlin.math.abs
 
@@ -59,6 +57,8 @@ import kotlin.math.abs
 fun QiblaScreen(
     viewModel: QiblaViewModel = hiltViewModel()
 ) {
+    val state = viewModel.state.value
+
     val baseParameters = Shape(
         sides = 16,
         innerRadius = .892f,
@@ -79,7 +79,7 @@ fun QiblaScreen(
     val needle = remember { needleParameters.genShape() }
     val needleClip = remember(needle) { RoundedPolygonShape(polygon = needle) }
 
-    val currentRotation = SmoothRotation(-viewModel.azimuth.floatValue)
+    val currentRotation = smoothRotation(-state.azimuth)
     val rotation by animateFloatAsState(
         targetValue = currentRotation.value,
         animationSpec = tween(
@@ -87,9 +87,6 @@ fun QiblaScreen(
             easing = LinearOutSlowInEasing
         )
     )
-
-    val coordinates = Coordinates(55.825313, -4.293643)
-    val qibla = remember { Qibla(coordinates).direction }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
@@ -207,9 +204,9 @@ fun QiblaScreen(
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
-                                    .rotate(qibla.toFloat())
+                                    .rotate(state.qiblaDirection)
                                     .padding(15.dp)
-                                    .align(angleToCoordinates(qibla.toFloat()))
+                                    .align(angleToCoordinates(state.qiblaDirection))
                             )
                         }
                     }

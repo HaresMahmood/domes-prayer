@@ -16,5 +16,6 @@ data class PrayerUseCases(
     val getCalculationMethod: GetCalculationMethod,
     val setJuristic: SetJuristic,
     val getJuristic: GetJuristic,
+    val getQiblaDirection: GetQiblaDirection,
     val getDayFraction: GetDayFraction,
 )

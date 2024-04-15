@@ -168,7 +168,7 @@ fun angleToCoordinates(angleDegrees: Float): BiasAlignment {
 }
 
 @Composable
-fun SmoothRotation(rotation: Float): MutableState<Float> {
+fun smoothRotation(rotation: Float): MutableState<Float> {
     val storedRotation = remember { mutableFloatStateOf(rotation) }
 
     LaunchedEffect(rotation){

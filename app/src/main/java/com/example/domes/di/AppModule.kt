@@ -19,15 +19,16 @@ import com.example.domes.domain.repository.IUserPreferencesRepository
 import com.example.domes.domain.usecase.AddPrayerRecord
 import com.example.domes.domain.usecase.FetchLocation
 import com.example.domes.domain.usecase.GetCalculationMethod
-import com.example.domes.domain.usecase.GetLocale
 import com.example.domes.domain.usecase.GetCurrentPrayer
 import com.example.domes.domain.usecase.GetDayFraction
 import com.example.domes.domain.usecase.GetHijriDate
 import com.example.domes.domain.usecase.GetJuristic
+import com.example.domes.domain.usecase.GetLocale
 import com.example.domes.domain.usecase.GetLocation
 import com.example.domes.domain.usecase.GetPrayerRecord
 import com.example.domes.domain.usecase.GetPrayerTimeLeft
 import com.example.domes.domain.usecase.GetPrayerTimes
+import com.example.domes.domain.usecase.GetQiblaDirection
 import com.example.domes.domain.usecase.PrayerUseCases
 import com.example.domes.domain.usecase.SendNotification
 import com.example.domes.domain.usecase.SetCalculationMethod
@@ -122,6 +123,7 @@ object AppModule {
             getJuristic = GetJuristic(userPreferencesRepository),
             setCalculationMethod = SetCalculationMethod(userPreferencesRepository),
             getCalculationMethod = GetCalculationMethod(userPreferencesRepository),
+            getQiblaDirection = GetQiblaDirection(),
             getDayFraction = GetDayFraction(),
         )
     }
