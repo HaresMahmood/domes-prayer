@@ -1,6 +1,5 @@
 package com.example.domes.presentation.routes.prayers
 
-import com.batoulapps.adhan2.Coordinates
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerTime
 import java.time.LocalDate
@@ -12,4 +11,5 @@ sealed class PrayersEvent {
     data class ChangePrayerRecord(val prayer: Prayer, val hasPrayed: Boolean): PrayersEvent()
     data class ChangeDate(val date: LocalDate): PrayersEvent()
     data object RefreshLocation : PrayersEvent()
+    data class SetOverarchingDropdownVisibility(val isVisible: Boolean? = null): PrayersEvent()
 }

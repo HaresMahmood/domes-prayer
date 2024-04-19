@@ -17,18 +17,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.outlined.ExpandCircleDown
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberTopAppBarState
@@ -41,12 +48,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.domes.presentation.common.composables.LayeredTopAppBar
-import com.example.domes.presentation.common.composables.Polygon
-import com.example.domes.presentation.common.composables.Shape
+import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.shape.Polygon
+import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.routes.Screen
-import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getArabicFormatter
-import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.routes.prayers.composables.DisplaySlider
 import com.example.domes.presentation.routes.prayers.composables.MainActionSection
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBox
@@ -128,16 +133,73 @@ fun PrayersScreen(
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    val foregroundText =
-                        state.currentPrayer?.prayer?.name ?: state.selectedDate.format(
-                            getFormatter("d MMMM")
-                        )
-                    val backgroundText = state.currentPrayer?.prayer?.arabicName
-                        ?: getArabicFormatter("MMM d").format(state.selectedHijriDate)
+                    val (foregroundText, backgroundText) = if (state.selectedDate == LocalDate.now()) {
+                        (state.currentPrayer?.prayer?.name ?: "") to (state.currentPrayer?.prayer?.arabicName ?: "")
+                    } else {
+                        state.selectedDate.format(UIConstants.getFormatter("d MMMM")) to
+                        state.selectedHijriDate.format(UIConstants.getArabicFormatter("MMM d"))
+                    }
 
                     LayeredTopAppBar(
                         foregroundText,
                         backgroundText,
+                        topActions = {
+                            IconButton(
+                                onClick = { viewModel.onEvent(PrayersEvent.SetOverarchingDropdownVisibility()) }
+                            ) {
+                                Icon(
+                                    Icons.Outlined.ExpandCircleDown,
+                                    contentDescription = "More options"
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = state.showOverarchingDropdown,
+                                onDismissRequest = {
+                                    viewModel.onEvent(
+                                        PrayersEvent.SetOverarchingDropdownVisibility(
+                                            false
+                                        )
+                                    )
+                                }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Settings") },
+                                    onClick = {
+                                        navController.navigate(Screen.Settings.route)
+                                        viewModel.onEvent(
+                                            PrayersEvent.SetOverarchingDropdownVisibility(
+                                                false
+                                            )
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Outlined.Settings,
+                                            contentDescription = "Settings"
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Help") },
+                                    onClick = { /* Handle edit! */ },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.AutoMirrored.Outlined.HelpOutline,
+                                            contentDescription = null
+                                        )
+                                    }
+                                )
+                            }
+                        },
+                        bottomActions = MainActionSection(
+                            state.timeLeft,
+                            viewModel.calculateRemainingPrayerTime(),
+                            state.locale,
+                            navController = navController,
+                        ) {
+                            //viewModel.onEvent(PrayersEvent.Snooze)
+                        },
                         scrollBehavior = scrollBehavior
                     )
                 },
@@ -166,16 +228,6 @@ fun PrayersScreen(
                         contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 90.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                     ) {
-                        stickyHeader {
-                            MainActionSection(
-                                state.timeLeft,
-                                viewModel.calculateRemainingPrayerTime(),
-                                state.locale,
-                                navController = navController,
-                            ) {
-                                //viewModel.onEvent(PrayersEvent.Snooze)
-                            }
-                        }
                         item {
                             val shapeParam = Shape(
                                 roundness = .4f,

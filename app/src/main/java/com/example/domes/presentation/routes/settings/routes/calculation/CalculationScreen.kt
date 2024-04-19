@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -38,11 +39,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.Madhab
-import com.example.domes.presentation.common.composables.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.dialog.OptionDialog
 import com.example.domes.presentation.common.composables.dialog.OptionItem
+import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.routes.settings.routes.notifications.CalculationEvent
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
@@ -57,7 +60,7 @@ import com.maxkeppeler.sheets.option.models.Option
 )
 @Composable
 fun CalculationScreen(
-//    navController: NavController,
+    navController: NavController,
     viewModel: NotificationsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
@@ -247,7 +250,11 @@ fun CalculationScreen(
         topBar = {
             LayeredTopAppBar(
                 "Calculation",
-                navigationIcon = Icons.AutoMirrored.Outlined.ArrowBack,
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
+                    }
+                },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -450,17 +457,5 @@ fun CalculationScreen(
                 viewModel.onEvent(CalculationEvent.ChangeCalculationMethod(calculationMethodOptions[index].second))
             }
         }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.Q)
-@Preview(
-    showBackground = true,
-    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
-)
-@Composable
-fun DomesPreview() {
-    DomesTheme {
-        CalculationScreen()
     }
 }

@@ -165,6 +165,11 @@ class PrayersViewModel @Inject constructor(
                     selectedPrayerRecord = updatedPrayerRecord
                 )
             }
+            is PrayersEvent.SetOverarchingDropdownVisibility -> {
+                _state.value = _state.value.copy(
+                    showOverarchingDropdown = event.isVisible ?: !_state.value.showOverarchingDropdown
+                )
+            }
         }
     }
 

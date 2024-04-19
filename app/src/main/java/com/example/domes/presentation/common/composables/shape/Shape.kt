@@ -1,4 +1,4 @@
-package com.example.domes.presentation.common.composables
+package com.example.domes.presentation.common.composables.shape
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue

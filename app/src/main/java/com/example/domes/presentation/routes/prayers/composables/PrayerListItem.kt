@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
-import com.example.domes.presentation.common.composables.Shape
+import com.example.domes.presentation.common.composables.shape.Shape
 
 // TODO: Rewrite to be more compact
 @Composable

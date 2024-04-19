@@ -88,16 +88,16 @@ class MainActivity : ComponentActivity() {
                             PrayersScreen(navController)
                         }
                         composable(route = Screen.Qibla.route) {
-                            QiblaScreen()
+                            QiblaScreen(navController)
                         }
                         composable(route = Screen.Settings.route) {
                             SettingsScreen(navController)
                         }
                         composable(route = Screen.Location.route) {
-                            LocationScreen()
+                            LocationScreen(navController)
                         }
                         composable(route = Screen.Calculation.route) {
-                            CalculationScreen()
+                            CalculationScreen(navController)
                         }
                         composable(route = Screen.Notifications.route) {
                             NotificationsScreen(navController)
@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
 
-                            ManagePrayerScreen(prayer)
+                            ManagePrayerScreen(navController, prayer)
                         }
                     }
                 }

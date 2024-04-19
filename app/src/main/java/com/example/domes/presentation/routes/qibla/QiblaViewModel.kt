@@ -13,19 +13,24 @@ import androidx.lifecycle.viewModelScope
 import com.example.domes.domain.usecase.PrayerUseCases
 import com.example.domes.presentation.routes.qibla.QiblaState.Companion.DEVIATION
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
 
 @HiltViewModel
 class QiblaViewModel@Inject constructor(
     application: Application,
     private val prayersUseCases: PrayerUseCases
 ) : ViewModel() {
-    private var sensorManager: SensorManager = application.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val sensorManager: SensorManager = application.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private var sensor: Sensor? = null
 
     private val _state = mutableStateOf(QiblaState())
     val state: State<QiblaState> = _state
+
+    private var hapticJob: Job? = null
 
     private val sensorListener = object : SensorEventListener {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
@@ -61,16 +66,40 @@ class QiblaViewModel@Inject constructor(
                     qiblaDirection = prayersUseCases.getQiblaDirection(location)
                 )
             }
-        }
-    }
 
-    init {
+            startHapticFeedbackLoop()
+        }
+
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)?.also {
             sensorManager.registerListener(sensorListener, it, SensorManager.SENSOR_DELAY_GAME)
         }
     }
 
+    private fun startHapticFeedbackLoop() {
+        hapticJob = viewModelScope.launch {
+            while (true) {
+                val difference = abs(_state.value.qiblaDirection - _state.value.azimuth)
+
+                // Trigger the haptic feedback
+                _state.value.triggerHapticFeedback.postValue(Unit)
+
+                // Calculate the delay based on the difference
+                val delayMillis = calculateDelay(difference)
+                delay(delayMillis)
+            }
+        }
+    }
+
     override fun onCleared() {
         sensorManager.unregisterListener(sensorListener)
+        hapticJob?.cancel()
+    }
+
+    private fun calculateDelay(difference: Float): Long {
+        val maxDelay = 1000L
+        val minDelay = 100L
+        val normalizedDifference = (difference / 180).coerceIn(0f, 1f)
+
+        return maxDelay - ((maxDelay - minDelay) * normalizedDifference).toLong()
     }
 }

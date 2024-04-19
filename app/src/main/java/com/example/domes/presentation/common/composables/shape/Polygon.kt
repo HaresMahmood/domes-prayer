@@ -1,4 +1,4 @@
-package com.example.domes.presentation.common.composables
+package com.example.domes.presentation.common.composables.shape
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
