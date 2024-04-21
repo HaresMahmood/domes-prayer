@@ -34,8 +34,6 @@ import com.maxkeppeler.sheets.calendar.CalendarView
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
-import com.maxkeppeler.sheets.calendar.utils.jumpNext
-import com.maxkeppeler.sheets.calendar.utils.jumpPrev
 import java.time.LocalDate
 import java.time.chrono.HijrahDate
 
@@ -117,24 +115,24 @@ fun SelectedDateBottomSheetSection(
             Row {
                 IconButton(
                     onClick = {
-                        selectedDate.value?.jumpNext(calendarConfig)
-                        onDateChange(selectedDate.value!!)
-                    }
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Outlined.NavigateBefore,
-                        contentDescription = "Previous month"
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        selectedDate.value?.jumpPrev(calendarConfig)
-                        onDateChange(selectedDate.value!!)
+                        selectedDate.value = selectedDate.value?.minusDays(1)
+                        selectedDate.value?.let { onDateChange(it) }
                     }
                 ) {
                     Icon(
                         Icons.AutoMirrored.Outlined.NavigateNext,
                         contentDescription = "Next month"
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        selectedDate.value = selectedDate.value?.plusDays(1)
+                        selectedDate.value?.let { onDateChange(it) }
+                    }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.NavigateBefore,
+                        contentDescription = "Previous month"
                     )
                 }
             }
