@@ -326,7 +326,6 @@ fun PrayersScreen(
                                         isFirstItem = index == 0,
                                         isLastItem = index == prayerTimes.lastIndex,
                                         remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
-                                        onClick = { },
                                         onTick = {
                                             viewModel.onEvent(
                                                 PrayersEvent.ChangePrayerRecord(
