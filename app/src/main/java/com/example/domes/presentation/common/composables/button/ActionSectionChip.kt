@@ -1,6 +1,5 @@
 package com.example.domes.presentation.common.composables.button
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,7 +7,8 @@ import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PinDrop
-import androidx.compose.material3.Button
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.maxkeppeker.sheets.core.models.base.IconSource
 
 enum class Variant {
@@ -27,7 +26,7 @@ enum class Variant {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ActionSectionButton(
+fun ActionSectionChip(
     title: String,
     variant: Variant = Variant.DEFAULT,
     icon: IconSource? = null,
@@ -35,67 +34,75 @@ fun ActionSectionButton(
     onClick: () -> Unit = {},
 ) {
     val cornerShapes = when (variant) {
-        Variant.DEFAULT -> RoundedCornerShape(100)
+        Variant.DEFAULT -> AssistChipDefaults.shape
         Variant.VISUAL -> RoundedCornerShape(
             topStartPercent = 12,
             topEndPercent = 45,
             bottomStartPercent = 45,
             bottomEndPercent = 45
         )
-        Variant.SELECTED -> MaterialTheme.shapes.medium
+        Variant.SELECTED -> RoundedCornerShape(100)
     }
 
     val colors = when (variant) {
-        Variant.DEFAULT -> ButtonDefaults.buttonColors(
+        Variant.DEFAULT -> AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            leadingIconContentColor = MaterialTheme.colorScheme.secondary
         )
-        Variant.VISUAL -> ButtonDefaults.buttonColors(
+        Variant.VISUAL -> AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            leadingIconContentColor = MaterialTheme.colorScheme.tertiary
         )
-        Variant.SELECTED -> ButtonDefaults.buttonColors(
+        Variant.SELECTED -> AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
+            labelColor = MaterialTheme.colorScheme.onPrimary,
+            leadingIconContentColor = MaterialTheme.colorScheme.inversePrimary,
+            trailingIconContentColor = MaterialTheme.colorScheme.inversePrimary
         )
     }
 
-    Button(
+    AssistChip(
         onClick = onClick,
         shape = cornerShapes,
-        contentPadding = PaddingValues(horizontal = 15.dp),
+        border = null, // if (variant == Variant.DEFAULT) AssistChipDefaults.assistChipBorder() else
+        leadingIcon =  { icon?.imageVector?.let {
+            Icon(
+                it,
+                null,
+                modifier = Modifier.size(ChipDefaults.LeadingIconSize)
+            )
+        } },
+        label = {
+            Text(
+                text = title,
+//                style = MaterialTheme.typography.labelMedium
+            )
+        },
+        trailingIcon = {
+            trailingIcon?.imageVector?.let {
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Icon(
+                    it,
+                    null,
+                    modifier = Modifier.size(ChipDefaults.LeadingIconSize)
+                )
+            }
+        },
+//        contentPadding = PaddingValues(horizontal = 15.dp),
         colors = colors,
-    ) {
-        icon?.imageVector?.let {
-            Icon(
-                it,
-                null,
-                modifier = Modifier.size(ChipDefaults.LeadingIconSize)
-            )
-        }
-        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelSmall
-        )
-
-        trailingIcon?.imageVector?.let {
-            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Icon(
-                it,
-                null,
-                modifier = Modifier.size(ChipDefaults.LeadingIconSize)
-            )
-        }
-    }
+    )
 }
 
-@Preview
+@Preview(
+    showBackground = true
+)
 @Composable
 fun Preview() {
-    ActionSectionButton(
+    ActionSectionChip(
         title = "Test",
         icon = IconSource(Icons.Outlined.PinDrop),
-        variant = Variant.VISUAL,
+//        variant = Variant.SELECTED,
     )
 }

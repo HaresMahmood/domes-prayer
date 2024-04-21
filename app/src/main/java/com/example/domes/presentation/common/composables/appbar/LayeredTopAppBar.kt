@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domes.R
 import com.example.domes.domain.model.prayer.Prayer
-import com.example.domes.presentation.common.composables.button.ActionSectionButton
+import com.example.domes.presentation.common.composables.button.ActionSectionChip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,8 +129,8 @@ fun LargeTopAppBarPreview() {
             Prayer.MAGHRIB.name,
             Prayer.MAGHRIB.arabicName,
             bottomActions = listOf(
-                { ActionSectionButton("test 1") },
-                { ActionSectionButton("test 2") },
+                { ActionSectionChip("test 1") },
+                { ActionSectionChip("test 2") },
             ),
             scrollBehavior = scrollBehavior
         )

@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
-import com.example.domes.presentation.common.composables.button.ActionSectionButton
+import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.common.composables.dialog.InputDialog
 import com.example.domes.presentation.routes.Screen
@@ -84,7 +84,7 @@ fun LocationScreen(
                     }
                 },
                 bottomActions = listOf {
-                    ActionSectionButton(
+                    ActionSectionChip(
                         state.locale,
                         Variant.VISUAL,
                         icon = IconSource(Icons.Outlined.PinDrop)
