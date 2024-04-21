@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -27,7 +26,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domes.R
@@ -94,21 +92,23 @@ fun LayeredTopAppBar(
             ),
             scrollBehavior = scrollBehavior,
         )
-        LazyRow(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            items(bottomActions.size) { index ->
-                Box(
-                    modifier = Modifier.padding(
-                        start = if (index == 0) 16.dp else 0.dp,
-                        end = if (index == bottomActions.size - 1) 16.dp else 0.dp
-                    )
-                ) {
-                    bottomActions[index]()
+        if (bottomActions.isNotEmpty()) {
+            LazyRow(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                items(bottomActions.size) { index ->
+                    Box(
+                        modifier = Modifier.padding(
+                            start = if (index == 0) 16.dp else 0.dp,
+                            end = if (index == bottomActions.size - 1) 16.dp else 0.dp
+                        )
+                    ) {
+                        bottomActions[index]()
+                    }
                 }
             }
         }
