@@ -149,6 +149,7 @@ fun SelectedDateBottomSheetSection(
         CalendarView(
             useCaseState = rememberUseCaseState(
                 visible = true,
+                embedded = true,
                 onCloseRequest = {
                     collapseBottomSheet()
                 },
