@@ -3,20 +3,19 @@ package com.example.domes.presentation.common.composables.button
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeker.sheets.core.views.IconComponent
 
 enum class Variant {
     DEFAULT,
@@ -41,6 +40,7 @@ fun ActionSectionChip(
             bottomStartPercent = 45,
             bottomEndPercent = 45
         )
+
         Variant.SELECTED -> RoundedCornerShape(100)
     }
 
@@ -50,11 +50,13 @@ fun ActionSectionChip(
             labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
             leadingIconContentColor = MaterialTheme.colorScheme.secondary
         )
+
         Variant.VISUAL -> AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
             labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
             leadingIconContentColor = MaterialTheme.colorScheme.tertiary
         )
+
         Variant.SELECTED -> AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.primary,
             labelColor = MaterialTheme.colorScheme.onPrimary,
@@ -67,13 +69,11 @@ fun ActionSectionChip(
         onClick = onClick,
         shape = cornerShapes,
         border = null, // if (variant == Variant.DEFAULT) AssistChipDefaults.assistChipBorder() else
-        leadingIcon =  { icon?.imageVector?.let {
-            Icon(
-                it,
-                null,
-                modifier = Modifier.size(ChipDefaults.LeadingIconSize)
-            )
-        } },
+        leadingIcon = {
+            icon?.let {
+                IconComponent(modifier = Modifier, iconSource = it)
+            }
+        },
         label = {
             Text(
                 text = title,
@@ -81,13 +81,9 @@ fun ActionSectionChip(
             )
         },
         trailingIcon = {
-            trailingIcon?.imageVector?.let {
+            trailingIcon?.let {
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Icon(
-                    it,
-                    null,
-                    modifier = Modifier.size(ChipDefaults.LeadingIconSize)
-                )
+                IconComponent(modifier = Modifier, iconSource = it)
             }
         },
 //        contentPadding = PaddingValues(horizontal = 15.dp),
