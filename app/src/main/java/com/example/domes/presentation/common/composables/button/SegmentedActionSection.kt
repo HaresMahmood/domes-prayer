@@ -1,5 +1,6 @@
 package com.example.domes.presentation.common.composables.button
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -28,7 +29,7 @@ data class SegmentedAction(
 
 @Composable
 fun SegmentedActionSection(
-    children: List<SegmentedAction> = emptyList(),
+    children: List<SegmentedAction?> = emptyList(),
 ) {
     @Composable
     fun corners(pos: Int): Shape {
@@ -46,17 +47,20 @@ fun SegmentedActionSection(
     }
 
     Row(
+        modifier = Modifier.animateContentSize(),
         horizontalArrangement = Arrangement.spacedBy(3.dp)
     ) {
         children.forEachIndexed { index, child ->
-            FilledTonalIconButton(
-                modifier = Modifier.then(Modifier.size(40.dp)),
-                onClick = child.onClick,
-                shape = corners(index),
-                colors = child.colors ?: IconButtonDefaults.filledTonalIconButtonColors()
-            ) {
-                child.icon?.let {
-                    IconComponent(modifier = Modifier, iconSource = it)
+            child?.let {
+                FilledTonalIconButton(
+                    modifier = Modifier.then(Modifier.size(40.dp)),
+                    onClick = child.onClick,
+                    shape = corners(index),
+                    colors = child.colors ?: IconButtonDefaults.filledTonalIconButtonColors()
+                ) {
+                    child.icon?.let {
+                        IconComponent(modifier = Modifier, iconSource = it)
+                    }
                 }
             }
         }
@@ -77,13 +81,7 @@ fun SegmentedButtonPreview() {
                     contentDescription = "Yesterday"
                 ),
             ),
-            SegmentedAction(
-                onClick = {},
-                icon = IconSource(
-                    Icons.AutoMirrored.Outlined.NavigateBefore,
-                    contentDescription = "Yesterday"
-                ),
-            ),
+            null,
             SegmentedAction(
                 onClick = {},
                 icon = IconSource(

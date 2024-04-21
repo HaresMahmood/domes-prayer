@@ -15,7 +15,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
+import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,12 +50,18 @@ fun SelectedDateBottomSheetSection(
     collapseBottomSheet: () -> Unit,
     onDateChange: (LocalDate) -> Unit,
 ) {
-    val selectedDate = remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
+    val todayDate = remember { LocalDate.now() }
+    val selectedDate = remember { mutableStateOf<LocalDate?>(todayDate) }
     val calendarConfig = CalendarConfig(
         yearSelection = true,
         monthSelection = true,
         style = CalendarStyle.MONTH,
     )
+
+    fun updateDate(days: Long, isToday: Boolean = false) {
+        selectedDate.value = if (isToday) todayDate else selectedDate.value?.plusDays(days)
+        selectedDate.value?.let { onDateChange(it) }
+    }
 
     Box(
         modifier = Modifier
@@ -113,30 +121,51 @@ fun SelectedDateBottomSheetSection(
                 }
             }
 
-            SegmentedActionSection(
-                children = listOf(
-                    SegmentedAction(
-                        onClick = {
-                            selectedDate.value = selectedDate.value?.minusDays(1)
-                            selectedDate.value?.let { onDateChange(it) }
-                        },
-                        icon = IconSource(
-                            Icons.AutoMirrored.Outlined.NavigateBefore,
-                            contentDescription = "Yesterday"
-                        ),
-                    ),
-                    SegmentedAction(
-                        onClick = {
-                            selectedDate.value = selectedDate.value?.plusDays(1)
-                            selectedDate.value?.let { onDateChange(it) }
-                        },
-                        icon = IconSource(
-                            Icons.AutoMirrored.Outlined.NavigateNext,
-                            contentDescription = "Tomorrow"
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(3.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // TODO: Make more efficient
+//                AnimatedVisibility (selectedDate.value != todayDate) {
+//                    AssistChip(
+//                        modifier = Modifier.padding(0.dp),
+//                        onClick = { /*TODO*/ },
+//                        label = { Text(todayDate.dayOfMonth.toString(), maxLines = 1, overflow = TextOverflow.Visible) }
+//                    )
+//                }
+
+                val selectionActions = mutableListOf<SegmentedAction>().apply {
+                    add(
+                        SegmentedAction(
+                            { updateDate(-1) },
+                            icon = IconSource(
+                                Icons.AutoMirrored.Outlined.NavigateBefore,
+                                "Yesterday"
+                            )
                         )
                     )
-                )
-            )
+                    if (selectedDate.value?.equals(todayDate) == false) {
+                        add(
+                            SegmentedAction(
+                                { updateDate(0, true) },
+                                icon = IconSource(Icons.Outlined.Today, "Today"),
+                                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.inversePrimary,
+                                    contentColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        )
+                    }
+                    add(
+                        SegmentedAction(
+                            { updateDate(1) },
+                            icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "Tomorrow")
+                        )
+                    )
+                }
+
+                SegmentedActionSection(children = selectionActions)
+            }
         }
     }
     Column(
