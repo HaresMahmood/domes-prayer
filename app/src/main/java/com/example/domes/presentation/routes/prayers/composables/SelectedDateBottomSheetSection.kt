@@ -16,8 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,8 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.example.domes.presentation.common.composables.button.SegmentedAction
+import com.example.domes.presentation.common.composables.button.SegmentedActionSection
 import com.example.domes.presentation.routes.prayers.UIConstants
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarView
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
@@ -112,30 +113,30 @@ fun SelectedDateBottomSheetSection(
                 }
             }
 
-            Row {
-                IconButton(
-                    onClick = {
-                        selectedDate.value = selectedDate.value?.minusDays(1)
-                        selectedDate.value?.let { onDateChange(it) }
-                    }
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Outlined.NavigateBefore,
-                        contentDescription = "Next month"
+            SegmentedActionSection(
+                children = listOf(
+                    SegmentedAction(
+                        onClick = {
+                            selectedDate.value = selectedDate.value?.minusDays(1)
+                            selectedDate.value?.let { onDateChange(it) }
+                        },
+                        icon = IconSource(
+                            Icons.AutoMirrored.Outlined.NavigateBefore,
+                            contentDescription = "Yesterday"
+                        ),
+                    ),
+                    SegmentedAction(
+                        onClick = {
+                            selectedDate.value = selectedDate.value?.plusDays(1)
+                            selectedDate.value?.let { onDateChange(it) }
+                        },
+                        icon = IconSource(
+                            Icons.AutoMirrored.Outlined.NavigateNext,
+                            contentDescription = "Tomorrow"
+                        )
                     )
-                }
-                IconButton(
-                    onClick = {
-                        selectedDate.value = selectedDate.value?.plusDays(1)
-                        selectedDate.value?.let { onDateChange(it) }
-                    }
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Outlined.NavigateNext,
-                        contentDescription = "Previous month"
-                    )
-                }
-            }
+                )
+            )
         }
     }
     Column(
