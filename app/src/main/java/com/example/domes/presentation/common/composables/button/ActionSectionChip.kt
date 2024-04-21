@@ -99,7 +99,7 @@ fun ActionSectionChip(
     showBackground = true
 )
 @Composable
-fun Preview() {
+fun ActionSectionChipPreview() {
     ActionSectionChip(
         title = "Test",
         icon = IconSource(Icons.Outlined.PinDrop),
