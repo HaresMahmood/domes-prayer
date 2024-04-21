@@ -120,7 +120,7 @@ fun SelectedDateBottomSheetSection(
                     }
                 ) {
                     Icon(
-                        Icons.AutoMirrored.Outlined.NavigateNext,
+                        Icons.AutoMirrored.Outlined.NavigateBefore,
                         contentDescription = "Next month"
                     )
                 }
@@ -131,7 +131,7 @@ fun SelectedDateBottomSheetSection(
                     }
                 ) {
                     Icon(
-                        Icons.AutoMirrored.Outlined.NavigateBefore,
+                        Icons.AutoMirrored.Outlined.NavigateNext,
                         contentDescription = "Previous month"
                     )
                 }
