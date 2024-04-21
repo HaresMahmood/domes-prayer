@@ -1,18 +1,14 @@
 package com.example.domes.presentation.routes.settings.routes.location
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,8 +21,6 @@ import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material.icons.outlined.SwapVert
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,15 +38,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.button.ActionSectionButton
+import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.common.composables.dialog.InputDialog
 import com.example.domes.presentation.routes.Screen
-import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -90,6 +83,13 @@ fun LocationScreen(
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 },
+                bottomActions = listOf {
+                    ActionSectionButton(
+                        state.locale,
+                        Variant.VISUAL,
+                        icon = IconSource(Icons.Outlined.PinDrop)
+                    )
+                },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -106,26 +106,6 @@ fun LocationScreen(
                 contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                item {
-                    Button(
-                        onClick = { /*TODO*/ },
-                        shape = RoundedCornerShape(
-                            topStartPercent = 12,
-                            topEndPercent = 45,
-                            bottomStartPercent = 45,
-                            bottomEndPercent = 45
-                        ),
-                        contentPadding = PaddingValues(horizontal = 14.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        ),
-                    ) {
-                        Icon(Icons.Outlined.PinDrop, "Current location")
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(state.locale)
-                    }
-                }
                 item {
                     Column(
                         modifier = Modifier
@@ -251,7 +231,7 @@ fun LocationScreen(
                                     bottom = 8.dp,
                                 )
                                 .clickable {
-                                           viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
+                                    viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
                                 },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
