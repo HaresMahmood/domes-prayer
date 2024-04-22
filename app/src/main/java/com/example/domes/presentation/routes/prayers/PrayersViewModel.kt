@@ -35,13 +35,13 @@ class PrayersViewModel @Inject constructor(
     private val _state = mutableStateOf(PrayersState())
     val state: State<PrayersState> = _state
 
+    private val currentTime = LocalDateTime.now()
+
     // Events
 
     private val timeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
             if (intent?.action == Intent.ACTION_TIME_TICK) {
-                val currentTime = LocalDateTime.now()
-
                 onEvent(PrayersEvent.ChangeTime(currentTime))
 
                 if (currentTime.isAfter(_state.value.currentPrayer?.timeWindow)) {
@@ -51,7 +51,7 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
-    // Move to separate class to run in background
+    // TODO: Move to separate class to run in background
     private val notificationActionReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
             intent?.getParcelableExtra<PrayerTime>("PRAYERTIME")?.let { prayerTime ->
@@ -79,15 +79,20 @@ class PrayersViewModel @Inject constructor(
 
     init {
         context.registerReceiver(timeReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
-        context.registerReceiver(notificationActionReceiver, IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED))
+        context.registerReceiver(
+            notificationActionReceiver,
+            IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED)
+        )
 
         viewModelScope.launch {
             val coordinates = prayersUseCases.getLocation()
 
-            _state.value = _state.value.copy(
-                location = coordinates,
-                locale = prayersUseCases.getLocale(coordinates),
-            )
+            if (_state.value.isTodaySelected) {
+                _state.value = _state.value.copy(
+                    location = coordinates,
+                    locale = prayersUseCases.getLocale(coordinates),
+                )
+            }
 
             _state.value.location?.let { location ->
                 updateCurrentPrayerTimes(location, _state.value.calculationParameters)
@@ -123,9 +128,16 @@ class PrayersViewModel @Inject constructor(
             }
 
             is PrayersEvent.ChangeDate -> {
+                val isTodaySelected = event.date == currentTime.toLocalDate()
                 _state.value = _state.value.copy(
                     selectedDate = event.date,
-                    selectedHijriDate = prayersUseCases.getHijriDate(event.date)
+                    selectedHijriDate = prayersUseCases.getHijriDate(event.date),
+                    isTodaySelected = isTodaySelected,
+                    dayFraction = _state.value.currentRawPrayerTimes?.let { prayers ->
+                        if (isTodaySelected) prayersUseCases.getDayFraction(prayers, currentTime)
+                        else if (event.date.isAfter(currentTime.toLocalDate())) 0.0
+                        else 1.0
+                    } ?: 0.0
                 )
 
                 getPrayerTimes(
@@ -218,7 +230,7 @@ class PrayersViewModel @Inject constructor(
             )
         }.launchIn(viewModelScope).invokeOnCompletion {
 
-            }
+        }
     }
 
     private fun getPrayerTimes(
