@@ -2,9 +2,8 @@ package com.example.domes.presentation.routes.prayers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,8 +43,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
@@ -57,12 +59,13 @@ import com.example.domes.presentation.routes.prayers.composables.MainActionSecti
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBox
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.routes.prayers.composables.PrayerListItem
-import com.example.domes.presentation.routes.prayers.composables.SelectedDateBottomSheetSection
+import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class UIConstants {
     companion object {
@@ -80,7 +83,7 @@ class UIConstants {
 
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
     ExperimentalMaterialApi::class
 )
 @Composable
@@ -93,7 +96,10 @@ fun PrayersScreen(
         if (state.selectedDate == LocalDate.now()) state.currentPrayerTimes else state.selectedPrayerTimes
 
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val bottomSheetShaffoldState = rememberBottomSheetScaffoldState()
+
+    val bottomSheetProgress = 1f // (bottomSheetHeight.value / screenHeight.value + 0.37f) * 0.73f
+
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = {
         viewModel.onEvent(
             PrayersEvent.RefreshLocation
@@ -103,21 +109,18 @@ fun PrayersScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-    println("REFRESHING: ${state.isRefreshing}")
-
     BottomSheetScaffold(
-        scaffoldState = scaffoldState,
+        scaffoldState = bottomSheetShaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
         sheetPeekHeight = UIConstants.SHEET_PEEK_HEIGHT,
         sheetShape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp),
-        modifier = Modifier.animateContentSize(),
-        sheetDragHandle = { },
+        sheetDragHandle = {},
         sheetContent = {
-            SelectedDateBottomSheetSection(
+            SelectedDateSection(
                 gregorianDate = state.selectedDate,
                 hijriDate = state.selectedHijriDate,
-                bottomSheetExpandAction = { scope.launch { scaffoldState.bottomSheetState.expand() } },
-                collapseBottomSheet = { scope.launch { scaffoldState.bottomSheetState.partialExpand() } }
+                bottomSheetExpandAction = { scope.launch { bottomSheetShaffoldState.bottomSheetState.expand() } },
+                collapseBottomSheet = { scope.launch { bottomSheetShaffoldState.bottomSheetState.partialExpand() } }
             ) { selectedDate ->
                 viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
             }
@@ -125,9 +128,33 @@ fun PrayersScreen(
     ) { innerPadding ->
         Box(
             modifier = Modifier
+                .clickable {
+                    if (bottomSheetShaffoldState.bottomSheetState.hasExpandedState) {
+                        scope.launch { bottomSheetShaffoldState.bottomSheetState.partialExpand() }
+                    }
+                }
                 .fillMaxSize()
                 .padding(innerPadding)
-                .pullRefresh(pullRefreshState),
+                .pullRefresh(pullRefreshState)
+                .graphicsLayer {
+                    if (bottomSheetShaffoldState.bottomSheetState.hasExpandedState) {
+                        // val from 1959.0.dp to 863.0.dp
+                        val bottomSheetHeight = bottomSheetShaffoldState.bottomSheetState.requireOffset().roundToInt()
+
+                        // Map the bottomSheetHeight to a range of 0f to 1f
+                        val progress = (bottomSheetHeight - 863) / (1959 - 863).toFloat()
+
+                        // Interpolate the blurRadius, alpha, and scale values based on the progress
+                        val blurRadius = lerp(start = 20f, stop = 1f, fraction = progress)
+                        val alpha = lerp(start = 0.5f, stop = 1f, fraction = progress)
+                        val scale = lerp(start = 0.95f, stop = 1f, fraction = progress)
+
+                        this.alpha = alpha
+                        this.scaleX = scale
+                        this.scaleY = scale
+                        this.renderEffect = BlurEffect(blurRadius, blurRadius)
+                    }
+                },
             contentAlignment = Alignment.Center
         ) {
             Scaffold(

@@ -1,6 +1,7 @@
 package com.example.domes.presentation.routes.prayers.composables
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +44,7 @@ import java.time.chrono.HijrahDate
 @SuppressLint("RestrictedApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectedDateBottomSheetSection(
+fun SelectedDateSection(
     gregorianDate: LocalDate,
     hijriDate: HijrahDate,
     bottomSheetExpandAction: () -> Unit,
@@ -168,11 +169,11 @@ fun SelectedDateBottomSheetSection(
             }
         }
     }
-    Column(
+    Box(
         Modifier
             .fillMaxWidth()
-            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+            .animateContentSize(),
     ) {
         CalendarView(
             useCaseState = rememberUseCaseState(
