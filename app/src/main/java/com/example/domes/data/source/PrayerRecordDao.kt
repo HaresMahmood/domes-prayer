@@ -14,7 +14,7 @@ interface PrayerRecordDao {
     @Query("SELECT * FROM prayerRecord")
     fun getAll(): Flow<List<PrayerRecord>>
 
-    @Query("SELECT * FROM prayerrecord WHERE date = :date")
+    @Query("SELECT * FROM prayerRecord WHERE date = :date")
     suspend fun getByDate(date: LocalDate): PrayerRecord?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

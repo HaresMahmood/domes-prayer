@@ -3,7 +3,7 @@ package com.example.domes.domain.usecase
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
 import com.batoulapps.adhan2.PrayerTimes
-import com.example.domes.data.repository.PrayerTimesRespitory
+import com.example.domes.data.repository.OldPrayerTimesRespitory
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerTime
 import kotlinx.datetime.Instant
@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 import kotlin.time.Duration.Companion.hours
 
 class GetPrayerTimes(
-    private val repository: PrayerTimesRespitory
+    private val repository: OldPrayerTimesRespitory
 ) {
     companion object {
         private fun mapPrayer(prayer: Prayer): Prayer {
@@ -95,11 +95,11 @@ class GetPrayerTimes(
                 dayFraction = getDayFraction(prayerTimes.isha),
                 timeWindow = middleOfTheNightTime
             ),
-//            PrayerTime(
-//                prayer = Prayer.TEST,
-//                time = testTime,
-//                timeWindow = testTime.plusMinutes(5)
-//            )
+            PrayerTime(
+                prayer = Prayer.TEST,
+                time = testTime,
+                timeWindow = testTime.plusMinutes(5)
+            )
         ), prayerTimes)
     }
 }

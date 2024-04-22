@@ -1,14 +1,16 @@
 package com.example.domes.data.service
 
 import android.app.AlarmManager
+import android.app.Application
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
+import com.example.domes.data.receiver.AlarmReceiver
+import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerTime
 import java.time.ZoneId
 
 class AlarmService(
-    private val context: Context
+    private val context: Application
 ): IAlarmService {
     companion object {
         const val ACTION_ALARM = "com.example.domes.ALARM"
@@ -17,7 +19,7 @@ class AlarmService(
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun schedule(prayerTime: PrayerTime) {
-        val intent = Intent(ACTION_ALARM).apply {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("PRAYERTIME", prayerTime)
             action = ACTION_ALARM
         }
@@ -27,19 +29,19 @@ class AlarmService(
             prayerTime.time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
             PendingIntent.getBroadcast(
                 context,
-                prayerTime.hashCode(),
+                prayerTime.prayer.hashCode(),
                 intent,
-                PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
     }
 
-    override fun cancel(prayerTime: PrayerTime) {
+    override fun cancel(prayer: Prayer) {
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
-                prayerTime.hashCode(),
-                Intent(ACTION_ALARM),
+                prayer.hashCode(),
+                Intent(context, AlarmReceiver::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )

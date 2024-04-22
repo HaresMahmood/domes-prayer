@@ -1,4 +1,4 @@
-package com.example.domes.data.receivers
+package com.example.domes.data.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

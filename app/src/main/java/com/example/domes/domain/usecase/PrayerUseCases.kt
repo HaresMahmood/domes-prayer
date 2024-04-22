@@ -2,6 +2,8 @@ package com.example.domes.domain.usecase
 
 data class PrayerUseCases(
     val getPrayerTimes: GetPrayerTimes,
+    val getCurrentPrayerTimes: GetCurrentPrayerTimes,
+    val updatePrayerTimes: UpdatePrayerTimes,
     val getCurrentPrayer: GetCurrentPrayer,
     val getPrayerRecord: GetPrayerRecord,
     val addPrayerRecord: AddPrayerRecord,

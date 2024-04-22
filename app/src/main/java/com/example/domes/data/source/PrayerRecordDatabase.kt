@@ -8,7 +8,7 @@ import com.example.domes.domain.model.prayer.PrayerRecord
 import java.time.LocalDate
 
 
-class Converters {
+class PrayerRecordConverters {
     @TypeConverter
     fun toLocalDate(value: String?): LocalDate? {
         return value?.let { LocalDate.parse(it) }
@@ -24,7 +24,7 @@ class Converters {
     entities = [PrayerRecord::class],
     version = 1
 )
-@TypeConverters(Converters::class)
+@TypeConverters(PrayerRecordConverters::class)
 abstract class PrayerRecordDatabase: RoomDatabase() {
     abstract val prayerRecordDao: PrayerRecordDao
 

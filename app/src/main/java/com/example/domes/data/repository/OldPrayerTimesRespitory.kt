@@ -10,7 +10,7 @@ import kotlinx.datetime.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
-class PrayerTimesRespitory {
+class OldPrayerTimesRespitory {
    fun getAll(date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters): Pair<PrayerTimes, SunnahTimes> {
        return PrayerTimes(
            coordinates,

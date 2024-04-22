@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -49,15 +50,14 @@ android {
     }
 }
 
+// TODO: Clean up gradle file by taking out versions
 dependencies {
     implementation "com.maxkeppeler.sheets-compose-dialogs:core:1.2.1" // necessary
     implementation "com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.1" // TODO: Outdated but seems to mess up dynamic theming, maybe because of BOM
     implementation "com.maxkeppeler.sheets-compose-dialogs:option:1.2.1"
     implementation "com.maxkeppeler.sheets-compose-dialogs:input:1.2.1"
 
-//    implementation("com.batoulapps.adhan:adhan2:1.2.1")
-
-    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.core:core-ktx:1.9.23'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
     implementation 'androidx.activity:activity-compose:1.5.1'
     implementation platform('androidx.compose:compose-bom:2023.05.00')
@@ -67,8 +67,10 @@ dependencies {
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.ui:ui-test-junit4'
-    implementation 'androidx.compose.material3:material3:1.1.2'
+    //noinspection GradleDependency
+    implementation "androidx.compose.material3:material3:$compose_version" // TODO: Outdated but seems to mess up dynamic theming
     implementation 'com.google.android.gms:play-services-location:21.2.0'
+    implementation 'androidx.hilt:hilt-common:1.2.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -79,7 +81,7 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.23"))
     implementation("androidx.graphics:graphics-shapes:1.0.0-alpha04")
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -108,9 +110,10 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
 
-    implementation "com.google.dagger:hilt-android:2.48"
-    kapt "com.google.dagger:hilt-android-compiler:2.48"
+    implementation "com.google.dagger:hilt-android:2.50"
+    kapt "com.google.dagger:hilt-android-compiler:2.50"
     kapt "androidx.hilt:hilt-compiler:1.2.0"
+    implementation "androidx.hilt:hilt-work:1.2.0"
 
     implementation "androidx.room:room-runtime:2.6.1"
     kapt "androidx.room:room-compiler:2.6.1"
@@ -120,13 +123,15 @@ dependencies {
 
     implementation("com.batoulapps.adhan:adhan2:0.0.5")
 
-    implementation 'androidx.work:work-runtime:2.7.1'
-    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    implementation 'androidx.work:work-runtime:2.9.0'
+    implementation 'androidx.work:work-runtime-ktx:2.9.0'
     implementation "androidx.navigation:navigation-compose:2.7.7"
 
     implementation "com.google.accompanist:accompanist-permissions:0.35.0-alpha"
 
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation "androidx.datastore:datastore-preferences:1.1.0"
+
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 kapt {
     correctErrorTypes true

@@ -19,6 +19,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.domes.data.worker.PrayerTimesUpdateWorker
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.PrayersScreen
@@ -30,11 +36,31 @@ import com.example.domes.presentation.routes.settings.routes.notifications.Notif
 import com.example.domes.presentation.routes.settings.routes.notifications.routes.ManagePrayerScreen
 import com.example.domes.ui.theme.DomesTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Immediate execution
+        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<PrayerTimesUpdateWorker>()
+            .build()
+        WorkManager.getInstance(this).enqueueUniqueWork(
+            "oneTimePrayerTimesUpdate",
+            ExistingWorkPolicy.KEEP,
+            oneTimeWorkRequest
+        )
+
+        // Periodic execution
+        val periodicWorkRequest =
+            PeriodicWorkRequestBuilder<PrayerTimesUpdateWorker>(1, TimeUnit.DAYS)
+                .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "periodicPrayerTimesUpdate",
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorkRequest
+        )
+
         super.onCreate(savedInstanceState)
         setContent {
             DomesTheme {
@@ -49,39 +75,39 @@ class MainActivity : ComponentActivity() {
                         startDestination = Screen.Prayers.route,
                         enterTransition = {
                             fadeIn(animationSpec = tween(500, easing = EaseOutExpo)) +
-                            slideIntoContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Left,
-                                animationSpec = tween(500, easing = EaseOutExpo)
-                            ) { offsetForFullSlide ->
-                                offsetForFullSlide / 8
-                            }
+                                    slideIntoContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Left,
+                                        animationSpec = tween(500, easing = EaseOutExpo)
+                                    ) { offsetForFullSlide ->
+                                        offsetForFullSlide / 8
+                                    }
                         },
                         exitTransition = {
                             fadeOut(animationSpec = tween(500, easing = EaseOutExpo)) +
-                            slideOutOfContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Left,
-                                animationSpec = tween(500, easing = EaseOutExpo)
-                            ) { offsetForFullSlide ->
-                                offsetForFullSlide / 8
-                            }
+                                    slideOutOfContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Left,
+                                        animationSpec = tween(500, easing = EaseOutExpo)
+                                    ) { offsetForFullSlide ->
+                                        offsetForFullSlide / 8
+                                    }
                         },
                         popEnterTransition = {
                             fadeIn(animationSpec = tween(500, easing = EaseOutExpo)) +
-                            slideIntoContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Right,
-                                animationSpec = tween(500, easing = EaseOutExpo)
-                            ) { offsetForFullSlide ->
-                                offsetForFullSlide / 8
-                            }
+                                    slideIntoContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Right,
+                                        animationSpec = tween(500, easing = EaseOutExpo)
+                                    ) { offsetForFullSlide ->
+                                        offsetForFullSlide / 8
+                                    }
                         },
                         popExitTransition = {
                             fadeOut(animationSpec = tween(500, easing = EaseOutExpo)) +
-                            slideOutOfContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Right,
-                                animationSpec = tween(500, easing = EaseOutExpo)
-                            ) { offsetForFullSlide ->
-                                offsetForFullSlide / 8
-                            }
+                                    slideOutOfContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Right,
+                                        animationSpec = tween(500, easing = EaseOutExpo)
+                                    ) { offsetForFullSlide ->
+                                        offsetForFullSlide / 8
+                                    }
                         }
                     ) {
                         composable(route = Screen.Prayers.route) {

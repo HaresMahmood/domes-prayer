@@ -9,17 +9,21 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
+import com.example.domes.data.repository.OldPrayerTimesRespitory
 import com.example.domes.data.repository.PrayerRecordRepository
-import com.example.domes.data.repository.PrayerTimesRespitory
+import com.example.domes.data.repository.PrayerTimesRepository
 import com.example.domes.data.repository.UserPreferencesRepository
+import com.example.domes.data.service.AlarmService
 import com.example.domes.data.service.NotificationService
 import com.example.domes.data.source.PrayerRecordDatabase
+import com.example.domes.data.source.PrayerTimesDatabase
 import com.example.domes.domain.repository.IPrayerRecordRepository
 import com.example.domes.domain.repository.IUserPreferencesRepository
 import com.example.domes.domain.usecase.AddPrayerRecord
 import com.example.domes.domain.usecase.FetchLocation
 import com.example.domes.domain.usecase.GetCalculationMethod
 import com.example.domes.domain.usecase.GetCurrentPrayer
+import com.example.domes.domain.usecase.GetCurrentPrayerTimes
 import com.example.domes.domain.usecase.GetDayFraction
 import com.example.domes.domain.usecase.GetHijriDate
 import com.example.domes.domain.usecase.GetJuristic
@@ -34,6 +38,7 @@ import com.example.domes.domain.usecase.SendNotification
 import com.example.domes.domain.usecase.SetCalculationMethod
 import com.example.domes.domain.usecase.SetJuristic
 import com.example.domes.domain.usecase.SetLocation
+import com.example.domes.domain.usecase.UpdatePrayerTimes
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
@@ -63,6 +68,22 @@ object AppModule {
     @Singleton
     fun providePrayerRecordRepository(database: PrayerRecordDatabase): IPrayerRecordRepository {
         return PrayerRecordRepository(database.prayerRecordDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providePrayerTimesDatabase(app: Application): PrayerTimesDatabase {
+        return Room.databaseBuilder(
+            app,
+            PrayerTimesDatabase::class.java,
+            PrayerTimesDatabase.DATABASE_NAME
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun providePrayerTimesRepository(database: PrayerTimesDatabase): PrayerTimesRepository {
+        return PrayerTimesRepository(database.prayerTimesDao)
     }
 
     @Singleton
@@ -98,17 +119,26 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideAlarmService(app: Application): AlarmService {
+        return AlarmService(app)
+    }
+
+    @Provides
+    @Singleton
     fun providePrayerUseCases(
         prayerRecordRepository: IPrayerRecordRepository,
+        prayerTimesRepository: PrayerTimesRepository,
         userPreferencesRepository: IUserPreferencesRepository,
         notificationService: NotificationService,
         fusedLocationProviderClient: FusedLocationProviderClient,
         app: Application
     ): PrayerUseCases {
-        val prayerTimesRepository = PrayerTimesRespitory()
+        val oldPrayerTimesRepository = OldPrayerTimesRespitory()
 
         return PrayerUseCases(
-            getPrayerTimes = GetPrayerTimes(prayerTimesRepository),
+            getPrayerTimes = GetPrayerTimes(oldPrayerTimesRepository),
+            getCurrentPrayerTimes = GetCurrentPrayerTimes(prayerTimesRepository),
+            updatePrayerTimes = UpdatePrayerTimes(prayerTimesRepository),
             getCurrentPrayer = GetCurrentPrayer(),
             getPrayerRecord = GetPrayerRecord(prayerRecordRepository),
             addPrayerRecord = AddPrayerRecord(prayerRecordRepository),

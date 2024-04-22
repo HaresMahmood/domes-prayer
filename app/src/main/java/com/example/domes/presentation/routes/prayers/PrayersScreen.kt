@@ -137,6 +137,7 @@ fun PrayersScreen(
                 .padding(innerPadding)
                 .pullRefresh(pullRefreshState)
                 .graphicsLayer {
+                    // TODO: Unoptimised
                     if (bottomSheetShaffoldState.bottomSheetState.hasExpandedState) {
                         // val from 1959.0.dp to 863.0.dp
                         val bottomSheetHeight = bottomSheetShaffoldState.bottomSheetState.requireOffset().roundToInt()
