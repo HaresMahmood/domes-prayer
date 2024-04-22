@@ -79,9 +79,7 @@ class PrayersViewModel @Inject constructor(
 
     init {
         context.registerReceiver(timeReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
-        context.registerReceiver(
-            notificationActionReceiver, IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED)
-        )
+        context.registerReceiver(notificationActionReceiver, IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED))
 
         viewModelScope.launch {
             val coordinates = prayersUseCases.getLocation()
@@ -106,15 +104,14 @@ class PrayersViewModel @Inject constructor(
     fun onEvent(event: PrayersEvent) {
         when (event) {
             is PrayersEvent.ChangeTime -> {
-                _state.value.currentRawPrayerTimes?.let { rawPrayerTimes ->
                 _state.value = _state.value.copy(
                     timeLeft = _state.value.currentPrayer?.let {
                         prayersUseCases.getPrayerTimeLeft(event.currentTime, it)
-                    }, dayFraction = prayersUseCases.getDayFraction(
-                        rawPrayerTimes, LocalDateTime.now()
-                    )
+                    },
+                    dayFraction = _state.value.currentRawPrayerTimes?.let {
+                        prayersUseCases.getDayFraction(it, LocalDateTime.now())
+                    } ?: 0.0
                 )
-                }
             }
 
             is PrayersEvent.ChangeCurrentPrayer -> {
@@ -175,14 +172,14 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
-    // TODO: move to use case
+    // TODO: move to use case?
     fun calculateRemainingPrayerTime() = _state.value.timeLeft?.let { timeLeft ->
         _state.value.totalTime?.let { totalTime ->
             timeLeft.toMillis().toDouble() / totalTime.toMillis().toDouble()
         }
     }?.toFloat() ?: 0.0f
 
-    fun mapPrayerToPrayerRecord(prayer: Prayer): Boolean {
+    private fun mapPrayerToPrayerRecord(prayer: Prayer): Boolean {
         return when (prayer) {
             Prayer.FAJR -> _state.value.selectedPrayerRecord.fajr
             Prayer.DHUHR -> _state.value.selectedPrayerRecord.dhuhr
@@ -206,25 +203,21 @@ class PrayersViewModel @Inject constructor(
         )
 
         prayersUseCases.getCurrentPrayerTimes().onEach { prayerTimes ->
+            val currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
+
             _state.value = _state.value.copy(
-                currentPrayerTimes = prayerTimes
+                currentPrayerTimes = prayerTimes,
+                currentRawPrayerTimes = rawPrayerTimes,
+                currentPrayer = currentPrayer,
+                timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer),
+                totalTime = prayersUseCases.getPrayerTimeLeft(
+                    currentPrayer.time, currentPrayer
+                ),
+                selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
+                dayFraction = prayersUseCases.getDayFraction(rawPrayerTimes, currentTime)
             )
         }.launchIn(viewModelScope).invokeOnCompletion {
-                val currentPrayer =
-                    prayersUseCases.getCurrentPrayer(_state.value.currentPrayerTimes, currentTime)
 
-                _state.value = _state.value.copy(
-                    currentRawPrayerTimes = rawPrayerTimes,
-                    currentPrayer = currentPrayer,
-                    timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer),
-                    totalTime = prayersUseCases.getPrayerTimeLeft(
-                        currentPrayer.time, currentPrayer
-                    ),
-                    selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
-                    dayFraction = prayersUseCases.getDayFraction(rawPrayerTimes, currentTime)
-                )
-
-                getPrayerRecord(currentTime.toLocalDate())
             }
     }
 
