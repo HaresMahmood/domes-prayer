@@ -1,6 +1,10 @@
 package com.example.domes.presentation.routes.qibla
 
-import android.view.HapticFeedbackConstants
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.VibratorManager
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,7 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +57,7 @@ import com.example.domes.presentation.common.utility.smoothRotation
 import com.example.domes.presentation.routes.Screen
 import kotlin.math.abs
 
+@RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QiblaScreen(
@@ -60,7 +65,8 @@ fun QiblaScreen(
     viewModel: QiblaViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-    val hapticFeedback = LocalView.current
+    val vibratorManager = LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+    val vibrator = vibratorManager.getDefaultVibrator();
 
     val baseParameters = Shape(
         sides = 16,
@@ -97,7 +103,8 @@ fun QiblaScreen(
     )
 
 //    state.triggerHapticFeedback.observeForever {
-//        hapticFeedback.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+//        val effect = VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
+//        vibrator.vibrate(effect)
 //    }
 
     Scaffold(
@@ -131,7 +138,8 @@ fun QiblaScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     onClick = {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        val effect = VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
+                        vibrator.vibrate(effect)
                     }
                 ) {
                     Icon(Icons.Outlined.CompassCalibration, contentDescription = "Calibrate")
