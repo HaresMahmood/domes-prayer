@@ -2,6 +2,7 @@ package com.example.domes.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -19,6 +20,8 @@ class UserPreferencesRepository @Inject constructor(
 
         val CALCULATION_METHOD = intPreferencesKey("calculation_method")
         val JURISTIC = intPreferencesKey("juristic")
+
+        val NOTIFICATIONS = booleanPreferencesKey("notifications")
     }
 
     override suspend fun setLocation(latitude: Double, longitude: Double) {
@@ -60,5 +63,16 @@ class UserPreferencesRepository @Inject constructor(
     override suspend fun getJuristic(): Int? {
         val preferences = dataStore.data.first()
         return preferences[PreferencesKeys.JURISTIC]
+    }
+
+    override suspend fun setNotifications(isNotificationsAllowed: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NOTIFICATIONS] = isNotificationsAllowed
+        }
+    }
+
+    override suspend fun getNotifications(): Boolean? {
+        val preferences = dataStore.data.first()
+        return preferences[PreferencesKeys.NOTIFICATIONS]
     }
 }

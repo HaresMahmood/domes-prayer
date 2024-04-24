@@ -9,4 +9,6 @@ interface IUserPreferencesRepository {
     suspend fun getCalculationMethod(): Int?
     suspend fun setJuristic(juristic: Int)
     suspend fun getJuristic(): Int?
+    suspend fun setNotifications(isNotificationsAllowed: Boolean)
+    suspend fun getNotifications(): Boolean?
 }

@@ -166,6 +166,7 @@ class PrayersViewModel @Inject constructor(
                 _state.value.isRefreshing = false
             }
             is PrayersEvent.ChangePrayerRecord -> {
+                // TODO: Creating a map, really?
                 val updatedDetails = _state.value.selectedPrayerRecord.details.map { detail ->
                     if (detail.prayer == event.prayer) {
                         detail.copy(
