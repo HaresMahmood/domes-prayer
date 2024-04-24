@@ -15,8 +15,9 @@ data class MissedReason(
         val SICK = MissedReason("Sick", R.drawable.routine_fill0_wght400_grad0_opsz24)
         val PERIOD = MissedReason("Period", R.drawable.routine_fill0_wght400_grad0_opsz24)
         val PREGNANCY = MissedReason("Pregnancy", R.drawable.routine_fill0_wght400_grad0_opsz24)
+        val NONE = null
 
-        val ALL = listOf(TRAVEL, SICK, PERIOD, PREGNANCY)
+        val ALL = listOf(TRAVEL, SICK, PERIOD, PREGNANCY, NONE)
     }
 }
 

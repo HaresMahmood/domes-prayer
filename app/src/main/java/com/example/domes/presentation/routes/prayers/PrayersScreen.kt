@@ -358,7 +358,7 @@ fun PrayersScreen(
                                         onExpand = {
                                             viewModel.onEvent(PrayersEvent.ChangeExpandedPrayer(if (it) null else prayerTime))
                                         },
-                                        onTick = { prayed, notes, missedReason ->
+                                        onPrayerRecordDetailValueChange = { prayed, notes, missedReason ->
                                             viewModel.onEvent(
                                                 PrayersEvent.ChangePrayerRecord(
                                                     prayerTime.prayer,

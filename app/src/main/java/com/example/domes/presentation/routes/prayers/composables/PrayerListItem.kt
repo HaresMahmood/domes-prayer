@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CallMissedOutgoing
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.NotificationsOff
@@ -36,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,10 +73,8 @@ fun PrayerListItem(
     isLastItem: Boolean = false,
     remainingTimePercentage: Float,
     onExpand: (Boolean) -> Unit,
-    onTick: (Boolean?, String?, MissedReason?) -> Unit = { prayed: Boolean?, notes: String?, missedReason: MissedReason? -> }
+    onPrayerRecordDetailValueChange: (prayed: Boolean?, notes: String?, missedReasons: MissedReason?) -> Unit = { b: Boolean?, s: String?, mr: MissedReason? -> }
 ) {
-    println("EXPANDED: ${prayerTime.prayer.name} - $isExpanded")
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,7 +114,9 @@ fun PrayerListItem(
                     )
                     .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
                     .clickable {
-                        onExpand(isExpanded)
+                        if (prayerTime.prayer.displayable) {
+                            onExpand(isExpanded)
+                        }
                     },
                 leadingContent = {
                     Box(contentAlignment = Alignment.Center) {
@@ -135,7 +137,7 @@ fun PrayerListItem(
                         }
                         IconButton(
                             onClick = {
-                                prayerRecordDetail?.let { onTick(!it.prayed, null, null) }
+                                prayerRecordDetail?.let { onPrayerRecordDetailValueChange(!it.prayed, null, null) }
                             }
                         ) {
                             if (prayerTime.prayer.displayable && prayerRecordDetail != null) {
@@ -231,6 +233,9 @@ fun PrayerListItem(
                 }
             )
             if (isExpanded) {
+                // TODO: Is this bad?
+                val isDropDownExpanded = remember { mutableStateOf(false) }
+
                 Divider()
                 Column(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
@@ -254,8 +259,10 @@ fun PrayerListItem(
 
                         ExposedDropdownMenuBox(
                             modifier = Modifier.fillMaxWidth(),
-                            expanded = true,
-                            onExpandedChange = {}
+                            expanded = isDropDownExpanded.value,
+                            onExpandedChange = {
+                                isDropDownExpanded.value = it
+                            }
                         ) {
                             OutlinedTextField(
                                 modifier = Modifier.menuAnchor().fillMaxWidth(),
@@ -264,23 +271,41 @@ fun PrayerListItem(
                                 readOnly = true,
                                 singleLine = true,
                                 label = { Text("Missed due to") },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = true) },
+                                leadingIcon = {
+                                    prayerRecordDetail.missedReason?.iconResId?.let { id ->
+                                        Icon(
+                                            painterResource(id = id),
+                                            "Missed reason"
+                                        )
+                                    } ?: Icon (
+                                        Icons.AutoMirrored.Filled.CallMissedOutgoing,
+                                        contentDescription = "Missed Reason"
+                                    )
+                                },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value) },
                                 colors = ExposedDropdownMenuDefaults.textFieldColors(),
                             )
                             ExposedDropdownMenu(
-                                expanded = true,
-                                onDismissRequest = { },
+                                expanded = isDropDownExpanded.value,
+                                onDismissRequest = {
+                                    isDropDownExpanded.value = !isDropDownExpanded.value
+                                },
                             ) {
                                 MissedReason.ALL.forEach {
                                     DropdownMenuItem(
-                                        text = { Text(it.name) },
+                                        text = { Text(it?.name ?: "None") },
                                         leadingIcon = {
-                                            Icon(
-                                                painterResource(it.iconResId),
-                                                it.name
-                                            )
+                                            it?.iconResId?.let { id ->
+                                                Icon(
+                                                    painterResource(id),
+                                                    it.name
+                                                )
+                                            }
                                         },
-                                        onClick = { },
+                                        onClick = {
+                                            onPrayerRecordDetailValueChange(null, null, it)
+                                            isDropDownExpanded.value = !isDropDownExpanded.value
+                                        },
                                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                     )
                                 }
@@ -291,12 +316,14 @@ fun PrayerListItem(
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        value = "",
-                        onValueChange = {},
+                        value = prayerRecordDetail?.notes ?: "",
+                        onValueChange = {
+                            onPrayerRecordDetailValueChange(null, it, null) // FIXME: Probably very inefficient!!! updating database on change
+                        },
                         leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TextSnippet, null) },
                         label = { Text("Notes") },
                         placeholder = { Text("Reason missed • Raka'ats prayed • Du'as read") },
-                        minLines = 2,
+                        maxLines = 2,
                     )
 
 //                InputView(

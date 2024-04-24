@@ -124,7 +124,6 @@ class PrayersViewModel @Inject constructor(
                 )
             }
             is PrayersEvent.ChangeExpandedPrayer -> {
-                println("EXPANDED PRAYER: ${event.prayerTime?.prayer}")
                 _state.value = _state.value.copy(
                     expandedPrayer = event.prayerTime
                 )
@@ -172,7 +171,7 @@ class PrayersViewModel @Inject constructor(
                         detail.copy(
                             prayed = event.prayed ?: detail.prayed,
                             notes = event.notes ?: detail.notes,
-                            missedReason = event.missedReason ?: detail.missedReason
+                            missedReason = event.missedReason
                         )
                     } else {
                         detail
