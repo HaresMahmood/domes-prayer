@@ -1,7 +1,5 @@
 package com.example.domes.presentation.routes.settings.routes.calculation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,8 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -47,9 +43,6 @@ import com.example.domes.presentation.common.composables.dialog.OptionDialog
 import com.example.domes.presentation.common.composables.dialog.OptionItem
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
-import com.example.domes.presentation.routes.settings.routes.notifications.CalculationEvent
-import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
-import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeler.sheets.option.models.Option
@@ -61,7 +54,7 @@ import com.maxkeppeler.sheets.option.models.Option
 @Composable
 fun CalculationScreen(
     navController: NavController,
-    viewModel: NotificationsViewModel = hiltViewModel()
+    viewModel: CalculationViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
     val scrollBehavior =
@@ -408,7 +401,7 @@ fun CalculationScreen(
                                     bottom = 8.dp
                                 )
                                 .clickable {
-                                    viewModel.onEvent(CalculationEvent.ResetSettings())
+                                    viewModel.onEvent(CalculationEvent.ResetSettings)
                                 },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,

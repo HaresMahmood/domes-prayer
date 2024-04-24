@@ -21,7 +21,7 @@ class UserPreferencesRepository @Inject constructor(
         val CALCULATION_METHOD = intPreferencesKey("calculation_method")
         val JURISTIC = intPreferencesKey("juristic")
 
-        val NOTIFICATIONS = booleanPreferencesKey("notifications")
+        val NOTIFICATIONS_ALLOWED = booleanPreferencesKey("notifications_allowed")
     }
 
     override suspend fun setLocation(latitude: Double, longitude: Double) {
@@ -65,14 +65,14 @@ class UserPreferencesRepository @Inject constructor(
         return preferences[PreferencesKeys.JURISTIC]
     }
 
-    override suspend fun setNotifications(isNotificationsAllowed: Boolean) {
+    override suspend fun setNotificationsAllowed(isNotificationsAllowed: Boolean) {
         dataStore.edit { preferences ->
-            preferences[PreferencesKeys.NOTIFICATIONS] = isNotificationsAllowed
+            preferences[PreferencesKeys.NOTIFICATIONS_ALLOWED] = isNotificationsAllowed
         }
     }
 
-    override suspend fun getNotifications(): Boolean? {
+    override suspend fun getNotificationsAllowed(): Boolean? {
         val preferences = dataStore.data.first()
-        return preferences[PreferencesKeys.NOTIFICATIONS]
+        return preferences[PreferencesKeys.NOTIFICATIONS_ALLOWED]
     }
 }

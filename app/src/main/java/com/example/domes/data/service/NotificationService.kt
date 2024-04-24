@@ -36,6 +36,7 @@ class NotificationService(
         CoroutineScope(Dispatchers.IO).launch {
             val notificationId = params.id ?: generateNotificationId()
             val notificationBuilder = context.createNotificationBuilder(params)
+
             notificationManager.notify(notificationId, notificationBuilder.build())
         }
     }

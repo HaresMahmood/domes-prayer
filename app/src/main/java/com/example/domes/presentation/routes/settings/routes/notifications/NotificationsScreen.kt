@@ -36,6 +36,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -91,7 +92,7 @@ fun NotificationsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                MaterialTheme.colorScheme.primaryContainer,
+                                if (state.isNotificationsAllowed) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                                 RoundedCornerShape(35.dp)
                             ),
                     ) {
@@ -106,7 +107,7 @@ fun NotificationsScreen(
                                     bottom = 8.dp
                                 )
                                 .clickable {
-                                    viewModel.onEvent(CalculationEvent.ResetSettings())
+                                    viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed())
                                 },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
@@ -122,8 +123,10 @@ fun NotificationsScreen(
                             headlineContent = { Text("Allow notifications") },
                             trailingContent = {
                                 Switch(
-                                    checked = true,
-                                    onCheckedChange = { }
+                                    checked = state.isNotificationsAllowed,
+                                    onCheckedChange = {
+                                        viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed(it))
+                                    }
                                 )
                             }
                         )
@@ -137,7 +140,8 @@ fun NotificationsScreen(
                                 MaterialTheme.colorScheme.surfaceColorAtElevation(
                                     1.dp
                                 ), RoundedCornerShape(35.dp)
-                            ),
+                            )
+                            .alpha(if (state.isNotificationsAllowed) 1f else 0.5f),
                     ) {
                         Prayer.ALL.forEach { prayer ->
                             ListItem(
@@ -181,7 +185,7 @@ fun NotificationsScreen(
                                                 .width(1.dp)
                                         )
                                         Switch(
-                                            checked = true,
+                                            checked = state.isNotificationsAllowed,
                                             onCheckedChange = { }
                                         )
                                     }

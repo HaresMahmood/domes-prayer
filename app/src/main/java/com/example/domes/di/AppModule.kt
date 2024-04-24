@@ -29,6 +29,7 @@ import com.example.domes.domain.usecase.GetHijriDate
 import com.example.domes.domain.usecase.GetJuristic
 import com.example.domes.domain.usecase.GetLocale
 import com.example.domes.domain.usecase.GetLocation
+import com.example.domes.domain.usecase.GetNotificationsAllowed
 import com.example.domes.domain.usecase.GetPrayerRecord
 import com.example.domes.domain.usecase.GetPrayerTimeLeft
 import com.example.domes.domain.usecase.GetPrayerTimes
@@ -38,6 +39,7 @@ import com.example.domes.domain.usecase.SendNotification
 import com.example.domes.domain.usecase.SetCalculationMethod
 import com.example.domes.domain.usecase.SetJuristic
 import com.example.domes.domain.usecase.SetLocation
+import com.example.domes.domain.usecase.SetNotificationsAllowed
 import com.example.domes.domain.usecase.UpdatePrayerTimes
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -145,6 +147,8 @@ object AppModule {
             getHijriDate = GetHijriDate(),
             getPrayerTimeLeft = GetPrayerTimeLeft(),
             sendNotification = SendNotification(notificationService),
+            getNotificationsAllowed = GetNotificationsAllowed(userPreferencesRepository),
+            setNotificationsAllowed = SetNotificationsAllowed(userPreferencesRepository),
             getLocale = GetLocale(app),
             fetchLocation = FetchLocation(userPreferencesRepository, fusedLocationProviderClient, app),
             setLocation = SetLocation(userPreferencesRepository),

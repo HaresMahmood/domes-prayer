@@ -10,6 +10,8 @@ data class PrayerUseCases(
     val getHijriDate: GetHijriDate,
     val getPrayerTimeLeft: GetPrayerTimeLeft,
     val sendNotification: SendNotification,
+    val getNotificationsAllowed: GetNotificationsAllowed,
+    val setNotificationsAllowed: SetNotificationsAllowed,
     val fetchLocation: FetchLocation,
     val setLocation: SetLocation,
     val getLocation: GetLocation,
