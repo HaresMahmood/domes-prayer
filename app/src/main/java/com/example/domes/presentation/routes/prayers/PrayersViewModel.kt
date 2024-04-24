@@ -123,7 +123,12 @@ class PrayersViewModel @Inject constructor(
                     )
                 )
             }
-
+            is PrayersEvent.ChangeExpandedPrayer -> {
+                println("EXPANDED PRAYER: ${event.prayerTime?.prayer}")
+                _state.value = _state.value.copy(
+                    expandedPrayer = event.prayerTime
+                )
+            }
             is PrayersEvent.ChangeDate -> {
                 val isTodaySelected = event.date == currentTime.toLocalDate()
                 _state.value = _state.value.copy(
@@ -162,10 +167,6 @@ class PrayersViewModel @Inject constructor(
                 _state.value.isRefreshing = false
             }
             is PrayersEvent.ChangePrayerRecord -> {
-                // Log the state before changes
-                println("PR BEFORE: ${_state.value.selectedPrayerRecord}")
-
-                // Create a completely new list to ensure recomposition
                 val updatedDetails = _state.value.selectedPrayerRecord.details.map { detail ->
                     if (detail.prayer == event.prayer) {
                         detail.copy(
@@ -177,20 +178,13 @@ class PrayersViewModel @Inject constructor(
                         detail
                     }
                 }
-
-                // Create a new PrayerRecord with the updated details list
                 val updatedPrayerRecord = _state.value.selectedPrayerRecord.copy(details = updatedDetails)
 
-                // Update the state to trigger recomposition
                 _state.value = _state.value.copy(selectedPrayerRecord = updatedPrayerRecord)
 
-                // Launch the use case to add the updated prayer record
                 viewModelScope.launch {
                     prayersUseCases.addPrayerRecord(updatedPrayerRecord)
                 }
-
-                // Log the state after changes
-                println("PR AFTER: ${_state.value.selectedPrayerRecord}")
             }
             is PrayersEvent.SetOverarchingDropdownVisibility -> {
                 _state.value = _state.value.copy(

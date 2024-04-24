@@ -348,12 +348,16 @@ fun PrayersScreen(
                                     PrayerListItem(
                                         prayerTime = prayerTime,
                                         prayerRecordDetail = state.selectedPrayerRecord.details.find { it.prayer == prayerTime.prayer },
+                                        isExpanded = state.expandedPrayer == prayerTime,
                                         isCurrent = prayerTime == state.currentPrayer,
                                         hasPassed = prayerTime.timeWindow.isBefore(LocalDateTime.now()) && prayerTime != state.currentPrayer,
                                         isSilent = false,
                                         isFirstItem = index == 0,
                                         isLastItem = index == prayerTimes.lastIndex,
                                         remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
+                                        onExpand = {
+                                            viewModel.onEvent(PrayersEvent.ChangeExpandedPrayer(if (it) null else prayerTime))
+                                        },
                                         onTick = { prayed, notes, missedReason ->
                                             viewModel.onEvent(
                                                 PrayersEvent.ChangePrayerRecord(

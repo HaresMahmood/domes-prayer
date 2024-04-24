@@ -36,7 +36,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,15 +63,17 @@ import java.time.LocalDateTime
 fun PrayerListItem(
     prayerTime: PrayerTime,
     prayerRecordDetail: PrayerRecordDetail?,
+    isExpanded: Boolean = false,
     isCurrent: Boolean = false,
     hasPassed: Boolean = false,
     isSilent: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
     remainingTimePercentage: Float,
+    onExpand: (Boolean) -> Unit,
     onTick: (Boolean?, String?, MissedReason?) -> Unit = { prayed: Boolean?, notes: String?, missedReason: MissedReason? -> }
 ) {
-    val isExpanded = remember { mutableStateOf(false) }
+    println("EXPANDED: ${prayerTime.prayer.name} - $isExpanded")
 
     Box(
         modifier = Modifier
@@ -80,7 +81,7 @@ fun PrayerListItem(
             .wrapContentHeight()
             .animateContentSize()
             .background(
-                if (isExpanded.value) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
+                if (isExpanded) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
 //                MaterialTheme.shapes.large
             ),
         contentAlignment = Alignment.Center
@@ -111,9 +112,9 @@ fun PrayerListItem(
                         top = if (isFirstItem) 16.dp else 0.dp,
                         bottom = if (isLastItem) 16.dp else 0.dp,
                     )
-                    .alpha(if (hasPassed && !isCurrent && !isExpanded.value) 0.5f else 1f)
+                    .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
                     .clickable {
-                        isExpanded.value = !isExpanded.value
+                        onExpand(isExpanded)
                     },
                 leadingContent = {
                     Box(contentAlignment = Alignment.Center) {
@@ -229,7 +230,7 @@ fun PrayerListItem(
                     }
                 }
             )
-            if (isExpanded.value) {
+            if (isExpanded) {
                 Divider()
                 Column(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
@@ -354,7 +355,8 @@ fun Preview() {
                 LocalDateTime.now().plusMinutes(10)
             ),
             prayerRecordDetail = PrayerRecordDetail(Prayer.FAJR, false),
-            remainingTimePercentage = 0.5f
+            remainingTimePercentage = 0.5f,
+            onExpand = {}
         )
     }
 }
