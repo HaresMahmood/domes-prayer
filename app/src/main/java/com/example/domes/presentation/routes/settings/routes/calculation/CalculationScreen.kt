@@ -1,5 +1,6 @@
 package com.example.domes.presentation.routes.settings.routes.calculation
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,9 +16,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
+import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material3.Badge
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,20 +30,25 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.Madhab
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.button.SegmentedAction
+import com.example.domes.presentation.common.composables.button.SegmentedActionSection
 import com.example.domes.presentation.common.composables.dialog.OptionDialog
 import com.example.domes.presentation.common.composables.dialog.OptionItem
 import com.example.domes.presentation.routes.Screen
@@ -378,6 +388,31 @@ fun CalculationScreen(
                                         color = MaterialTheme.colorScheme.tertiary
                                     )
                                 },
+                                trailingContent = {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Badge(
+                                            modifier = Modifier.animateContentSize(),
+                                            containerColor = TooltipDefaults.plainTooltipContainerColor,
+                                            contentColor = TooltipDefaults.plainTooltipContentColor
+                                        ) {
+                                            Text("0", textAlign = TextAlign.Center)
+                                        }
+
+                                        SegmentedActionSection(listOf(
+                                            SegmentedAction(
+                                                { },
+                                                icon = IconSource(Icons.AutoMirrored.Outlined.NavigateBefore, "Less")
+                                            ),
+                                            SegmentedAction(
+                                                { },
+                                                icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "More")
+                                            )
+                                        ))
+                                    }
+                                }
                             )
                         }
                     }
