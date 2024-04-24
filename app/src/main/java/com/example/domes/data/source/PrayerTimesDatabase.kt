@@ -42,6 +42,6 @@ abstract class PrayerTimesDatabase: RoomDatabase() {
     abstract val prayerTimesDao: PrayerTimesDao
 
     companion object {
-        const val DATABASE_NAME = "prayer_times"
+        const val DATABASE_NAME = "prayer_time"
     }
 }

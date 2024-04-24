@@ -42,6 +42,8 @@ import java.util.concurrent.TimeUnit
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
+//        deleteDatabase("prayer_records")
+
         // Immediate execution
         val oneTimeWorkRequest = OneTimeWorkRequestBuilder<PrayerTimesUpdateWorker>()
             .build()

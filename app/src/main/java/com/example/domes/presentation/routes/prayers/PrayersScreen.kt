@@ -347,18 +347,18 @@ fun PrayersScreen(
                                 prayerTimes.forEachIndexed { index, prayerTime ->
                                     PrayerListItem(
                                         prayerTime = prayerTime,
-                                        hasPrayed = viewModel.mapPrayerToPrayerRecord(prayerTime),
+                                        prayerRecordDetail = state.selectedPrayerRecord.details.find { it.prayer == prayerTime.prayer },
                                         isCurrent = prayerTime == state.currentPrayer,
                                         hasPassed = prayerTime.timeWindow.isBefore(LocalDateTime.now()) && prayerTime != state.currentPrayer,
                                         isSilent = false,
                                         isFirstItem = index == 0,
                                         isLastItem = index == prayerTimes.lastIndex,
                                         remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
-                                        onTick = {
+                                        onTick = { prayed, notes, missedReason ->
                                             viewModel.onEvent(
                                                 PrayersEvent.ChangePrayerRecord(
                                                     prayerTime.prayer,
-                                                    it
+                                                    prayed, notes, missedReason
                                                 )
                                             )
                                         }

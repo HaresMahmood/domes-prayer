@@ -13,7 +13,6 @@ import androidx.lifecycle.viewModelScope
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
 import com.example.domes.data.service.NotificationService.Companion.ACTION_NOTIFICATION_ACTION_CLICKED
-import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.domain.usecase.PrayerUseCases
@@ -59,10 +58,8 @@ class PrayersViewModel @Inject constructor(
                     ?.let {
                         onEvent(PrayersEvent.ChangePrayerRecord(prayerTime.prayer, true))
                     } ?: viewModelScope.launch {
-                    prayersUseCases.getPrayerRecord(prayerTime.time.toLocalDate())
-                        ?.let { fetchedPrayerRecord ->
-                            updatePrayerRecord(fetchedPrayerRecord, prayerTime.prayer, true)
-                        }
+                    prayersUseCases.getPrayerRecord(prayerTime.time.toLocalDate())?.details?.find { it.prayer == prayerTime.prayer }?.prayed =
+                        true
                 }
 
                 // TODO: Move into use case and notification service
@@ -164,17 +161,37 @@ class PrayersViewModel @Inject constructor(
 
                 _state.value.isRefreshing = false
             }
-            // TODO: Simplify
             is PrayersEvent.ChangePrayerRecord -> {
-                val updatedPrayerRecord = updatePrayerRecord(
-                    _state.value.selectedPrayerRecord, event.prayer, event.hasPrayed
-                )
+                // Log the state before changes
+                println("PR BEFORE: ${_state.value.selectedPrayerRecord}")
 
-                _state.value = _state.value.copy(
-                    selectedPrayerRecord = updatedPrayerRecord
-                )
+                // Create a completely new list to ensure recomposition
+                val updatedDetails = _state.value.selectedPrayerRecord.details.map { detail ->
+                    if (detail.prayer == event.prayer) {
+                        detail.copy(
+                            prayed = event.prayed ?: detail.prayed,
+                            notes = event.notes ?: detail.notes,
+                            missedReason = event.missedReason ?: detail.missedReason
+                        )
+                    } else {
+                        detail
+                    }
+                }
+
+                // Create a new PrayerRecord with the updated details list
+                val updatedPrayerRecord = _state.value.selectedPrayerRecord.copy(details = updatedDetails)
+
+                // Update the state to trigger recomposition
+                _state.value = _state.value.copy(selectedPrayerRecord = updatedPrayerRecord)
+
+                // Launch the use case to add the updated prayer record
+                viewModelScope.launch {
+                    prayersUseCases.addPrayerRecord(updatedPrayerRecord)
+                }
+
+                // Log the state after changes
+                println("PR AFTER: ${_state.value.selectedPrayerRecord}")
             }
-
             is PrayersEvent.SetOverarchingDropdownVisibility -> {
                 _state.value = _state.value.copy(
                     showOverarchingDropdown = event.isVisible
@@ -190,21 +207,6 @@ class PrayersViewModel @Inject constructor(
             timeLeft.toMillis().toDouble() / totalTime.toMillis().toDouble()
         }
     }?.toFloat() ?: 0.0f
-
-    private fun mapPrayerToPrayerRecord(prayer: Prayer): Boolean {
-        return when (prayer) {
-            Prayer.FAJR -> _state.value.selectedPrayerRecord.fajr
-            Prayer.DHUHR -> _state.value.selectedPrayerRecord.dhuhr
-            Prayer.ASR -> _state.value.selectedPrayerRecord.asr
-            Prayer.MAGHRIB -> _state.value.selectedPrayerRecord.maghrib
-            Prayer.ISHA -> _state.value.selectedPrayerRecord.isha
-            else -> false
-        }
-    }
-
-    fun mapPrayerToPrayerRecord(prayerTime: PrayerTime): Boolean {
-        return mapPrayerToPrayerRecord(prayerTime.prayer)
-    }
 
     private fun updateCurrentPrayerTimes(
         coordinates: Coordinates, parameters: CalculationParameters
@@ -228,9 +230,9 @@ class PrayersViewModel @Inject constructor(
                 selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
                 dayFraction = prayersUseCases.getDayFraction(rawPrayerTimes, currentTime)
             )
-        }.launchIn(viewModelScope).invokeOnCompletion {
 
-        }
+            getPrayerRecord(currentTime.toLocalDate())
+        }.launchIn(viewModelScope)
     }
 
     private fun getPrayerTimes(
@@ -256,28 +258,4 @@ class PrayersViewModel @Inject constructor(
             }
         }
     }
-
-    private fun updatePrayerRecord(
-        prayerRecord: PrayerRecord, changedPrayer: Prayer, hasPrayed: Boolean
-    ): PrayerRecord {
-        val updatedPrayerRecord = prayerRecord.copy(
-            fajr = if (changedPrayer == Prayer.FAJR) hasPrayed else prayerRecord.fajr,
-            dhuhr = if (changedPrayer == Prayer.DHUHR) hasPrayed else prayerRecord.dhuhr,
-            asr = if (changedPrayer == Prayer.ASR) hasPrayed else prayerRecord.asr,
-            maghrib = if (changedPrayer == Prayer.MAGHRIB) hasPrayed else prayerRecord.maghrib,
-            isha = if (changedPrayer == Prayer.ISHA) hasPrayed else prayerRecord.isha
-        )
-
-        viewModelScope.launch {
-            prayersUseCases.addPrayerRecord(updatedPrayerRecord)
-        }
-
-        return updatedPrayerRecord
-    }
-
-    // private fun updatePrayerRecord(prayerRecord: PrayerRecord) {
-    //     viewModelScope.launch {
-    //         prayersUseCases.updatePrayerRecord(prayerRecord)
-    //     }
-    // }   
 }

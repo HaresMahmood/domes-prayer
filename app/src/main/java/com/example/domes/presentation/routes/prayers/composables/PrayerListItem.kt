@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -49,7 +48,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import com.example.domes.domain.model.prayer.MissedReason
 import com.example.domes.domain.model.prayer.Prayer
+import com.example.domes.domain.model.prayer.PrayerRecordDetail
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.presentation.common.composables.shape.Circle
 import com.example.domes.presentation.common.composables.shape.Shape
@@ -58,18 +59,18 @@ import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFo
 import java.time.LocalDateTime
 
 // TODO: Rewrite to be more compact
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrayerListItem(
     prayerTime: PrayerTime,
-    hasPrayed: Boolean,
+    prayerRecordDetail: PrayerRecordDetail?,
     isCurrent: Boolean = false,
     hasPassed: Boolean = false,
     isSilent: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
     remainingTimePercentage: Float,
-    onTick: (Boolean) -> Unit = {}
+    onTick: (Boolean?, String?, MissedReason?) -> Unit = { prayed: Boolean?, notes: String?, missedReason: MissedReason? -> }
 ) {
     val isExpanded = remember { mutableStateOf(false) }
 
@@ -132,10 +133,12 @@ fun PrayerListItem(
                             )
                         }
                         IconButton(
-                            onClick = { onTick(!hasPrayed) }
+                            onClick = {
+                                prayerRecordDetail?.let { onTick(!it.prayed, null, null) }
+                            }
                         ) {
-                            if (prayerTime.prayer.displayable) {
-                                if (hasPrayed) {
+                            if (prayerTime.prayer.displayable && prayerRecordDetail != null) {
+                                if (prayerRecordDetail.prayed) {
                                     Icon(Icons.Outlined.CheckCircle, "Prayed")
                                 } else {
                                     Icon(Icons.Outlined.RadioButtonUnchecked, "Not prayed")
@@ -232,7 +235,7 @@ fun PrayerListItem(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    if (hasPassed && !hasPrayed) {
+                    if (hasPassed && prayerRecordDetail?.prayed == false) {
 //                        Row(
 //                            modifier = Modifier.fillMaxWidth(),
 //                            horizontalArrangement = Arrangement.SpaceBetween,
@@ -255,7 +258,7 @@ fun PrayerListItem(
                         ) {
                             OutlinedTextField(
                                 modifier = Modifier.menuAnchor().fillMaxWidth(),
-                                value = "Travel",
+                                value = prayerRecordDetail.missedReason?.name ?: "",
                                 onValueChange = {},
                                 readOnly = true,
                                 singleLine = true,
@@ -267,11 +270,19 @@ fun PrayerListItem(
                                 expanded = true,
                                 onDismissRequest = { },
                             ) {
-                                DropdownMenuItem(
-                                    text = { Text("Travel") },
-                                    onClick = { },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                )
+                                MissedReason.ALL.forEach {
+                                    DropdownMenuItem(
+                                        text = { Text(it.name) },
+                                        leadingIcon = {
+                                            Icon(
+                                                painterResource(it.iconResId),
+                                                it.name
+                                            )
+                                        },
+                                        onClick = { },
+                                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    )
+                                }
                             }
                         }
                     }
@@ -338,11 +349,11 @@ fun Preview() {
     ) {
         PrayerListItem(
             prayerTime = PrayerTime(
-                Prayer.TEST,
+                Prayer.FAJR,
                 LocalDateTime.now(),
                 LocalDateTime.now().plusMinutes(10)
             ),
-            hasPrayed = false,
+            prayerRecordDetail = PrayerRecordDetail(Prayer.FAJR, false),
             remainingTimePercentage = 0.5f
         )
     }
