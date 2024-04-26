@@ -289,7 +289,9 @@ fun PrayerListItem(
                                         contentDescription = "Missed Reason"
                                     )
                                 },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value) },
+                                trailingIcon = { IconButton(onClick = { isDropDownExpanded.value = !isDropDownExpanded.value }) {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value)
+                                } },
                                 colors = ExposedDropdownMenuDefaults.textFieldColors(),
                             )
                             ExposedDropdownMenu(
