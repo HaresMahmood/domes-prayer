@@ -92,11 +92,10 @@ fun NotificationsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                if (state.isNotificationsAllowed) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                if (state.isNotificationsAllowed) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
                                 RoundedCornerShape(35.dp)
                             ),
                     ) {
-                        // TODO: Add confirmation dialog
                         ListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -185,8 +184,10 @@ fun NotificationsScreen(
                                                 .width(1.dp)
                                         )
                                         Switch(
-                                            checked = state.isNotificationsAllowed,
-                                            onCheckedChange = { }
+                                            checked = state.prayerNotifications.find { it.prayer == prayer }?.isNotificationAllowed ?: true,
+                                            onCheckedChange = {
+                                                viewModel.onEvent(NotificationsEvent.ChangePrayerNotification(prayer))
+                                            }
                                         )
                                     }
                                 }

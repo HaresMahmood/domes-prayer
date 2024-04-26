@@ -187,6 +187,17 @@ fun smoothRotation(rotation: Float): MutableState<Float> {
     return storedRotation
 }
 
+fun <T> MutableList<T>.addOrReplace(predicate: (T) -> Boolean, newItem: T) {
+    val index = this.indexOfFirst(predicate)
+    if (index != -1) {
+        // The item exists, replace it
+        this[index] = newItem
+    } else {
+        // The item does not exist, add it
+        this.add(newItem)
+    }
+}
+
 internal const val DEBUG = false
 
 internal inline fun debugLog(message: String) {

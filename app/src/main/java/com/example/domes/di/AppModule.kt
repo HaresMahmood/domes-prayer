@@ -10,15 +10,18 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.example.domes.data.repository.OldPrayerTimesRespitory
+import com.example.domes.data.repository.PrayerNotificationRepository
 import com.example.domes.data.repository.PrayerRecordRepository
 import com.example.domes.data.repository.PrayerTimesRepository
 import com.example.domes.data.repository.UserPreferencesRepository
 import com.example.domes.data.service.AlarmService
 import com.example.domes.data.service.NotificationService
+import com.example.domes.data.source.PrayerNotificationDatabase
 import com.example.domes.data.source.PrayerRecordDatabase
 import com.example.domes.data.source.PrayerTimesDatabase
 import com.example.domes.domain.repository.IPrayerRecordRepository
 import com.example.domes.domain.repository.IUserPreferencesRepository
+import com.example.domes.domain.usecase.AddPrayerNotification
 import com.example.domes.domain.usecase.AddPrayerRecord
 import com.example.domes.domain.usecase.FetchLocation
 import com.example.domes.domain.usecase.GetCalculationMethod
@@ -30,6 +33,8 @@ import com.example.domes.domain.usecase.GetJuristic
 import com.example.domes.domain.usecase.GetLocale
 import com.example.domes.domain.usecase.GetLocation
 import com.example.domes.domain.usecase.GetNotificationsAllowed
+import com.example.domes.domain.usecase.GetPrayerNotification
+import com.example.domes.domain.usecase.GetPrayerNotifications
 import com.example.domes.domain.usecase.GetPrayerRecord
 import com.example.domes.domain.usecase.GetPrayerTimeLeft
 import com.example.domes.domain.usecase.GetPrayerTimes
@@ -88,6 +93,22 @@ object AppModule {
         return PrayerTimesRepository(database.prayerTimesDao)
     }
 
+    @Provides
+    @Singleton
+    fun providePrayerNotificationDatabase(app: Application): PrayerNotificationDatabase {
+        return Room.databaseBuilder(
+            app,
+            PrayerNotificationDatabase::class.java,
+            PrayerNotificationDatabase.DATABASE_NAME
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun providePrayerNotificationRepository(database: PrayerNotificationDatabase): PrayerNotificationRepository {
+        return PrayerNotificationRepository(database.prayerNotificationDao)
+    }
+
     @Singleton
     @Provides
     fun providePreferencesDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
@@ -130,6 +151,7 @@ object AppModule {
     fun providePrayerUseCases(
         prayerRecordRepository: IPrayerRecordRepository,
         prayerTimesRepository: PrayerTimesRepository,
+        prayerNotificationRepository: PrayerNotificationRepository,
         userPreferencesRepository: IUserPreferencesRepository,
         notificationService: NotificationService,
         fusedLocationProviderClient: FusedLocationProviderClient,
@@ -144,6 +166,9 @@ object AppModule {
             getCurrentPrayer = GetCurrentPrayer(),
             getPrayerRecord = GetPrayerRecord(prayerRecordRepository),
             addPrayerRecord = AddPrayerRecord(prayerRecordRepository),
+            getPrayerNotification = GetPrayerNotification(prayerNotificationRepository),
+            getPrayerNotifications = GetPrayerNotifications(prayerNotificationRepository),
+            addPrayerNotification = AddPrayerNotification(prayerNotificationRepository),
             getHijriDate = GetHijriDate(),
             getPrayerTimeLeft = GetPrayerTimeLeft(),
             sendNotification = SendNotification(notificationService),
