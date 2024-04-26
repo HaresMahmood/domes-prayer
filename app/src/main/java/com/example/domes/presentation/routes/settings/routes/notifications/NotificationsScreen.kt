@@ -143,6 +143,8 @@ fun NotificationsScreen(
                             .alpha(if (state.isNotificationsAllowed) 1f else 0.5f),
                     ) {
                         Prayer.ALL.forEach { prayer ->
+                            val notification = state.prayerNotifications.find { it.prayer == prayer }
+
                             ListItem(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -152,7 +154,7 @@ fun NotificationsScreen(
                                         end = 5.dp,
                                     )
                                     .clickable {
-                                        navController.navigate(Screen.ManagePrayer.route + "?prayer=${prayer.name}")
+                                        navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
                                     },
                                 colors = ListItemDefaults.colors(
                                     containerColor = Color.Transparent,
@@ -184,7 +186,7 @@ fun NotificationsScreen(
                                                 .width(1.dp)
                                         )
                                         Switch(
-                                            checked = state.prayerNotifications.find { it.prayer == prayer }?.isNotificationAllowed ?: true,
+                                            checked = notification?.isNotificationAllowed != false,
                                             onCheckedChange = {
                                                 viewModel.onEvent(NotificationsEvent.ChangePrayerNotification(prayer))
                                             }

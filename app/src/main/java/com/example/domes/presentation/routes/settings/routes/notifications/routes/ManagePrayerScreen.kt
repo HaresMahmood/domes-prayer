@@ -1,7 +1,5 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,15 +34,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.routes.Screen
-import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @OptIn(
@@ -60,6 +55,8 @@ fun ManagePrayerScreen(
     val state = viewModel.state.value
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    println("NOTIFICATION: ${state.isNotificationAllowed}")
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -93,7 +90,8 @@ fun ManagePrayerScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(35.dp)
+                                if (state.isNotificationAllowed) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
+                                RoundedCornerShape(35.dp)
                             ),
                     ) {
                         // TODO: Add confirmation dialog
@@ -107,7 +105,7 @@ fun ManagePrayerScreen(
                                     bottom = 8.dp
                                 )
                                 .clickable {
-                                    viewModel.onEvent(CalculationEvent.ResetSettings())
+//                                    viewModel.onEvent(CalculationEvent.ResetSettings())
                                 },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent,
@@ -123,8 +121,10 @@ fun ManagePrayerScreen(
                             headlineContent = { Text("Allow notifications") },
                             trailingContent = {
                                 Switch(
-                                    checked = true,
-                                    onCheckedChange = { }
+                                    checked = state.isNotificationAllowed,
+                                    onCheckedChange = {
+                                        viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
+                                    }
                                 )
                             }
                         )

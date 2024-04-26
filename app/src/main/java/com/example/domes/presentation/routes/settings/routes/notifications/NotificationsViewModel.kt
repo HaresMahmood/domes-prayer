@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domes.domain.model.prayer.PrayerNotification
 import com.example.domes.domain.usecase.PrayerUseCases
-import com.example.domes.presentation.common.utility.addOrReplace
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -44,26 +43,15 @@ class NotificationsViewModel @Inject constructor(
                 }
             }
             is NotificationsEvent.ChangePrayerNotification -> {
-                var notification = _state.value.prayerNotifications.find { it.prayer == event.prayer }?.copy()
+                val existingNotification = _state.value.prayerNotifications.find { it.prayer == event.prayer }
+                val notification = existingNotification
+                    ?.copy(isNotificationAllowed = event.isNotificationsAllowed ?: !existingNotification.isNotificationAllowed)
+                    ?: PrayerNotification(event.prayer, isNotificationAllowed = event.isNotificationsAllowed ?: false)
 
-                if (notification != null) {
-                    var isAllowed = event.isNotificationsAllowed ?: !notification.isNotificationAllowed
-
-                    notification.isNotificationAllowed = isAllowed
-                }
-                else {
-                    notification = PrayerNotification(event.prayer, isNotificationAllowed = false)
-                }
-
-                val updatedNotifications = _state.value.copy().prayerNotifications.toMutableList()
-                updatedNotifications.addOrReplace(
-                    { it.prayer == event.prayer },
-                    notification
-                )
-
-                _state.value = _state.value.copy(
-                    prayerNotifications = updatedNotifications
-                )
+                _state.value = _state.value.copy(prayerNotifications = _state.value.prayerNotifications.toMutableList().apply {
+                    val index = indexOfFirst { it.prayer == event.prayer }
+                    if (index != -1) this[index] = notification else add(notification)
+                })
 
                 viewModelScope.launch {
                     prayersUseCases.addPrayerNotification(notification)
