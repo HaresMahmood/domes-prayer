@@ -1,6 +1,7 @@
 package com.example.domes.presentation.routes.prayers.composables
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMissedOutgoing
@@ -71,34 +71,39 @@ fun PrayerListItem(
     isSilent: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
+    isBeforeExpandedItem: Boolean = false,
+    isAfterExpandedItem: Boolean = false,
     remainingTimePercentage: Float,
     onExpand: (Boolean) -> Unit,
     onPrayerRecordDetailValueChange: (prayed: Boolean?, notes: String?, missedReasons: MissedReason?) -> Unit = { b: Boolean?, s: String?, mr: MissedReason? -> }
 ) {
-    Box(
+    val backgroundElevation by animateDpAsState(
+        targetValue = if (isExpanded) 5.dp else 1.dp
+    )
+    val topCornerSize by animateDpAsState(
+        targetValue = if (isExpanded) 12.dp else if (isFirstItem || isAfterExpandedItem) 35.dp else 0.dp // TODO: Use material shapes
+    )
+    val bottomCornerSize by animateDpAsState(
+        targetValue = if (isExpanded) 12.dp else if (isLastItem || isBeforeExpandedItem) 35.dp else 0.dp // TODO: Use material shapes
+    )
+
+    Column (
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
             .animateContentSize()
-            .background(
-                if (isExpanded) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
-//                MaterialTheme.shapes.large
-            ),
-        contentAlignment = Alignment.Center
     ) {
-//        AnimatedVisibility(isExpanded.value, modifier = Modifier.matchParentSize()) {
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(8.dp)
-//                    .background(
-//                        MaterialTheme.colorScheme.surfaceVariant,
-//                        MaterialTheme.shapes.large
-//                    )
-//            )
-//        }
         Column(
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            modifier = Modifier
+                .background(
+                    MaterialTheme.colorScheme.surfaceColorAtElevation(backgroundElevation),
+                    RoundedCornerShape(
+                        topStart = topCornerSize,
+                        topEnd = topCornerSize,
+                        bottomStart = bottomCornerSize,
+                        bottomEnd = bottomCornerSize
+                    )
+                ),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             ListItem(
                 colors = ListItemDefaults.colors(
@@ -109,8 +114,8 @@ fun PrayerListItem(
                     .padding(
                         start = 0.dp,
                         end = if (isCurrent) 0.dp else 12.dp,
-                        top = if (isFirstItem) 16.dp else 0.dp,
-                        bottom = if (isLastItem) 16.dp else 0.dp,
+                        top = if (isFirstItem || isAfterExpandedItem) 16.dp else 0.dp,
+                        bottom = if (isLastItem || isBeforeExpandedItem) 16.dp else 0.dp,
                     )
                     .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
                     .clickable {
@@ -265,7 +270,9 @@ fun PrayerListItem(
                             }
                         ) {
                             OutlinedTextField(
-                                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth(),
                                 value = prayerRecordDetail.missedReason?.name ?: "",
                                 onValueChange = {},
                                 readOnly = true,
