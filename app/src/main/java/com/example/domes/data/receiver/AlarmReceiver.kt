@@ -24,7 +24,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         context?.let { ctx ->
             GlobalScope.launch(Dispatchers.IO) {
-                if (useCases.getNotificationsAllowed()) {
+                if (useCases.getNotificationsAllowed() && (useCases.getPrayerNotification(prayerTime.prayer)?.isNotificationAllowed != false)) {
                     useCases.sendNotification(
                         prayerTime,
                         "From ${prayerTime.time.format(getFormatter("HH:mm a"))} to ${
