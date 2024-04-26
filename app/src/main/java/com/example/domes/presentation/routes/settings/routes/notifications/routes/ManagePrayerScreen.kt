@@ -166,7 +166,7 @@ fun ManagePrayerScreen(
                 }
                 item {
                     Text(
-                        "Custom",
+                        "Additional",
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.padding(start = 20.dp)
                     )

@@ -26,9 +26,9 @@ class ManagePrayerViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            notification = prayer.let {
+            notification = (prayer.let {
                 prayersUseCases.getPrayerNotification(it)
-            } ?: PrayerNotification(prayer).also {
+            } ?: PrayerNotification(prayer)).also {
                 _state.value = _state.value.copy(
                     isNotificationAllowed = it.isNotificationAllowed,
                     notifications = it.notifications
