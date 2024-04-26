@@ -16,10 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
-import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Calculate
+import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material3.Badge
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -404,11 +404,11 @@ fun CalculationScreen(
                                         SegmentedActionSection(listOf(
                                             SegmentedAction(
                                                 { },
-                                                icon = IconSource(Icons.AutoMirrored.Outlined.NavigateBefore, "Less")
+                                                icon = IconSource(Icons.Outlined.Remove, "Less")
                                             ),
                                             SegmentedAction(
                                                 { },
-                                                icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "More")
+                                                icon = IconSource(Icons.Outlined.Add, "More")
                                             )
                                         ))
                                     }
