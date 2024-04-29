@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domes.domain.model.prayer.Notification
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerNotification
 import com.example.domes.domain.usecase.PrayerUseCases
@@ -22,16 +23,14 @@ class ManagePrayerViewModel @Inject constructor(
 
     // TODO: Should these be properties or something else?
     private val prayer = Prayer.fromString(savedStateHandle.get<String>("prayer"))
-    private lateinit var notification: PrayerNotification // TODO: Funky
 
     init {
         viewModelScope.launch {
-            notification = (prayer.let {
+            (prayer.let {
                 prayersUseCases.getPrayerNotification(it)
             } ?: PrayerNotification(prayer)).also {
                 _state.value = _state.value.copy(
-                    isNotificationAllowed = it.isNotificationAllowed,
-                    notifications = it.notifications
+                    notification = it
                 )
             }
         }
@@ -40,16 +39,56 @@ class ManagePrayerViewModel @Inject constructor(
     fun onEvent(event: ManagePrayerEvent) {
         when (event) {
             is ManagePrayerEvent.ChangeNotificationsAllowed -> {
-                val isAllowed = event.isNotificationAllowed ?: !_state.value.isNotificationAllowed
+                val isAllowed = event.isNotificationAllowed ?: (_state.value.notification?.isNotificationAllowed == false)
+                val updatedNotification = _state.value.notification?.copy(isNotificationAllowed = isAllowed)
 
                 _state.value = _state.value.copy(
-                    isNotificationAllowed = isAllowed
+                    notification = updatedNotification
                 )
 
-                notification.isNotificationAllowed = isAllowed
+                viewModelScope.launch {
+                    updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
+                }
+            }
+            is ManagePrayerEvent.ChangeExpandedNotification -> {
+                println("Notification: ${event.notificationIndex}")
+
+                _state.value = _state.value.copy(
+                    expandedNotificationIndex = event.notificationIndex
+                )
+            }
+            is ManagePrayerEvent.AddNotification -> {
+                val updatedNotifications = _state.value.notification?.notifications?.toMutableList()?.apply {
+                    add(Notification())
+                } ?: mutableListOf(Notification())
+
+                val updatedNotification = _state.value.notification?.copy(
+                    notifications = updatedNotifications
+                )
+
+                _state.value = _state.value.copy(
+                    notification = updatedNotification
+                )
 
                 viewModelScope.launch {
-                    prayersUseCases.addPrayerNotification(notification)
+                    updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
+                }
+            }
+            is ManagePrayerEvent.RemoveNotification -> {
+                val updatedNotifications = _state.value.notification?.notifications?.toMutableList()?.apply {
+                    remove(event.notification)
+                } ?: mutableListOf(Notification())
+
+                val updatedNotification = _state.value.notification?.copy(
+                    notifications = updatedNotifications
+                )
+
+                _state.value = _state.value.copy(
+                    notification = updatedNotification
+                )
+
+                viewModelScope.launch {
+                    updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
                 }
             }
         }

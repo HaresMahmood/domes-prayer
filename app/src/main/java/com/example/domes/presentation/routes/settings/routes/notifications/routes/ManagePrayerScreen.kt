@@ -1,6 +1,5 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -32,8 +30,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -44,11 +40,9 @@ import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.routes.notifications.routes.composables.ManagePrayerCard
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalMaterial3Api::class
 )
 @Composable
 fun ManagePrayerScreen(
@@ -59,8 +53,6 @@ fun ManagePrayerScreen(
     val state = viewModel.state.value
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
-    println("NOTIFICATION: ${state.isNotificationAllowed}")
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -78,7 +70,9 @@ fun ManagePrayerScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { },
+                onClick = {
+                    viewModel.onEvent(ManagePrayerEvent.AddNotification)
+                },
                 containerColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onTertiary,
                 elevation = FloatingActionButtonDefaults.elevation(
@@ -89,7 +83,7 @@ fun ManagePrayerScreen(
                 Icon(Icons.Filled.AddAlert, "Add")
             }
         },
-        ) { innerPadding ->
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -106,7 +100,7 @@ fun ManagePrayerScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                if (state.isNotificationAllowed) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                if (state.notification?.isNotificationAllowed == true) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceColorAtElevation(
                                     1.dp
                                 ),
                                 RoundedCornerShape(35.dp)
@@ -139,7 +133,7 @@ fun ManagePrayerScreen(
                             headlineContent = { Text("Allow notifications") },
                             trailingContent = {
                                 Switch(
-                                    checked = state.isNotificationAllowed,
+                                    checked = state.notification?.isNotificationAllowed == true,
                                     onCheckedChange = {
                                         viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
                                     }
@@ -156,63 +150,44 @@ fun ManagePrayerScreen(
                     )
                 }
                 item {
-                    val isExpanded = remember { mutableStateOf(false) }
                     ManagePrayerCard(
                         isDefaultNotification = true,
-                        isExpanded = isExpanded.value,
-                    ) {
-                        isExpanded.value = !it
-                    }
-                }
-                item {
-                    Text(
-                        "Additional",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(start = 20.dp)
+                        isExpanded = state.expandedNotificationIndex == -1,
+                        onExpand = {
+                            viewModel.onEvent(ManagePrayerEvent.ChangeExpandedNotification(if (it) null else -1))
+                        }
                     )
                 }
-                item {
-                    val isExpanded = remember { mutableStateOf(false) }
-                    ManagePrayerCard(
-                        isExpanded = isExpanded.value,
-                    ) {
-                        isExpanded.value = !it
-                    }
-                }
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(35.dp)
-                            ),
-                    ) {
-                        // TODO: Add confirmation dialog
-                        ListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    top = 8.dp,
-                                    start = 5.dp,
-                                    end = 5.dp,
-                                    bottom = 8.dp
-                                )
-                                .clickable {
-
-                                },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent,
-                                headlineColor = MaterialTheme.colorScheme.onErrorContainer
-                            ),
-                            leadingContent = {
-                                Icon(
-                                    Icons.Outlined.RestartAlt,
-                                    "Reset to default",
-                                    tint = MaterialTheme.colorScheme.error,
-                                )
-                            },
-                            headlineContent = { Text("Reset to default") },
-                        )
+                state.notification?.notifications?.let {
+                    if (it.size > 0) {
+                        item {
+                            Text(
+                                "Additional",
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier.padding(start = 20.dp)
+                            )
+                        }
+                        item {
+                            Column {
+                                it.forEachIndexed { index, notification ->
+                                    ManagePrayerCard(
+                                        isExpanded = state.expandedNotificationIndex == index,
+                                        onExpand = { expanded ->
+                                            viewModel.onEvent(
+                                                ManagePrayerEvent.ChangeExpandedNotification(
+                                                    if (expanded) null else index
+                                                )
+                                            )
+                                        },
+                                        onRemove = {
+                                            viewModel.onEvent(
+                                                ManagePrayerEvent.RemoveNotification(notification)
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
