@@ -1,16 +1,10 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes.composables
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CompareArrows
 import androidx.compose.material.icons.automirrored.outlined.Redo
@@ -29,9 +23,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.domes.domain.model.prayer.Notification
 import com.example.domes.presentation.common.composables.button.SegmentedButtonItem
 import com.example.domes.presentation.common.composables.button.SegmentedButtons
+import com.example.domes.presentation.common.composables.card.ExpandableCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,60 +41,50 @@ fun ManagePrayerCard(
     notification: Notification? = null,
     isDefaultNotification: Boolean = false,
     isExpanded: Boolean = false,
-    onExpand: (Boolean) -> Unit,
-    onRemove: (() -> Unit)? = null,
+    isFirstItem: Boolean = false,
+    isLastItem: Boolean = false,
+    isBeforeExpandedItem: Boolean = false,
+    isAfterExpandedItem: Boolean = false,
+    expand: (Boolean) -> Unit,
+    remove: (() -> Unit)? = null,
 ) {
-    val backgroundElevation by animateDpAsState(
-        targetValue = if (isExpanded) 5.dp else 1.dp
-    )
-    val cornerSize by animateDpAsState(
-        targetValue = if (isExpanded) 12.dp else 35.dp // TODO: Use material shapes
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                MaterialTheme.colorScheme.surfaceColorAtElevation(backgroundElevation),
-                RoundedCornerShape(cornerSize)
-            )
-            .animateContentSize(),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        ListItem(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = 8.dp,
-                    start = 5.dp,
-                    end = 5.dp,
-                    bottom = if (isExpanded) 0.dp else 8.dp
-                )
-                .clickable {
-                    onExpand(isExpanded)
+    ExpandableCard(
+        content = {
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = 8.dp,
+                        start = 5.dp,
+                        end = 5.dp,
+                        bottom = if (isExpanded) 0.dp else 8.dp
+                    )
+                    .clickable {
+                        expand(isExpanded)
+                    },
+                colors = ListItemDefaults.colors(
+                    containerColor = Color.Transparent,
+                ),
+                leadingContent = {
+                    Icon(
+                        Icons.Outlined.Timer,
+                        "Setting icon",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
                 },
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent,
-            ),
-            leadingContent = {
-                Icon(
-                    Icons.Outlined.Timer,
-                    "Setting icon",
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            },
-            headlineContent = { Text("Time") },
-            supportingContent = {
-                Text(
-                    "3 mins",
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-            },
-            trailingContent = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-            }
-        )
-        if (isExpanded) {
+                headlineContent = { Text("Time") },
+                supportingContent = {
+                    Text(
+                        "3 mins",
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                },
+                trailingContent = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
+                }
+            )
+        },
+        expandedContent = {
             if (!isDefaultNotification) {
                 ListItem(
                     modifier = Modifier
@@ -206,8 +189,8 @@ fun ManagePrayerCard(
                         contentColor = MaterialTheme.colorScheme.error,
                     ),
                     onClick = {
-                        if (onRemove != null) {
-                            onRemove()
+                        if (remove != null) {
+                            remove()
                         }
                     }
                 ) {
@@ -216,8 +199,9 @@ fun ManagePrayerCard(
                     Text("Remove")
                 }
             }
-        }
-    }
+        },
+        expand = expand,
+    )
 }
 
 @Preview(
@@ -229,6 +213,6 @@ fun Preview() {
     ManagePrayerCard(
         isDefaultNotification = false,
         isExpanded = true,
-        onExpand = {}
+        expand = {}
     )
 }

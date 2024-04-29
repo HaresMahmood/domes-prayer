@@ -153,7 +153,7 @@ fun ManagePrayerScreen(
                     ManagePrayerCard(
                         isDefaultNotification = true,
                         isExpanded = state.expandedNotificationIndex == -1,
-                        onExpand = {
+                        expand = {
                             viewModel.onEvent(ManagePrayerEvent.ChangeExpandedNotification(if (it) null else -1))
                         }
                     )
@@ -172,14 +172,18 @@ fun ManagePrayerScreen(
                                 it.forEachIndexed { index, notification ->
                                     ManagePrayerCard(
                                         isExpanded = state.expandedNotificationIndex == index,
-                                        onExpand = { expanded ->
+                                        isFirstItem = index == 0,
+                                        isLastItem = index == it.lastIndex,
+                                        isBeforeExpandedItem = index == state.expandedNotificationIndex?.let { item -> item - 1 },
+                                        isAfterExpandedItem = index == state.expandedNotificationIndex?.let { item -> item + 1 },
+                                        expand = { expanded ->
                                             viewModel.onEvent(
                                                 ManagePrayerEvent.ChangeExpandedNotification(
                                                     if (expanded) null else index
                                                 )
                                             )
                                         },
-                                        onRemove = {
+                                        remove = {
                                             viewModel.onEvent(
                                                 ManagePrayerEvent.RemoveNotification(notification)
                                             )

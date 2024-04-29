@@ -39,8 +39,8 @@ fun SegmentedActionSection(
                 bottomEnd = MaterialTheme.shapes.small.bottomEnd
             )
             children.size - 1 -> MaterialTheme.shapes.extraLarge.copy(
-                topStart = MaterialTheme.shapes.small.topStart,
-                bottomStart = MaterialTheme.shapes.small.bottomStart
+                topStart = MaterialTheme.shapes.extraSmall.topStart,
+                bottomStart = MaterialTheme.shapes.extraSmall.bottomStart
             )
             else -> MaterialTheme.shapes.small
         }
