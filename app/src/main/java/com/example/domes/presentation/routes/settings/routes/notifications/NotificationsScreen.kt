@@ -169,7 +169,7 @@ fun NotificationsScreen(
                                 headlineContent = { Text(prayer.name) },
                                 supportingContent = {
                                     val notificationText = if (notification?.isNotificationAllowed != false) {
-                                        val notifications = (notification?.notifications?.size ?: 0) + 1
+                                        val notifications = notification?.notifications?.size ?: 1
                                         val pluralText = if (notifications == 1) "" else "s"
 
                                         "$notifications notification$pluralText"

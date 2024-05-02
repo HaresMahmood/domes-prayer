@@ -36,6 +36,7 @@ import com.example.domes.domain.usecase.GetNotificationsAllowed
 import com.example.domes.domain.usecase.GetPrayerNotification
 import com.example.domes.domain.usecase.GetPrayerNotifications
 import com.example.domes.domain.usecase.GetPrayerRecord
+import com.example.domes.domain.usecase.GetPrayerTime
 import com.example.domes.domain.usecase.GetPrayerTimeLeft
 import com.example.domes.domain.usecase.GetPrayerTimes
 import com.example.domes.domain.usecase.GetQiblaDirection
@@ -164,6 +165,7 @@ object AppModule {
             getCurrentPrayerTimes = GetCurrentPrayerTimes(prayerTimesRepository),
             updatePrayerTimes = UpdatePrayerTimes(prayerTimesRepository),
             getCurrentPrayer = GetCurrentPrayer(),
+            getPrayerTime = GetPrayerTime(prayerTimesRepository),
             getPrayerRecord = GetPrayerRecord(prayerRecordRepository),
             addPrayerRecord = AddPrayerRecord(prayerRecordRepository),
             getPrayerNotification = GetPrayerNotification(prayerNotificationRepository),

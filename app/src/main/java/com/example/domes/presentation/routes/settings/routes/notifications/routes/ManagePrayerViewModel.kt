@@ -11,6 +11,7 @@ import com.example.domes.domain.model.prayer.PrayerNotification
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +31,7 @@ class ManagePrayerViewModel @Inject constructor(
                 prayersUseCases.getPrayerNotification(it)
             } ?: PrayerNotification(prayer)).also {
                 _state.value = _state.value.copy(
+                    time = prayersUseCases.getPrayerTime(prayer)?.time ?: LocalDateTime.now(),
                     notification = it
                 )
             }
@@ -39,8 +41,10 @@ class ManagePrayerViewModel @Inject constructor(
     fun onEvent(event: ManagePrayerEvent) {
         when (event) {
             is ManagePrayerEvent.ChangeNotificationsAllowed -> {
-                val isAllowed = event.isNotificationAllowed ?: (_state.value.notification?.isNotificationAllowed == false)
-                val updatedNotification = _state.value.notification?.copy(isNotificationAllowed = isAllowed)
+                val isAllowed = event.isNotificationAllowed
+                    ?: (_state.value.notification?.isNotificationAllowed == false)
+                val updatedNotification =
+                    _state.value.notification?.copy(isNotificationAllowed = isAllowed)
 
                 _state.value = _state.value.copy(
                     notification = updatedNotification
@@ -50,6 +54,7 @@ class ManagePrayerViewModel @Inject constructor(
                     updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
                 }
             }
+
             is ManagePrayerEvent.ChangeExpandedNotification -> {
                 println("Notification: ${event.notificationIndex}")
 
@@ -57,10 +62,12 @@ class ManagePrayerViewModel @Inject constructor(
                     expandedNotificationIndex = event.notificationIndex
                 )
             }
+
             is ManagePrayerEvent.AddNotification -> {
-                val updatedNotifications = _state.value.notification?.notifications?.toMutableList()?.apply {
-                    add(Notification())
-                } ?: mutableListOf(Notification())
+                val updatedNotifications =
+                    _state.value.notification?.notifications?.toMutableList()?.apply {
+                        add(Notification())
+                    } ?: mutableListOf(Notification())
 
                 val updatedNotification = _state.value.notification?.copy(
                     notifications = updatedNotifications
@@ -75,12 +82,34 @@ class ManagePrayerViewModel @Inject constructor(
                 }
             }
             is ManagePrayerEvent.RemoveNotification -> {
-                val updatedNotifications = _state.value.notification?.notifications?.toMutableList()?.apply {
-                    remove(event.notification)
-                } ?: mutableListOf(Notification())
+                val updatedNotifications =
+                    _state.value.notification?.notifications?.toMutableList()?.apply {
+                        remove(event.notification)
+                    } ?: mutableListOf(Notification())
 
                 val updatedNotification = _state.value.notification?.copy(
                     notifications = updatedNotifications
+                )
+
+                _state.value = _state.value.copy(
+                    notification = updatedNotification
+                )
+
+                viewModelScope.launch {
+                    updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
+                }
+            }
+            is ManagePrayerEvent.ChangeOffset -> {
+                val updatedNotifications = _state.value.notification?.notifications?.map { notification ->
+                    if (notification == event.notification) {
+                        notification.copy(offset = event.offset)
+                    } else {
+                        notification
+                    }
+                } ?: listOf(Notification())
+
+                val updatedNotification = _state.value.notification?.copy(
+                    notifications = updatedNotifications.toMutableList()
                 )
 
                 _state.value = _state.value.copy(

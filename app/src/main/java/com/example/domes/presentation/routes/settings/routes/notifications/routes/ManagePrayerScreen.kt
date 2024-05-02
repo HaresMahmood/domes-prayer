@@ -142,42 +142,31 @@ fun ManagePrayerScreen(
                         )
                     }
                 }
-                item {
-                    Text(
-                        "Default",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                }
-                item {
-                    ManagePrayerCard(
-                        isDefaultNotification = true,
-                        isFirstItem = true,
-                        isLastItem = true,
-                        isExpanded = state.expandedNotificationIndex == -1,
-                        expand = {
-                            viewModel.onEvent(ManagePrayerEvent.ChangeExpandedNotification(if (it) null else -1))
-                        }
-                    )
-                }
-                state.notification?.notifications?.let {
-                    if (it.size > 0) {
-                        item {
-                            Text(
-                                "Additional",
-                                style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier.padding(start = 20.dp)
-                            )
-                        }
+                state.notification?.notifications?.let { notifications ->
+                    if (notifications.size > 0) {
                         item {
                             Column {
-                                it.forEachIndexed { index, notification ->
+                                notifications.forEachIndexed { index, notification ->
+                                    if (index == 0 || index == 1) {
+                                        Text(
+                                            if (index == 0) "Default" else "Additional",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            modifier = Modifier.padding(20.dp)
+                                        )
+                                    }
+
                                     ManagePrayerCard(
+                                        time = state.time,
+                                        notification = notification,
                                         isExpanded = state.expandedNotificationIndex == index,
-                                        isFirstItem = index == 0,
-                                        isLastItem = index == it.lastIndex,
+                                        isFirstItem = index == 0 || index == 1,
+                                        isDefaultNotification = index == 0,
+                                        isLastItem = index == 0 || index == notifications.lastIndex,
                                         isBeforeExpandedItem = index == state.expandedNotificationIndex?.let { item -> item - 1 },
                                         isAfterExpandedItem = index == state.expandedNotificationIndex?.let { item -> item + 1 },
+                                        changeOffset = { offset ->
+                                            viewModel.onEvent(ManagePrayerEvent.ChangeOffset(notification, offset))
+                                        },
                                         expand = { expanded ->
                                             viewModel.onEvent(
                                                 ManagePrayerEvent.ChangeExpandedNotification(

@@ -15,7 +15,7 @@ interface PrayerTimesDao {
     fun getAll(): Flow<List<PrayerTime>>
 
     @Query("SELECT * FROM PrayerTime WHERE prayer = :prayer")
-    suspend fun getPrayer(prayer: Prayer): PrayerTime?
+    suspend fun getByPrayer(prayer: Prayer): PrayerTime?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(prayerTime: PrayerTime)

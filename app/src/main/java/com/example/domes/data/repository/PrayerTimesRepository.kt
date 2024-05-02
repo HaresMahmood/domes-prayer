@@ -12,8 +12,8 @@ class PrayerTimesRepository(
         return dao.getAll()
     }
 
-    suspend fun getPrayer(prayer: Prayer): PrayerTime? {
-        return dao.getPrayer(prayer)
+    suspend fun getByPrayer(prayer: Prayer): PrayerTime? {
+        return dao.getByPrayer(prayer)
     }
 
     suspend fun insert(prayerTime: PrayerTime) {

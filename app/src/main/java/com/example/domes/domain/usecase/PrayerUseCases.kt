@@ -5,6 +5,7 @@ data class PrayerUseCases(
     val getCurrentPrayerTimes: GetCurrentPrayerTimes,
     val updatePrayerTimes: UpdatePrayerTimes,
     val getCurrentPrayer: GetCurrentPrayer,
+    val getPrayerTime: GetPrayerTime,
     val getPrayerRecord: GetPrayerRecord,
     val addPrayerRecord: AddPrayerRecord,
     val getPrayerNotification: GetPrayerNotification,

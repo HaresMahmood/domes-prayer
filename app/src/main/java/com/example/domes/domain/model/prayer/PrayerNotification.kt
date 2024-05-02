@@ -16,7 +16,7 @@ enum class Sound {
 
 data class Notification(
     var label: String = "",
-    var interval: Int = 0,
+    var offset: Int = 0,
     var alertType: AlertType = AlertType.SOUND_AND_VIBRATE,
     var sound: Sound = Sound.DEVICE_DEFAULT
 )
@@ -26,5 +26,7 @@ data class PrayerNotification(
     @PrimaryKey
     val prayer: Prayer,
     var isNotificationAllowed: Boolean = true,
-    val notifications: MutableList<Notification> = mutableListOf()
+    val notifications: MutableList<Notification> = mutableListOf(
+        Notification(label = "Default", alertType = AlertType.SOUND)
+    )
 )
