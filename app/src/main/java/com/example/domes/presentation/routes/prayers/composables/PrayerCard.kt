@@ -1,5 +1,6 @@
 package com.example.domes.presentation.routes.prayers.composables
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,13 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMissedOutgoing
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
+import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
@@ -43,19 +47,24 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.domes.domain.model.prayer.MissedReason
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerRecordDetail
 import com.example.domes.domain.model.prayer.PrayerTime
+import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.shape.Circle
 import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
+import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.LocalDateTime
 
 // TODO: Rewrite to be more compact
@@ -64,6 +73,7 @@ import java.time.LocalDateTime
 fun PrayerCard(
     prayerTime: PrayerTime,
     prayerRecordDetail: PrayerRecordDetail?,
+    navController: NavController,
     isExpanded: Boolean = false,
     isCurrent: Boolean = false,
     hasPassed: Boolean = false,
@@ -91,9 +101,9 @@ fun PrayerCard(
                     .fillMaxWidth()
                     .padding(
                         start = 0.dp,
-                        end = if (isCurrent) 0.dp else 12.dp,
-                        top = if (isFirstItem || isAfterExpandedItem) 16.dp else 0.dp,
-                        bottom = if (isLastItem || isBeforeExpandedItem) 16.dp else 0.dp,
+//                        end = if (isCurrent) 0.dp else 12.dp,
+//                        top = if (isFirstItem || isAfterExpandedItem) 16.dp else 0.dp,
+//                        bottom = if (isLastItem || isBeforeExpandedItem) 16.dp else 0.dp,
                     )
                     .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
                     .clickable {
@@ -222,7 +232,7 @@ fun PrayerCard(
 
             Divider()
             Column(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 if (hasPassed && prayerRecordDetail?.prayed == false) {
@@ -299,37 +309,81 @@ fun PrayerCard(
                     maxLines = 2,
                 )
             }
+            Divider()
+            LazyRow(
+                modifier = Modifier.padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                item {
+                    ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze))
+                }
+                item {
+                    ActionSectionChip(
+                        "Manage notifications",
+                        icon = IconSource(Icons.Outlined.Notifications),
+                        onClick = {
+                            navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayerTime.prayer.name}")
+                        }
+                    )
+                }
+                item {
+                    ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze))
+                }
+            }
         },
         expand = expand,
     )
 }
 
 
-@Preview(
-    showBackground = true,
-    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
-)
-@Composable
-fun Preview() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                MaterialTheme.colorScheme.surfaceColorAtElevation(
-                    1.dp
-                ), RoundedCornerShape(35.dp)
-            ),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        PrayerCard(
-            prayerTime = PrayerTime(
-                Prayer.FAJR,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(10)
-            ),
-            prayerRecordDetail = PrayerRecordDetail(Prayer.FAJR, false),
-            remainingTimePercentage = 0.5f,
-            expand = {}
-        )
-    }
-}
+//@Preview(
+//    showBackground = true,
+//    wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE,
+//    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+//)
+//@Composable
+//fun Preview() {
+//    // fake navController for preview
+//    val navController = remember {
+//        NavController(LocalContext.current)
+//    }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .background(
+//                MaterialTheme.colorScheme.surfaceColorAtElevation(
+//                    1.dp
+//                ), RoundedCornerShape(35.dp)
+//            ),
+//        verticalArrangement = Arrangement.spacedBy(2.dp),
+//    ) {
+//        PrayerCard(
+//            prayerTime = PrayerTime(
+//                Prayer.FAJR,
+//                LocalDateTime.now(),
+//                LocalDateTime.now().plusMinutes(10)
+//            ),
+//            prayerRecordDetail = PrayerRecordDetail(Prayer.FAJR, false),
+//            remainingTimePercentage = 0.5f,
+//            isExpanded = true,
+//            hasPassed = true,
+//            expand = {},
+//            navController = navController
+//        )
+//
+//        PrayerCard(
+//            prayerTime = PrayerTime(
+//                Prayer.DHUHR,
+//                LocalDateTime.now(),
+//                LocalDateTime.now().plusMinutes(10)
+//            ),
+//            prayerRecordDetail = PrayerRecordDetail(Prayer.DHUHR, false),
+//            isCurrent = true,
+//            remainingTimePercentage = 0.5f,
+//            isExpanded = false,
+//            expand = {},
+//            navController = navController
+//        )
+//    }
+//}

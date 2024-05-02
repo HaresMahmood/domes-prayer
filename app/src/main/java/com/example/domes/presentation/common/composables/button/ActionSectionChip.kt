@@ -20,7 +20,8 @@ import com.maxkeppeker.sheets.core.views.IconComponent
 enum class Variant {
     DEFAULT,
     VISUAL,
-    SELECTED
+    SELECTED,
+    ERROR
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -30,10 +31,11 @@ fun ActionSectionChip(
     variant: Variant = Variant.DEFAULT,
     icon: IconSource? = null,
     trailingIcon: IconSource? = null,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
     val cornerShapes = when (variant) {
-        Variant.DEFAULT -> AssistChipDefaults.shape
+        Variant.DEFAULT, Variant.ERROR -> AssistChipDefaults.shape
         Variant.VISUAL -> RoundedCornerShape(
             topStartPercent = 12,
             topEndPercent = 45,
@@ -63,9 +65,16 @@ fun ActionSectionChip(
             leadingIconContentColor = MaterialTheme.colorScheme.inversePrimary,
             trailingIconContentColor = MaterialTheme.colorScheme.inversePrimary
         )
+        Variant.ERROR -> AssistChipDefaults.assistChipColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            labelColor = MaterialTheme.colorScheme.onErrorContainer,
+            leadingIconContentColor = MaterialTheme.colorScheme.error,
+            trailingIconContentColor = MaterialTheme.colorScheme.error
+        )
     }
 
     AssistChip(
+        modifier = modifier,
         onClick = onClick,
         shape = cornerShapes,
         border = null, // if (variant == Variant.DEFAULT) AssistChipDefaults.assistChipBorder() else

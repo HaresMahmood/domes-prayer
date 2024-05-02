@@ -2,10 +2,8 @@ package com.example.domes.presentation.routes.settings.routes.notifications.rout
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CompareArrows
 import androidx.compose.material.icons.automirrored.outlined.Redo
@@ -14,8 +12,6 @@ import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.MarkChatUnread
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -25,16 +21,18 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import com.example.domes.domain.model.prayer.Notification
+import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.SegmentedButtonItem
 import com.example.domes.presentation.common.composables.button.SegmentedButtons
+import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.common.composables.card.ExpandableCard
+import com.maxkeppeker.sheets.core.models.base.IconSource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -183,24 +181,18 @@ fun ManagePrayerCard(
 
             if (!isDefaultNotification) {
                 Divider()
-                Button(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(7.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
+
+                ActionSectionChip(
+                    "Remove",
+                    icon = IconSource(Icons.Outlined.DeleteForever),
+                    modifier = Modifier.padding(16.dp),
+                    variant = Variant.ERROR,
                     onClick = {
                         if (remove != null) {
                             remove()
                         }
                     }
-                ) {
-                    Icon(Icons.Outlined.DeleteForever, "Remove")
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text("Remove")
-                }
+                )
             }
         },
         expand = expand,

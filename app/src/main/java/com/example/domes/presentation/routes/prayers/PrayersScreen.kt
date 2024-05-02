@@ -350,6 +350,7 @@ fun PrayersScreen(
                                         isBeforeExpandedItem = index == expandedPrayerIndex - 1,
                                         isAfterExpandedItem = index == expandedPrayerIndex + 1,
                                         remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
+                                        navController = navController,
                                         expand = {
                                             viewModel.onEvent(PrayersEvent.ChangeExpandedPrayer(if (it) null else prayerTime))
                                         },
