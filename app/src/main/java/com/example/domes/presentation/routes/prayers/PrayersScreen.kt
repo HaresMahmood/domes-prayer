@@ -2,14 +2,12 @@ package com.example.domes.presentation.routes.prayers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -60,7 +58,7 @@ import com.example.domes.presentation.routes.prayers.composables.DisplaySlider
 import com.example.domes.presentation.routes.prayers.composables.MainActionSection
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBox
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBoxChild
-import com.example.domes.presentation.routes.prayers.composables.PrayerListItem
+import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -336,40 +334,23 @@ fun PrayersScreen(
                             }
                         }
                         item {
-                            Column(
-//                                modifier = Modifier
-//                                    .fillMaxWidth() // TODO: Why?
-//                                    .background(
-//                                        MaterialTheme.colorScheme.surfaceColorAtElevation(
-//                                            1.dp
-//                                        ), RoundedCornerShape(35.dp)
-//                                    ),
-//                                verticalArrangement = Arrangement.spacedBy(2.dp),
-                            ) {
+                            Column {
                                 val expandedPrayerIndex = prayerTimes.indexOf(state.expandedPrayer)
 
                                 prayerTimes.forEachIndexed { index, prayerTime ->
-                                    val isExpanded = state.expandedPrayer === prayerTime
-                                    val isFirstItem = index == 0
-                                    val isLastItem = index == prayerTimes.lastIndex
-
-                                    AnimatedVisibility(isExpanded && !isFirstItem) {
-                                        Spacer(Modifier.size(10.dp))
-                                    }
-
-                                    PrayerListItem(
+                                    PrayerCard(
                                         prayerTime = prayerTime,
                                         prayerRecordDetail = state.selectedPrayerRecord.details.find { it.prayer == prayerTime.prayer },
-                                        isExpanded = isExpanded,
+                                        isExpanded = state.expandedPrayer === prayerTime,
                                         isCurrent = prayerTime == state.currentPrayer,
                                         hasPassed = prayerTime.timeWindow.isBefore(LocalDateTime.now()) && prayerTime != state.currentPrayer,
                                         isSilent = false,
-                                        isFirstItem = isFirstItem,
-                                        isLastItem = isLastItem,
-                                        isBeforeExpandedItem = index == expandedPrayerIndex?.let { it - 1 },
-                                        isAfterExpandedItem = index == expandedPrayerIndex?.let { it + 1 },
+                                        isFirstItem = index == 0,
+                                        isLastItem = index == prayerTimes.lastIndex,
+                                        isBeforeExpandedItem = index == expandedPrayerIndex - 1,
+                                        isAfterExpandedItem = index == expandedPrayerIndex + 1,
                                         remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
-                                        onExpand = {
+                                        expand = {
                                             viewModel.onEvent(PrayersEvent.ChangeExpandedPrayer(if (it) null else prayerTime))
                                         },
                                         onPrayerRecordDetailValueChange = { prayed, notes, missedReason ->
@@ -381,10 +362,6 @@ fun PrayersScreen(
                                             )
                                         }
                                     )
-
-                                    AnimatedVisibility(isExpanded && !isLastItem) {
-                                        Spacer(Modifier.size(10.dp))
-                                    }
                                 }
                             }
                         }

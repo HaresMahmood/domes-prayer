@@ -1,7 +1,5 @@
 package com.example.domes.presentation.routes.prayers.composables
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,6 +51,7 @@ import com.example.domes.domain.model.prayer.MissedReason
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerRecordDetail
 import com.example.domes.domain.model.prayer.PrayerTime
+import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.shape.Circle
 import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
@@ -62,7 +61,7 @@ import java.time.LocalDateTime
 // TODO: Rewrite to be more compact
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrayerListItem(
+fun PrayerCard(
     prayerTime: PrayerTime,
     prayerRecordDetail: PrayerRecordDetail?,
     isExpanded: Boolean = false,
@@ -74,37 +73,16 @@ fun PrayerListItem(
     isBeforeExpandedItem: Boolean = false,
     isAfterExpandedItem: Boolean = false,
     remainingTimePercentage: Float,
-    onExpand: (Boolean) -> Unit,
+    expand: (Boolean) -> Unit,
     onPrayerRecordDetailValueChange: (prayed: Boolean?, notes: String?, missedReasons: MissedReason?) -> Unit = { b: Boolean?, s: String?, mr: MissedReason? -> }
 ) {
-    val backgroundElevation by animateDpAsState(
-        targetValue = if (isExpanded) 5.dp else 1.dp
-    )
-    val topCornerSize by animateDpAsState(
-        targetValue = if (isExpanded) 12.dp else if (isFirstItem || isAfterExpandedItem) 35.dp else 0.dp // TODO: Use material shapes
-    )
-    val bottomCornerSize by animateDpAsState(
-        targetValue = if (isExpanded) 12.dp else if (isLastItem || isBeforeExpandedItem) 35.dp else 0.dp // TODO: Use material shapes
-    )
-
-    Column (
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .background(
-                    MaterialTheme.colorScheme.surfaceColorAtElevation(backgroundElevation),
-                    RoundedCornerShape(
-                        topStart = topCornerSize,
-                        topEnd = topCornerSize,
-                        bottomStart = bottomCornerSize,
-                        bottomEnd = bottomCornerSize
-                    )
-                ),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
+    ExpandableCard(
+        isExpanded = isExpanded,
+        isFirstItem = isFirstItem,
+        isLastItem = isLastItem,
+        isBeforeExpandedItem = isBeforeExpandedItem,
+        isAfterExpandedItem = isAfterExpandedItem,
+        content = {
             ListItem(
                 colors = ListItemDefaults.colors(
                     containerColor = Color.Transparent,
@@ -120,7 +98,7 @@ fun PrayerListItem(
                     .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
                     .clickable {
                         if (prayerTime.prayer.displayable) {
-                            onExpand(isExpanded)
+                            expand(isExpanded)
                         }
                     },
                 leadingContent = {
@@ -237,134 +215,93 @@ fun PrayerListItem(
                     }
                 }
             )
-            if (isExpanded) {
-                // TODO: Is this bad?
-                val isDropDownExpanded = remember { mutableStateOf(false) }
+        },
+        expandedContent = {
+            // TODO: Is this bad?
+            val isDropDownExpanded = remember { mutableStateOf(false) }
 
-                Divider()
-                Column(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    if (hasPassed && prayerRecordDetail?.prayed == false) {
-//                        Row(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            horizontalArrangement = Arrangement.SpaceBetween,
-//                            verticalAlignment = Alignment.CenterVertically
-//                        ) {
-//                            Text("Missed due to")
-//
-//                            AssistChip(
-//                                leadingIcon = { Icon(Icons.Outlined.Flight, "Travel") },
-//                                label = { Text("Travel") },
-//                                trailingIcon = { Icon(Icons.Outlined.ArrowDropDown, "Select") },
-//                                onClick = { /*TODO*/ }
-//                            )
-//                        }
-
-                        ExposedDropdownMenuBox(
-                            modifier = Modifier.fillMaxWidth(),
+            Divider()
+            Column(
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                if (hasPassed && prayerRecordDetail?.prayed == false) {
+                    ExposedDropdownMenuBox(
+                        modifier = Modifier.fillMaxWidth(),
+                        expanded = isDropDownExpanded.value,
+                        onExpandedChange = {
+                            isDropDownExpanded.value = it
+                        }
+                    ) {
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            value = prayerRecordDetail.missedReason?.name ?: "",
+                            onValueChange = {},
+                            readOnly = true,
+                            singleLine = true,
+                            label = { Text("Missed due to") },
+                            leadingIcon = {
+                                prayerRecordDetail.missedReason?.iconResId?.let { id ->
+                                    Icon(
+                                        painterResource(id = id),
+                                        "Missed reason"
+                                    )
+                                } ?: Icon (
+                                    Icons.AutoMirrored.Filled.CallMissedOutgoing,
+                                    contentDescription = "Missed Reason"
+                                )
+                            },
+                            trailingIcon = { IconButton(onClick = { isDropDownExpanded.value = !isDropDownExpanded.value }) {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value)
+                            } },
+                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                        )
+                        ExposedDropdownMenu(
                             expanded = isDropDownExpanded.value,
-                            onExpandedChange = {
-                                isDropDownExpanded.value = it
-                            }
+                            onDismissRequest = {
+                                isDropDownExpanded.value = !isDropDownExpanded.value
+                            },
                         ) {
-                            OutlinedTextField(
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth(),
-                                value = prayerRecordDetail.missedReason?.name ?: "",
-                                onValueChange = {},
-                                readOnly = true,
-                                singleLine = true,
-                                label = { Text("Missed due to") },
-                                leadingIcon = {
-                                    prayerRecordDetail.missedReason?.iconResId?.let { id ->
-                                        Icon(
-                                            painterResource(id = id),
-                                            "Missed reason"
-                                        )
-                                    } ?: Icon (
-                                        Icons.AutoMirrored.Filled.CallMissedOutgoing,
-                                        contentDescription = "Missed Reason"
-                                    )
-                                },
-                                trailingIcon = { IconButton(onClick = { isDropDownExpanded.value = !isDropDownExpanded.value }) {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value)
-                                } },
-                                colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                            )
-                            ExposedDropdownMenu(
-                                expanded = isDropDownExpanded.value,
-                                onDismissRequest = {
-                                    isDropDownExpanded.value = !isDropDownExpanded.value
-                                },
-                            ) {
-                                MissedReason.ALL.forEach {
-                                    DropdownMenuItem(
-                                        text = { Text(it?.name ?: "None") },
-                                        leadingIcon = {
-                                            it?.iconResId?.let { id ->
-                                                Icon(
-                                                    painterResource(id),
-                                                    it.name
-                                                )
-                                            }
-                                        },
-                                        onClick = {
-                                            onPrayerRecordDetailValueChange(null, null, it)
-                                            isDropDownExpanded.value = !isDropDownExpanded.value
-                                        },
-                                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                    )
-                                }
+                            MissedReason.ALL.forEach {
+                                DropdownMenuItem(
+                                    text = { Text(it?.name ?: "None") },
+                                    leadingIcon = {
+                                        it?.iconResId?.let { id ->
+                                            Icon(
+                                                painterResource(id),
+                                                it.name
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        onPrayerRecordDetailValueChange(null, null, it)
+                                        isDropDownExpanded.value = !isDropDownExpanded.value
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                )
                             }
                         }
                     }
-
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        value = prayerRecordDetail?.notes ?: "",
-                        onValueChange = {
-                            onPrayerRecordDetailValueChange(null, it, null) // FIXME: Probably very inefficient!!! updating database on change
-                        },
-                        leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TextSnippet, null) },
-                        label = { Text("Notes") },
-                        placeholder = { Text("Reason missed • Raka'ats prayed • Du'as read") },
-                        maxLines = 2,
-                    )
-
-//                InputView(
-//                    useCaseState = rememberUseCaseState(
-//                        visible = true,
-//                        embedded = true,
-//                        onCloseRequest = {
-//                            println("INPUT VIEW CLOSED")
-//                        }
-//                    ),
-//                    selection = InputSelection(
-//                        input = listOf(
-//                            InputTextField(
-//                                header = InputHeader(
-//                                    title = "Notes",
-//                                    icon = IconSource(Icons.AutoMirrored.Outlined.TextSnippet)
-//                                ),
-////                            columns = 3,
-//                            maxLines = 5,
-//                                type = InputTextFieldType.OUTLINED,
-//                                validationListener = { value ->
-//                                    ValidationResult.Valid
-//                                }
-//                            )
-//                        ),
-//                        withButtonView = false
-//                    )
-//                )
                 }
+
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = prayerRecordDetail?.notes ?: "",
+                    onValueChange = {
+                        onPrayerRecordDetailValueChange(null, it, null) // FIXME: Probably very inefficient!!! updating database on change
+                    },
+                    leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TextSnippet, null) },
+                    label = { Text("Notes") },
+                    placeholder = { Text("Reason missed • Raka'ats prayed • Du'as read") },
+                    maxLines = 2,
+                )
             }
-        }
-    }
+        },
+        expand = expand,
+    )
 }
 
 
@@ -384,7 +321,7 @@ fun Preview() {
             ),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        PrayerListItem(
+        PrayerCard(
             prayerTime = PrayerTime(
                 Prayer.FAJR,
                 LocalDateTime.now(),
@@ -392,7 +329,7 @@ fun Preview() {
             ),
             prayerRecordDetail = PrayerRecordDetail(Prayer.FAJR, false),
             remainingTimePercentage = 0.5f,
-            onExpand = {}
+            expand = {}
         )
     }
 }

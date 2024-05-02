@@ -1,12 +1,16 @@
 package com.example.domes.presentation.common.composables.card
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Timer
@@ -49,25 +53,37 @@ fun ExpandableCard(
         targetValue = if (isExpanded) 12.dp else if (isLastItem || isBeforeExpandedItem) 35.dp else 0.dp // TODO: Use material shapes
     )
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-            .clickable {
-                expand(isExpanded)
-            },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(backgroundElevation)
-        ),
-        shape = RoundedCornerShape(
-            topStart = topCornerSize,
-            topEnd = topCornerSize,
-            bottomStart = bottomCornerSize,
-            bottomEnd = bottomCornerSize
-        )
-    ) {
-        content(isExpanded)
-        if (isExpanded) expandedContent()
+    Column {
+        AnimatedVisibility(isExpanded && !isFirstItem) {
+            Spacer(Modifier.size(10.dp))
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize()
+                .clickable {
+                    expand(isExpanded)
+                },
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                    backgroundElevation
+                )
+            ),
+            shape = RoundedCornerShape(
+                topStart = topCornerSize,
+                topEnd = topCornerSize,
+                bottomStart = bottomCornerSize,
+                bottomEnd = bottomCornerSize
+            )
+        ) {
+            content(isExpanded)
+            if (isExpanded) expandedContent()
+        }
+
+        AnimatedVisibility(isExpanded && !isLastItem) {
+            Spacer(Modifier.size(10.dp))
+        }
     }
 }
 

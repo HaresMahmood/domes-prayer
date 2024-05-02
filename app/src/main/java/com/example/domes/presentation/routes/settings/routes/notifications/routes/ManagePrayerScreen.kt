@@ -152,6 +152,8 @@ fun ManagePrayerScreen(
                 item {
                     ManagePrayerCard(
                         isDefaultNotification = true,
+                        isFirstItem = true,
+                        isLastItem = true,
                         isExpanded = state.expandedNotificationIndex == -1,
                         expand = {
                             viewModel.onEvent(ManagePrayerEvent.ChangeExpandedNotification(if (it) null else -1))

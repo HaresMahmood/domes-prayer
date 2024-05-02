@@ -1,6 +1,7 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes.composables
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -49,6 +50,11 @@ fun ManagePrayerCard(
     remove: (() -> Unit)? = null,
 ) {
     ExpandableCard(
+        isExpanded = isExpanded,
+        isFirstItem = isFirstItem,
+        isLastItem = isLastItem,
+        isBeforeExpandedItem = isBeforeExpandedItem,
+        isAfterExpandedItem = isAfterExpandedItem,
         content = {
             ListItem(
                 modifier = Modifier
@@ -58,10 +64,7 @@ fun ManagePrayerCard(
                         start = 5.dp,
                         end = 5.dp,
                         bottom = if (isExpanded) 0.dp else 8.dp
-                    )
-                    .clickable {
-                        expand(isExpanded)
-                    },
+                    ),
                 colors = ListItemDefaults.colors(
                     containerColor = Color.Transparent,
                 ),
@@ -210,9 +213,16 @@ fun ManagePrayerCard(
 )
 @Composable
 fun Preview() {
-    ManagePrayerCard(
-        isDefaultNotification = false,
-        isExpanded = true,
-        expand = {}
-    )
+    Column {
+        ManagePrayerCard(
+            isDefaultNotification = false,
+            isExpanded = true,
+            expand = {}
+        )
+        ManagePrayerCard(
+            isDefaultNotification = false,
+            isExpanded = false,
+            expand = {}
+        )
+    }
 }
