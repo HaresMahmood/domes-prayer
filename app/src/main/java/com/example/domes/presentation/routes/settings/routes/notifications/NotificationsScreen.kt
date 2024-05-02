@@ -143,7 +143,7 @@ fun NotificationsScreen(
                             .alpha(if (state.isNotificationsAllowed) 1f else 0.5f),
                     ) {
                         Prayer.ALL.forEach { prayer ->
-                            val notification = state.prayerNotifications.find { it.prayer == prayer }
+                            val notification = state.prayerNotifications.firstOrNull { it.prayer == prayer }
 
                             ListItem(
                                 modifier = Modifier
@@ -154,7 +154,7 @@ fun NotificationsScreen(
                                         end = 5.dp,
                                     )
                                     .clickable {
-                                        navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
+                                        if (state.isNotificationsAllowed) navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
                                     },
                                 colors = ListItemDefaults.colors(
                                     containerColor = Color.Transparent,
@@ -168,8 +168,16 @@ fun NotificationsScreen(
                                 },
                                 headlineContent = { Text(prayer.name) },
                                 supportingContent = {
+                                    val notificationText = if (notification?.isNotificationAllowed != false) {
+                                        val notifications = (notification?.notifications?.size ?: 0) + 1
+                                        val pluralText = if (notifications == 1) "" else "s"
+
+                                        "$notifications notification$pluralText"
+                                    }
+                                    else "Disabled"
+
                                     Text(
-                                        "3 notifications",
+                                        notificationText,
                                         color = MaterialTheme.colorScheme.tertiary
                                     )
                                 },
