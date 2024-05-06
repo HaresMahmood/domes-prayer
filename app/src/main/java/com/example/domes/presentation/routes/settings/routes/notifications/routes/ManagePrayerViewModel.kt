@@ -13,6 +13,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
+import kotlin.math.abs
+import kotlin.math.sign
+
+enum class OffsetPolarity(val index: Int) {
+    BEFORE(-1),
+    AFTER(1)
+}
 
 @HiltViewModel
 class ManagePrayerViewModel @Inject constructor(
@@ -54,7 +61,6 @@ class ManagePrayerViewModel @Inject constructor(
                     updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
                 }
             }
-
             is ManagePrayerEvent.ChangeExpandedNotification -> {
                 println("Notification: ${event.notificationIndex}")
 
@@ -62,7 +68,6 @@ class ManagePrayerViewModel @Inject constructor(
                     expandedNotificationIndex = event.notificationIndex
                 )
             }
-
             is ManagePrayerEvent.AddNotification -> {
                 val updatedNotifications =
                     _state.value.notification?.notifications?.toMutableList()?.apply {
@@ -102,7 +107,29 @@ class ManagePrayerViewModel @Inject constructor(
             is ManagePrayerEvent.ChangeOffset -> {
                 val updatedNotifications = _state.value.notification?.notifications?.map { notification ->
                     if (notification == event.notification) {
-                        notification.copy(offset = event.offset)
+                        val offset = (abs(notification.offset) + event.increment) * notification.offset.sign
+                        notification.copy(offset = offset)
+                    } else {
+                        notification
+                    }
+                } ?: listOf(Notification())
+
+                val updatedNotification = _state.value.notification?.copy(
+                    notifications = updatedNotifications.toMutableList()
+                )
+
+                _state.value = _state.value.copy(
+                    notification = updatedNotification
+                )
+
+                viewModelScope.launch {
+                    updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
+                }
+            }
+            is ManagePrayerEvent.ToggleOffsetPolarity -> {
+                val updatedNotifications = _state.value.notification?.notifications?.map { notification ->
+                    if (notification == event.notification) {
+                        notification.copy(offset = notification.offset * -1)
                     } else {
                         notification
                     }

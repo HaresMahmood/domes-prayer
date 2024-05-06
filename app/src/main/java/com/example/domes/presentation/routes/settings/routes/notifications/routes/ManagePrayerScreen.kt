@@ -151,7 +151,7 @@ fun ManagePrayerScreen(
                                         Text(
                                             if (index == 0) "Default" else "Additional",
                                             style = MaterialTheme.typography.labelMedium,
-                                            modifier = Modifier.padding(20.dp)
+                                            modifier = Modifier.padding(top = if (index == 0) 0.dp else 20.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)
                                         )
                                     }
 
@@ -164,8 +164,11 @@ fun ManagePrayerScreen(
                                         isLastItem = index == 0 || index == notifications.lastIndex,
                                         isBeforeExpandedItem = index == state.expandedNotificationIndex?.let { item -> item - 1 },
                                         isAfterExpandedItem = index == state.expandedNotificationIndex?.let { item -> item + 1 },
-                                        changeOffset = { offset ->
-                                            viewModel.onEvent(ManagePrayerEvent.ChangeOffset(notification, offset))
+                                        changeOffset = { increment ->
+                                            viewModel.onEvent(ManagePrayerEvent.ChangeOffset(notification, increment))
+                                        },
+                                        changeOffsetRelation = {
+                                            viewModel.onEvent(ManagePrayerEvent.ToggleOffsetPolarity(notification))
                                         },
                                         expand = { expanded ->
                                             viewModel.onEvent(

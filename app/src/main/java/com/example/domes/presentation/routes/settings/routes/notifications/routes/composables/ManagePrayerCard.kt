@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CompareArrows
-import androidx.compose.material.icons.automirrored.outlined.Redo
-import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.GraphicEq
@@ -42,8 +40,11 @@ import com.example.domes.presentation.common.composables.button.SegmentedButtonI
 import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.example.domes.presentation.routes.settings.routes.notifications.routes.OffsetPolarity
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.LocalDateTime
+import kotlin.math.abs
+import kotlin.math.sign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +58,7 @@ fun ManagePrayerCard(
     isBeforeExpandedItem: Boolean = false,
     isAfterExpandedItem: Boolean = false,
     changeOffset: (Int) -> Unit,
+    changeOffsetRelation: () -> Unit,
     expand: (Boolean) -> Unit,
     remove: (() -> Unit)? = null,
 ) {
@@ -121,7 +123,7 @@ fun ManagePrayerCard(
                 headlineContent = { Text("Offset") },
                 supportingContent = {
                     Text(
-                        "${notification?.offset} mins",
+                        "${notification?.offset?.let { abs(it) }} mins",
                         color = MaterialTheme.colorScheme.tertiary
                     )
                 },
@@ -131,7 +133,7 @@ fun ManagePrayerCard(
                             {
                                 if (notification?.offset != 0) {
                                     notification?.let {
-                                        changeOffset(it.offset - 1)
+                                        changeOffset(-1)
                                     }
                                 }
                             },
@@ -145,7 +147,7 @@ fun ManagePrayerCard(
                         SegmentedAction(
                             {
                                 notification?.let {
-                                    changeOffset(it.offset +  1)
+                                    changeOffset(1)
                                 }
                             },
                             icon = IconSource(Icons.Outlined.Add, "More")
@@ -173,18 +175,20 @@ fun ManagePrayerCard(
                 },
                 headlineContent = {
                     SegmentedButtons {
-                        SegmentedButtonItem(
-                            selected = false,
-                            onClick = { },
-                            label = { Text("Before") },
-                            icon = { Icon(Icons.AutoMirrored.Outlined.Undo, null) },
-                        )
-                        SegmentedButtonItem(
-                            selected = true,
-                            onClick = { },
-                            label = { Text("After") },
-                            icon = { Icon(Icons.AutoMirrored.Outlined.Redo, null) },
-                        )
+                        OffsetPolarity.entries.forEach { offsetRelation ->
+                            val selected = offsetRelation.index == notification?.offset?.sign
+                            SegmentedButtonItem(
+                                selected = selected,
+                                onClick = {
+                                    if (!selected) {
+                                        notification?.let { _ ->
+                                            changeOffsetRelation()
+                                        }
+                                    }
+                                },
+                                label = { Text(offsetRelation.name.lowercase().replaceFirstChar { it.uppercase() }) },
+                            )
+                        }
                     }
                 },
             )
@@ -283,12 +287,14 @@ fun Preview() {
             time = LocalDateTime.now(),
             isExpanded = true,
             changeOffset = {},
+            changeOffsetRelation = {},
             expand = {}
         )
         ManagePrayerCard(
             time = LocalDateTime.now(),
             isExpanded = false,
             changeOffset = {},
+            changeOffsetRelation = {},
             expand = {}
         )
     }

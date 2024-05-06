@@ -7,5 +7,6 @@ sealed class ManagePrayerEvent {
     data class ChangeExpandedNotification(val notificationIndex: Int?): ManagePrayerEvent()
     data object AddNotification: ManagePrayerEvent()
     data class RemoveNotification(val notification: Notification) : ManagePrayerEvent()
-    data class ChangeOffset(val notification: Notification, val offset: Int) : ManagePrayerEvent()
+    data class ChangeOffset(val notification: Notification, val increment: Int) : ManagePrayerEvent()
+    data class ToggleOffsetPolarity(val notification: Notification): ManagePrayerEvent()
 }
