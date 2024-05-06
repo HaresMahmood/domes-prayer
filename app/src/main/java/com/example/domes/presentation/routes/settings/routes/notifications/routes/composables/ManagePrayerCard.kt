@@ -52,6 +52,7 @@ fun ManagePrayerCard(
     time: LocalDateTime,
     notification: Notification? = null,
     isDefaultNotification: Boolean = false,
+    isEnabled: Boolean = true,
     isExpanded: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
@@ -63,6 +64,7 @@ fun ManagePrayerCard(
     remove: (() -> Unit)? = null,
 ) {
     ExpandableCard(
+        isEnabled = isEnabled,
         isExpanded = isExpanded,
         isFirstItem = isFirstItem,
         isLastItem = isLastItem,

@@ -27,6 +27,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 fun ExpandableCard(
     content: @Composable (ColumnScope.(Boolean) -> Unit) = {},
     expandedContent: @Composable (ColumnScope.() -> Unit) = {},
+    isEnabled: Boolean = true,
     isExpanded: Boolean = false,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
@@ -62,7 +64,10 @@ fun ExpandableCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .animateContentSize()
-                .clickable {
+                .alpha(if (isEnabled) 1f else 0.5f)
+                .clickable(
+                    enabled = isEnabled,
+                ) {
                     expand(isExpanded)
                 },
             colors = CardDefaults.cardColors(

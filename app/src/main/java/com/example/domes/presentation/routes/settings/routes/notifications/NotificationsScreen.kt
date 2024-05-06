@@ -153,8 +153,10 @@ fun NotificationsScreen(
                                         start = 5.dp,
                                         end = 5.dp,
                                     )
-                                    .clickable {
-                                        if (state.isNotificationsAllowed) navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
+                                    .clickable(
+                                        enabled = state.isNotificationsAllowed
+                                    ) {
+                                        navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
                                     },
                                 colors = ListItemDefaults.colors(
                                     containerColor = Color.Transparent,

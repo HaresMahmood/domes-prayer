@@ -158,6 +158,7 @@ fun ManagePrayerScreen(
                                     ManagePrayerCard(
                                         time = state.time,
                                         notification = notification,
+                                        isEnabled = state.notification.isNotificationAllowed,
                                         isExpanded = state.expandedNotificationIndex == index,
                                         isFirstItem = index == 0 || index == 1,
                                         isDefaultNotification = index == 0,
