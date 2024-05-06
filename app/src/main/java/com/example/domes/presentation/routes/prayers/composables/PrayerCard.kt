@@ -105,12 +105,6 @@ fun PrayerCard(
                     ),
                     modifier = Modifier
                         .weight(1f)
-//                        .padding(
-//                            start = 0.dp,
-//                            //                        end = if (isCurrent) 0.dp else 12.dp,
-//                            //                        top = if (isFirstItem || isAfterExpandedItem) 16.dp else 0.dp,
-//                            //                        bottom = if (isLastItem || isBeforeExpandedItem) 16.dp else 0.dp,
-//                        )
                         .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
                         .clickable {
                             expand(isExpanded)
@@ -256,7 +250,7 @@ fun PrayerCard(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                if (hasPassed && prayerRecordDetail?.prayed == false) {
+                if (hasPassed && prayerTime.prayer.displayable && prayerRecordDetail?.prayed == false) {
                     ExposedDropdownMenuBox(
                         modifier = Modifier.fillMaxWidth(),
                         expanded = isDropDownExpanded.value,
@@ -401,6 +395,7 @@ fun Preview() {
             isSilent = true,
             remainingTimePercentage = 0.5f,
             isExpanded = false,
+            isAfterExpandedItem = true,
             expand = {},
             navController = navController
         )
