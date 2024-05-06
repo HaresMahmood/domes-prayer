@@ -1,11 +1,16 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes.composables
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CompareArrows
 import androidx.compose.material.icons.outlined.Add
@@ -25,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -98,12 +104,22 @@ fun ManagePrayerCard(
                     )
                 },
                 trailingContent = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        Divider(
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            modifier = Modifier
+                                .height(SwitchDefaults.IconSize * 2) // TODO: This is kinda dumb
+                                .width(1.dp)
+                        )
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
+                    }
                 }
             )
         },
         expandedContent = {
-
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()

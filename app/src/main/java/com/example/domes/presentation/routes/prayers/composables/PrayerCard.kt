@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -178,64 +180,74 @@ fun PrayerCard(
                     }
                 )
 
-                Box(
-                    modifier = Modifier.width(80.dp),
-                    contentAlignment = Alignment.Center
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (isCurrent) {
-                        val shapeParam = Shape(
-                            sides = 4,
-                            innerRadius = .352f,
-                            roundness = .32f,
-                            rotation = 45f,
-                            shapeId = Shape.ShapeId.Star
-                        )
-                        val shape = remember {
-                            shapeParam.genShape()
-                        }
-                        val clip = remember(shape) {
-                            RoundedPolygonShape(polygon = shape)
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .clip(clip)
-                                .size(64.dp)
-                                .background(MaterialTheme.colorScheme.tertiaryContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painterResource(prayerTime.prayer.iconResId),
-                                prayerTime.prayer.name,
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer
+                    Divider(
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        modifier = Modifier
+                            .height(SwitchDefaults.IconSize * 2) // TODO: This is kinda dumb
+                            .width(1.dp)
+                    )
+                    Box(
+                        modifier = Modifier.width(84.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isCurrent) {
+                            val shapeParam = Shape(
+                                sides = 4,
+                                innerRadius = .352f,
+                                roundness = .32f,
+                                rotation = 45f,
+                                shapeId = Shape.ShapeId.Star
                             )
-                        }
-                    } else {
-                        val shapeParam = Shape(
-                            roundness = .4f,
-                            sides = 4,
-                            rotation = 90f,
-                            shapeId = Shape.ShapeId.Polygon
-                        )
-                        val shape = remember {
-                            shapeParam.genShape()
-                        }
-                        val clip = remember(shape) {
-                            RoundedPolygonShape(polygon = shape)
-                        }
+                            val shape = remember {
+                                shapeParam.genShape()
+                            }
+                            val clip = remember(shape) {
+                                RoundedPolygonShape(polygon = shape)
+                            }
 
-                        Box(
-                            modifier = Modifier
-                                .clip(clip)
-                                .size(48.dp)
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painterResource(prayerTime.prayer.iconResId),
-                                prayerTime.prayer.name,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            Box(
+                                modifier = Modifier
+                                    .clip(clip)
+                                    .size(64.dp)
+                                    .background(MaterialTheme.colorScheme.tertiaryContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painterResource(prayerTime.prayer.iconResId),
+                                    prayerTime.prayer.name,
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            }
+                        } else {
+                            val shapeParam = Shape(
+                                roundness = .4f,
+                                sides = 4,
+                                rotation = 90f,
+                                shapeId = Shape.ShapeId.Polygon
                             )
+                            val shape = remember {
+                                shapeParam.genShape()
+                            }
+                            val clip = remember(shape) {
+                                RoundedPolygonShape(polygon = shape)
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .clip(clip)
+                                    .size(48.dp)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painterResource(prayerTime.prayer.iconResId),
+                                    prayerTime.prayer.name,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
@@ -395,6 +407,7 @@ fun Preview() {
             isSilent = true,
             remainingTimePercentage = 0.5f,
             isExpanded = false,
+            isLastItem = true,
             isAfterExpandedItem = true,
             expand = {},
             navController = navController
