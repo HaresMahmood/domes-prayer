@@ -2,6 +2,7 @@ package com.example.domes.presentation.routes.prayers.composables
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMissedOutgoing
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
@@ -33,10 +33,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.testing.TestNavHostController
 import com.example.domes.domain.model.prayer.MissedReason
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerRecordDetail
@@ -93,44 +94,42 @@ fun PrayerCard(
         isBeforeExpandedItem = isBeforeExpandedItem,
         isAfterExpandedItem = isAfterExpandedItem,
         content = {
-            ListItem(
-                colors = ListItemDefaults.colors(
-                    containerColor = Color.Transparent,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 0.dp,
-//                        end = if (isCurrent) 0.dp else 12.dp,
-//                        top = if (isFirstItem || isAfterExpandedItem) 16.dp else 0.dp,
-//                        bottom = if (isLastItem || isBeforeExpandedItem) 16.dp else 0.dp,
-                    )
-                    .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
-                    .clickable {
-                        if (prayerTime.prayer.displayable) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ListItem(
+                    colors = ListItemDefaults.colors(
+                        containerColor = Color.Transparent,
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+//                        .padding(
+//                            start = 0.dp,
+//                            //                        end = if (isCurrent) 0.dp else 12.dp,
+//                            //                        top = if (isFirstItem || isAfterExpandedItem) 16.dp else 0.dp,
+//                            //                        bottom = if (isLastItem || isBeforeExpandedItem) 16.dp else 0.dp,
+//                        )
+                        .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
+                        .clickable {
                             expand(isExpanded)
-                        }
-                    },
-                leadingContent = {
-                    Box(contentAlignment = Alignment.Center) {
-                        if (isCurrent) {
-                            val remainingTimeAnimatedProgress by animateFloatAsState(
-                                targetValue = remainingTimePercentage,
-                                animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-                                label = "prayer-progress"
-                            )
-
-                            CircularProgressIndicator(
-                                progress = remainingTimeAnimatedProgress,
-                                modifier = Modifier
-                                    .size(40.dp),
-                                color = if (remainingTimePercentage < 0.15f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                                strokeCap  = StrokeCap.Round,
-                            )
-                        }
-                        IconButton(
+                        },
+                    leadingContent = {
+                        OutlinedIconButton(
+                            border = BorderStroke(4.dp,
+                                MaterialTheme.colorScheme.outline.copy(
+                                    alpha = if (isCurrent) 0.5f else 0.25f
+                                )
+                            ),
                             onClick = {
-                                prayerRecordDetail?.let { onPrayerRecordDetailValueChange(!it.prayed, null, null) }
+                                prayerRecordDetail?.let {
+                                    onPrayerRecordDetailValueChange(
+                                        !it.prayed,
+                                        null,
+                                        null
+                                    )
+                                }
                             }
                         ) {
                             if (prayerTime.prayer.displayable && prayerRecordDetail != null) {
@@ -142,16 +141,53 @@ fun PrayerCard(
                             } else {
                                 Circle(color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
+
+                            if (isCurrent) {
+                                val remainingTimeAnimatedProgress by animateFloatAsState(
+                                    targetValue = remainingTimePercentage,
+                                    animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+                                    label = "prayer-progress"
+                                )
+
+                                CircularProgressIndicator(
+                                    progress = remainingTimeAnimatedProgress,
+                                    modifier = Modifier
+                                        .size(40.dp),
+                                    color = if (remainingTimePercentage < 0.15f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                                    strokeCap = StrokeCap.Round,
+                                    strokeWidth = 4.dp
+                                )
+                            }
+                        }
+                    },
+                    headlineContent = {
+                        Text(
+                            prayerTime.prayer.name,
+                            style = if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
+                        )
+                    },
+                    supportingContent = {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(prayerTime.time.format(getFormatter("HH:mm a")))
+
+                            if (isSilent) {
+                                Icon(
+                                    Icons.Outlined.NotificationsOff,
+                                    modifier = Modifier.width(15.dp),
+                                    contentDescription = "Silent"
+                                )
+                            }
                         }
                     }
-                },
-                headlineContent = {
-                    Text(
-                        prayerTime.prayer.name,
-                        style = if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
-                    )
-                },
-                trailingContent = {
+                )
+
+                Box(
+                    modifier = Modifier.width(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
                     if (isCurrent) {
                         val shapeParam = Shape(
                             sides = 4,
@@ -170,14 +206,14 @@ fun PrayerCard(
                         Box(
                             modifier = Modifier
                                 .clip(clip)
-                                .size(72.dp)
+                                .size(64.dp)
                                 .background(MaterialTheme.colorScheme.tertiaryContainer),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 painterResource(prayerTime.prayer.iconResId),
                                 prayerTime.prayer.name,
-                                tint = MaterialTheme.colorScheme.tertiary
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                         }
                     } else {
@@ -203,28 +239,13 @@ fun PrayerCard(
                         ) {
                             Icon(
                                 painterResource(prayerTime.prayer.iconResId),
-                                prayerTime.prayer.name
-                            )
-                        }
-                    }
-                },
-                supportingContent = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(prayerTime.time.format(getFormatter("HH:mm a")))
-
-                        if (isSilent) {
-                            Icon(
-                                Icons.Outlined.NotificationsOff,
-                                modifier = Modifier.width(15.dp),
-                                contentDescription = "Silent"
+                                prayerTime.prayer.name,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
                 }
-            )
+            }
         },
         expandedContent = {
             // TODO: Is this bad?
@@ -258,14 +279,18 @@ fun PrayerCard(
                                         painterResource(id = id),
                                         "Missed reason"
                                     )
-                                } ?: Icon (
+                                } ?: Icon(
                                     Icons.AutoMirrored.Filled.CallMissedOutgoing,
                                     contentDescription = "Missed Reason"
                                 )
                             },
-                            trailingIcon = { IconButton(onClick = { isDropDownExpanded.value = !isDropDownExpanded.value }) {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value)
-                            } },
+                            trailingIcon = {
+                                IconButton(onClick = {
+                                    isDropDownExpanded.value = !isDropDownExpanded.value
+                                }) {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value)
+                                }
+                            },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
                         )
                         ExposedDropdownMenu(
@@ -301,7 +326,11 @@ fun PrayerCard(
                         .fillMaxWidth(),
                     value = prayerRecordDetail?.notes ?: "",
                     onValueChange = {
-                        onPrayerRecordDetailValueChange(null, it, null) // FIXME: Probably very inefficient!!! updating database on change
+                        onPrayerRecordDetailValueChange(
+                            null,
+                            it,
+                            null
+                        ) // FIXME: Probably very inefficient!!! updating database on change
                     },
                     leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TextSnippet, null) },
                     label = { Text("Notes") },
@@ -336,54 +365,44 @@ fun PrayerCard(
 }
 
 
-//@Preview(
-//    showBackground = true,
-//    wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE,
-//    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
-//)
-//@Composable
-//fun Preview() {
-//    // fake navController for preview
-//    val navController = remember {
-//        NavController(LocalContext.current)
-//    }
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .background(
-//                MaterialTheme.colorScheme.surfaceColorAtElevation(
-//                    1.dp
-//                ), RoundedCornerShape(35.dp)
-//            ),
-//        verticalArrangement = Arrangement.spacedBy(2.dp),
-//    ) {
-//        PrayerCard(
-//            prayerTime = PrayerTime(
-//                Prayer.FAJR,
-//                LocalDateTime.now(),
-//                LocalDateTime.now().plusMinutes(10)
-//            ),
-//            prayerRecordDetail = PrayerRecordDetail(Prayer.FAJR, false),
-//            remainingTimePercentage = 0.5f,
-//            isExpanded = true,
-//            hasPassed = true,
-//            expand = {},
-//            navController = navController
-//        )
-//
-//        PrayerCard(
-//            prayerTime = PrayerTime(
-//                Prayer.DHUHR,
-//                LocalDateTime.now(),
-//                LocalDateTime.now().plusMinutes(10)
-//            ),
-//            prayerRecordDetail = PrayerRecordDetail(Prayer.DHUHR, false),
-//            isCurrent = true,
-//            remainingTimePercentage = 0.5f,
-//            isExpanded = false,
-//            expand = {},
-//            navController = navController
-//        )
-//    }
-//}
+@Preview(
+    showBackground = true,
+    wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Composable
+fun Preview() {
+    val navController = TestNavHostController(LocalContext.current)
+//    navController.navigatorProvider.addNavigator(ComposeNavigator())
+
+    Column(Modifier.padding(15.dp)) {
+        PrayerCard(
+            prayerTime = PrayerTime(
+                Prayer.FAJR,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(10)
+            ),
+            prayerRecordDetail = PrayerRecordDetail(Prayer.FAJR, false),
+            remainingTimePercentage = 0.5f,
+            isExpanded = true,
+            hasPassed = true,
+            expand = {},
+            navController = navController
+        )
+
+        PrayerCard(
+            prayerTime = PrayerTime(
+                Prayer.DHUHR,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(10)
+            ),
+            prayerRecordDetail = PrayerRecordDetail(Prayer.DHUHR, false),
+            isCurrent = true,
+            isSilent = true,
+            remainingTimePercentage = 0.5f,
+            isExpanded = false,
+            expand = {},
+            navController = navController
+        )
+    }
+}
