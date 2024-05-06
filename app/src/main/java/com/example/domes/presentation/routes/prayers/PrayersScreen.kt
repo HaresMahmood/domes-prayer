@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -128,7 +129,10 @@ fun PrayersScreen(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .clickable {
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null
+                ) {
                     if (bottomSheetShaffoldState.bottomSheetState.hasExpandedState) {
                         scope.launch { bottomSheetShaffoldState.bottomSheetState.partialExpand() }
                     }
