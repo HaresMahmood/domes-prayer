@@ -1,5 +1,7 @@
 package com.example.domes.presentation.routes.settings
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,6 +35,8 @@ import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
+import com.example.domes.ui.theme.DomesTheme
+import com.maxkeppeker.sheets.core.models.base.IconSource
 
 class UIConstants {
     companion object {
@@ -77,26 +81,27 @@ fun SettingsScreen(
                     FixedCard {
                         SettingsListItem(
                             "Location",
+                            IconSource(Icons.Outlined.LocationOn),
                             "Auto-update • set manually",
-                            Icons.Outlined.LocationOn,
                             onClick = { navController.navigate(Screen.Location.route) },
                         )
                         SettingsListItem(
                             "Calculation",
+                            IconSource(Icons.Outlined.Calculate),
                             "Method • corrections",
-                            Icons.Outlined.Calculate,
                             onClick = { navController.navigate(Screen.Calculation.route) },
                         )
                         SettingsListItem(
                             "Notifications",
+                            IconSource(Icons.Outlined.Notifications),
                             "Adhan • prayers",
-                            Icons.Outlined.Notifications,
                             onClick = { navController.navigate(Screen.Notifications.route) },
                         )
                         SettingsListItem(
                             "Appearance",
+                            IconSource(Icons.Outlined.Palette),
                             "Theme • language • format",
-                            Icons.Outlined.Palette,
+                            isLastItem = true
                         )
                     }
                 }
@@ -104,18 +109,19 @@ fun SettingsScreen(
                     FixedCard {
                         SettingsListItem(
                             "About",
+                            IconSource(Icons.Outlined.Info),
                             "App version • contact",
-                            Icons.Outlined.Info,
                         )
                         SettingsListItem(
                             "Privacy",
+                            IconSource(Icons.Outlined.Security),
                             "Policy • terms",
-                            Icons.Outlined.Security,
                         )
                         SettingsListItem(
                             "Feedback",
+                            IconSource(Icons.Outlined.QuestionAnswer),
                             "Report a bug • suggest a feature",
-                            Icons.Outlined.QuestionAnswer,
+                            isLastItem = true
                         )
                     }
 
@@ -125,14 +131,16 @@ fun SettingsScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Preview(
     showBackground = true,
     wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
 )
 @Composable
 fun SettingsPreview() {
-    // Fake navController
     val navController = rememberNavController()
 
-    SettingsScreen(navController)
+    DomesTheme {
+        SettingsScreen(navController)
+    }
 }
