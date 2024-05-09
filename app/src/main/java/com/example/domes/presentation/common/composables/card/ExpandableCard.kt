@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -34,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import com.example.domes.presentation.common.composables.listitem.ListItemDivider
 
 @Composable
 fun ExpandableCard(
@@ -85,24 +84,11 @@ fun ExpandableCard(
             )
         ) { 
             Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-//                    .padding(
-//                        top = if (isFirstItem) 8.dp else 0.dp,
-//                        start = 5.dp,
-//                        end = 5.dp,
-//                        bottom = if (isLastItem) 8.dp else 0.dp
-//                    ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 content(isExpanded)
                 if (isExpanded) expandedContent()
-                else if (!isLastItem && !isBeforeExpandedItem) Divider(
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
-                    modifier = Modifier
-                        .height(1.dp)
-                        .fillMaxWidth(0.88f)
-                )
+                else if (!isLastItem && !isBeforeExpandedItem) ListItemDivider()
             }
         }
 
