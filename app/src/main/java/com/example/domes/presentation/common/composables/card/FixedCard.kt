@@ -27,23 +27,45 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 
+enum class Variant {
+    DEFAULT,
+    VISUAL,
+    FADED,
+    ERROR
+}
+
 @Composable
 fun FixedCard(
+    variant: Variant = Variant.DEFAULT,
     isFirstItem: Boolean = true,
     isLastItem: Boolean = true,
+    modifier: Modifier = Modifier,
     content: @Composable (ColumnScope.() -> Unit)
 ) {
+    val colors = when (variant) {
+        Variant.DEFAULT, Variant.FADED -> CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                1.dp
+            ).copy(alpha = if (variant == Variant.FADED) 0.5f else 1f)
+        )
+        Variant.VISUAL -> CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+        Variant.ERROR -> CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        )
+    }
+
     val topCornerSize = if (isFirstItem) 35.dp else 12.dp
     val bottomCornerSize = if (isLastItem) 35.dp else 12.dp
 
     Column {
         Card(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .animateContentSize(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
-            ),
+                .animateContentSize()
+                .then(modifier),
+            colors = colors,
             shape = RoundedCornerShape(
                 topStart = topCornerSize,
                 topEnd = topCornerSize,
@@ -177,6 +199,7 @@ fun FixedCardPreview() {
             },
             isFirstItem = false,
             isLastItem = true,
+            variant = Variant.ERROR
         )
     }
 }

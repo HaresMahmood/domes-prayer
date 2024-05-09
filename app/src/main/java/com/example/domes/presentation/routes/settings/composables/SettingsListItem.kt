@@ -3,54 +3,95 @@ package com.example.domes.presentation.routes.settings.composables
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material3.Icon
+import androidx.compose.material.icons.outlined.LockReset
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import com.example.domes.presentation.common.composables.listitem.ListItemDivider
 import com.example.domes.ui.theme.DomesTheme
+import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeker.sheets.core.views.IconComponent
+
+enum class Variant {
+    DEFAULT,
+    ERROR
+}
 
 @Composable
 fun SettingsListItem(
-    setting: String,
-    description: String,
-    icon: ImageVector,
+    title: String,
+    icon: IconSource,
+    description: String? = null,
+    value: String? = null,
+    variant: Variant = Variant.DEFAULT,
+    trailingContent: @Composable (() -> Unit)? = null,
+    isEnabled: Boolean = true,
+    isLastItem: Boolean = false,
     onClick: () -> Unit = {},
 ) {
-    ListItem(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 5.dp,
-                end = 5.dp,
-            )
-            .clickable { 
-                onClick() 
-            },
-        colors = ListItemDefaults.colors(
+    val supportingColor = (description?.let { ListItemDefaults.contentColor.copy(alpha = 0.5f) }
+        ?: value?.let { MaterialTheme.colorScheme.tertiary })
+        ?: ListItemDefaults.contentColor
+
+    val colors = when (variant) {
+        Variant.DEFAULT -> ListItemDefaults.colors(
             containerColor = Color.Transparent,
-        ),
-        headlineContent = { Text(setting) },
-        leadingContent = {
-            Icon(
-                icon,
-                "Setting icon",
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        },
-        supportingContent = { Text(description) },
-    )
+            leadingIconColor = MaterialTheme.colorScheme.primary,
+            supportingColor = supportingColor
+        )
+        Variant.ERROR -> ListItemDefaults.colors(
+            containerColor = Color.Transparent,
+            headlineColor = MaterialTheme.colorScheme.onErrorContainer,
+            leadingIconColor = MaterialTheme.colorScheme.error,
+            supportingColor = supportingColor
+        )
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ListItem(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 5.dp,
+                    end = 5.dp,
+                )
+                .alpha(if (isEnabled) 1f else 0.5f)
+                .clickable(
+                    enabled = isEnabled
+                ) {
+                    onClick()
+                },
+            colors = colors,
+            headlineContent = { Text(title) },
+            leadingContent = {
+                IconComponent(modifier = Modifier, iconSource = icon)
+            },
+            supportingContent = {
+                if (description != null || value != null) {
+                    Text(description ?: value ?: "")
+                }
+            },
+            trailingContent = trailingContent
+        )
+
+        if (!isLastItem) ListItemDivider()
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -61,10 +102,19 @@ fun SettingsListItem(
 @Composable
 fun DomesPreview() {
     DomesTheme {
-        SettingsListItem(
-            setting = "Location",
-            description = "Auto-update, set manually",
-            icon = Icons.Outlined.LocationOn
-        )
+        Column {
+            SettingsListItem(
+                title = "Location",
+                description = "Auto-update, set manually",
+                icon = IconSource(Icons.Outlined.LocationOn)
+            )
+
+            SettingsListItem(
+                title = "Reset",
+                icon = IconSource(Icons.Outlined.LockReset),
+                variant = Variant.ERROR,
+                isLastItem = true
+            )
+        }
     }
 }
