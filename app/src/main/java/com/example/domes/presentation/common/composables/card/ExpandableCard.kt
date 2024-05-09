@@ -85,7 +85,14 @@ fun ExpandableCard(
             )
         ) { 
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
+//                    .padding(
+//                        top = if (isFirstItem) 8.dp else 0.dp,
+//                        start = 5.dp,
+//                        end = 5.dp,
+//                        bottom = if (isLastItem) 8.dp else 0.dp
+//                    ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 content(isExpanded)
@@ -94,7 +101,7 @@ fun ExpandableCard(
                     color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
                     modifier = Modifier
                         .height(1.dp)
-                        .fillMaxWidth(0.85f)
+                        .fillMaxWidth(0.88f)
                 )
             }
         }

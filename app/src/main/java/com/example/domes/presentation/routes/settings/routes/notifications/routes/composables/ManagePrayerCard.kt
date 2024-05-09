@@ -1,12 +1,9 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes.composables
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -78,14 +75,6 @@ fun ManagePrayerCard(
         isAfterExpandedItem = isAfterExpandedItem,
         content = {
             ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = 8.dp,
-                        start = 5.dp,
-                        end = 5.dp,
-                        bottom = if (isExpanded) 0.dp else 8.dp
-                    ),
                 colors = ListItemDefaults.colors(
                     containerColor = Color.Transparent,
                 ),
@@ -121,13 +110,6 @@ fun ManagePrayerCard(
         },
         expandedContent = {
             ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = 8.dp,
-                        start = 5.dp,
-                        end = 5.dp,
-                    ),
                 colors = ListItemDefaults.colors(
                     containerColor = Color.Transparent,
                 ),
@@ -174,13 +156,6 @@ fun ManagePrayerCard(
                 }
             )
             ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = 8.dp,
-                        start = 5.dp,
-                        end = 5.dp,
-                    ),
                 colors = ListItemDefaults.colors(
                     containerColor = Color.Transparent,
                 ),
@@ -211,13 +186,6 @@ fun ManagePrayerCard(
                 },
             )
             ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = 8.dp,
-                        start = 5.dp,
-                        end = 5.dp,
-                    ),
                 colors = ListItemDefaults.colors(
                     containerColor = Color.Transparent,
                 ),
@@ -237,16 +205,6 @@ fun ManagePrayerCard(
                 },
             )
             ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 5.dp,
-                        end = 5.dp,
-                        bottom = 8.dp,
-                    )
-                    .clickable {
-
-                    },
                 colors = ListItemDefaults.colors(
                     containerColor = Color.Transparent,
                 ),
