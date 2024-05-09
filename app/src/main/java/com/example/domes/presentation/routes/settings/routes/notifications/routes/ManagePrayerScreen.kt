@@ -1,16 +1,12 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -20,26 +16,26 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.card.FixedCard
+import com.example.domes.presentation.common.composables.card.Variant
 import com.example.domes.presentation.routes.Screen
+import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.example.domes.presentation.routes.settings.routes.notifications.routes.composables.ManagePrayerCard
+import com.maxkeppeker.sheets.core.models.base.IconSource
 
 @OptIn(
     ExperimentalMaterial3Api::class
@@ -96,41 +92,12 @@ fun ManagePrayerScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                if (state.notification?.isNotificationAllowed == true) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                    1.dp
-                                ),
-                                RoundedCornerShape(35.dp)
-                            ),
+                    FixedCard(
+                        if (state.notification?.isNotificationAllowed == true) Variant.VISUAL else Variant.FADED
                     ) {
-                        // TODO: Add confirmation dialog
-                        ListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    top = 8.dp,
-                                    start = 5.dp,
-                                    end = 5.dp,
-                                    bottom = 8.dp
-                                )
-                                .clickable {
-//                                    viewModel.onEvent(CalculationEvent.ResetSettings())
-                                },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent,
-                                headlineColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            ),
-                            leadingContent = {
-                                Icon(
-                                    Icons.Outlined.Notifications,
-                                    "Notifications",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                )
-                            },
-                            headlineContent = { Text("Allow notifications") },
+                        SettingsListItem(
+                            title = "Allow notifications",
+                            icon = IconSource(Icons.Outlined.Notifications),
                             trailingContent = {
                                 Switch(
                                     checked = state.notification?.isNotificationAllowed == true,
@@ -138,6 +105,10 @@ fun ManagePrayerScreen(
                                         viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
                                     }
                                 )
+                            },
+                            isLastItem = true,
+                            onClick = {
+                                viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
                             }
                         )
                     }

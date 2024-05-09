@@ -1,13 +1,9 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes.composables
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CompareArrows
 import androidx.compose.material.icons.outlined.Add
@@ -24,10 +20,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,7 +35,9 @@ import com.example.domes.presentation.common.composables.button.SegmentedActionS
 import com.example.domes.presentation.common.composables.button.SegmentedButtonItem
 import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.card.ExpandableCard
+import com.example.domes.presentation.common.composables.listitem.IndicativeTrailingContent
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.example.domes.presentation.routes.settings.routes.notifications.routes.OffsetPolarity
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.LocalDateTime
@@ -74,59 +69,26 @@ fun ManagePrayerCard(
         isBeforeExpandedItem = isBeforeExpandedItem,
         isAfterExpandedItem = isAfterExpandedItem,
         content = {
-            ListItem(
-                colors = ListItemDefaults.colors(
-                    containerColor = Color.Transparent,
-                ),
-                leadingContent = {
-                    Icon(
-                        Icons.Outlined.Timer,
-                        "Setting icon",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                headlineContent = { Text("Time") },
-                supportingContent = {
-                    Text(
-                        time.plusMinutes(notification?.offset?.toLong() ?: 0).format(getFormatter("HH:mm a")),
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                },
+            SettingsListItem(
+                title = "Time",
+                icon = IconSource(Icons.Outlined.Timer),
+                value = time.plusMinutes(notification?.offset?.toLong() ?: 0).format(getFormatter("HH:mm a")),
                 trailingContent = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-                        Divider(
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                            modifier = Modifier
-                                .height(SwitchDefaults.IconSize * 2) // TODO: This is kinda dumb
-                                .width(1.dp)
-                        )
+                    IndicativeTrailingContent() {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
                     }
-                }
+                },
+                isLastItem = true,
+                onClick = {
+                    expand(isExpanded)
+                },
             )
         },
         expandedContent = {
-            ListItem(
-                colors = ListItemDefaults.colors(
-                    containerColor = Color.Transparent,
-                ),
-                leadingContent = {
-                    Icon(
-                        Icons.Outlined.Update,
-                        "Setting icon",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                headlineContent = { Text("Offset") },
-                supportingContent = {
-                    Text(
-                        "${notification?.offset?.let { abs(it) }} mins",
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                },
+            SettingsListItem(
+                title = "Offset",
+                icon = IconSource(Icons.Outlined.Update),
+                value = "${notification?.offset?.let { abs(it) }} mins",
                 trailingContent = {
                     SegmentedActionSection(listOf(
                         SegmentedAction(
@@ -153,20 +115,13 @@ fun ManagePrayerCard(
                             icon = IconSource(Icons.Outlined.Add, "More")
                         )
                     ))
-                }
-            )
-            ListItem(
-                colors = ListItemDefaults.colors(
-                    containerColor = Color.Transparent,
-                ),
-                leadingContent = {
-                    Icon(
-                        Icons.AutoMirrored.Outlined.CompareArrows,
-                        "Setting icon",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
                 },
-                headlineContent = {
+                isLastItem = true
+            )
+            SettingsListItem(
+                title = "",
+                icon = IconSource(Icons.AutoMirrored.Outlined.CompareArrows),
+                trailingContent = {
                     SegmentedButtons {
                         OffsetPolarity.entries.forEach { offsetRelation ->
                             val selected = offsetRelation.index == notification?.offset?.sign
@@ -184,44 +139,21 @@ fun ManagePrayerCard(
                         }
                     }
                 },
+                isLastItem = true
             )
-            ListItem(
-                colors = ListItemDefaults.colors(
-                    containerColor = Color.Transparent,
-                ),
-                leadingContent = {
-                    Icon(
-                        Icons.Outlined.MarkChatUnread,
-                        "Setting icon",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                headlineContent = { Text("Alert type") },
-                supportingContent = {
-                    Text(
-                        notification?.alertType.toString(),
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                },
+            SettingsListItem(
+                title = "Alert type",
+                icon = IconSource(Icons.Outlined.MarkChatUnread),
+                value = notification?.alertType.toString(),
+                isLastItem = true,
+                onClick = {}
             )
-            ListItem(
-                colors = ListItemDefaults.colors(
-                    containerColor = Color.Transparent,
-                ),
-                leadingContent = {
-                    Icon(
-                        Icons.Outlined.GraphicEq,
-                        "Setting icon",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                headlineContent = { Text("Sound") },
-                supportingContent = {
-                    Text(
-                        "Device default",
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                },
+            SettingsListItem(
+                title = "Sound",
+                icon = IconSource(Icons.Outlined.GraphicEq),
+                value = "Device default",
+                isLastItem = true,
+                onClick = {}
             )
 
             if (!isDefaultNotification) {
@@ -257,7 +189,7 @@ fun ManagePrayerCard(
     wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
 )
 @Composable
-fun Preview() {
+fun ManagePrayerCard() {
     Column {
         ManagePrayerCard(
             time = LocalDateTime.now(),
