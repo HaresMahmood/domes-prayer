@@ -1,15 +1,11 @@
 package com.example.domes.presentation.routes.settings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -22,17 +18,19 @@ import androidx.compose.material.icons.outlined.QuestionAnswer
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 
@@ -63,8 +61,7 @@ fun SettingsScreen(
                 scrollBehavior = scrollBehavior
             )
         },
-
-        ) { innerPadding ->
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,19 +71,10 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxSize(),
                 contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                    1.dp
-                                ), RoundedCornerShape(35.dp)
-                            ),
-                        verticalArrangement = Arrangement.spacedBy(2.dp),
-                    ) {
+                    FixedCard {
                         SettingsListItem(
                             "Location",
                             "Auto-update • set manually",
@@ -113,16 +101,7 @@ fun SettingsScreen(
                     }
                 }
                 item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                    1.dp
-                                ), RoundedCornerShape(35.dp)
-                            ),
-                        verticalArrangement = Arrangement.spacedBy(2.dp),
-                    ) {
+                    FixedCard {
                         SettingsListItem(
                             "About",
                             "App version • contact",
@@ -139,20 +118,21 @@ fun SettingsScreen(
                             Icons.Outlined.QuestionAnswer,
                         )
                     }
+
                 }
             }
         }
     }
 }
 
-//@RequiresApi(Build.VERSION_CODES.Q)
-//@Preview(
-//    showBackground = true,
-//    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
-//)
-//@Composable
-//fun DomesPreview() {
-//    DomesTheme {
-//        SettingsScreen()
-//    }
-//}
+@Preview(
+    showBackground = true,
+    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
+)
+@Composable
+fun SettingsPreview() {
+    // Fake navController
+    val navController = rememberNavController()
+
+    SettingsScreen(navController)
+}
