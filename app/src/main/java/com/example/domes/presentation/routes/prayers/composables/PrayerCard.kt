@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -107,15 +106,13 @@ fun PrayerCard(
                     ),
                     modifier = Modifier
                         .weight(1f)
-                        .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f)
-                        .clickable {
-                            expand(isExpanded)
-                        },
+                        .alpha(if (hasPassed && !isCurrent && !isExpanded) 0.5f else 1f),
                     leadingContent = {
                         OutlinedIconButton(
-                            border = BorderStroke(4.dp,
+                            border = BorderStroke(
+                                if (isCurrent) 4.dp else 1.dp,
                                 MaterialTheme.colorScheme.outline.copy(
-                                    alpha = if (isCurrent) 0.5f else 0.25f
+                                    alpha = 0.5f
                                 )
                             ),
                             onClick = {
