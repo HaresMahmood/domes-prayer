@@ -2,6 +2,7 @@ package com.example.domes.presentation.routes.prayers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.outlined.ExpandCircleDown
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -55,8 +57,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.shape.Polygon
 import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.routes.Screen
@@ -67,6 +72,7 @@ import com.example.domes.presentation.routes.prayers.composables.PercentageWidth
 import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
+import com.maxkeppeker.sheets.core.models.base.IconSource
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -96,7 +102,7 @@ class UIConstants {
 fun PrayersScreen(
     navController: NavController,
     prayersViewModel: PrayersViewModel = hiltViewModel(),
-    notificationsViewModel: NotificationsViewModel = hiltViewModel()
+    notificationsViewModel: NotificationsViewModel,
 ) {
     val prayersState = prayersViewModel.state.value
     val notificationsState = notificationsViewModel.state.value
@@ -177,6 +183,16 @@ fun PrayersScreen(
                         foregroundText,
                         backgroundText,
                         topActions = {
+                            if (!notificationsState.isNotificationsAllowed) {
+                                ActionSectionChip(
+                                    if (scrollBehavior.state.collapsedFraction < 0.5f) "Notifications off" else null,
+                                    icon = IconSource(Icons.Outlined.NotificationsOff),
+                                    modifier = Modifier.animateContentSize(),
+                                    onClick = {
+                                        navController.navigate(Screen.Notifications.route)
+                                    }
+                                )
+                            }
                             IconButton(
                                 onClick = { prayersViewModel.onEvent(PrayersEvent.SetOverarchingDropdownVisibility()) }
                             ) {
@@ -382,12 +398,12 @@ fun PrayersScreen(
                     Modifier
                         .fillMaxSize()
                         .pointerInput(Unit) {
-                        detectTapGestures {
-                            scope.launch {
-                                bottomSheetScaffoldState.bottomSheetState.partialExpand()
+                            detectTapGestures {
+                                scope.launch {
+                                    bottomSheetScaffoldState.bottomSheetState.partialExpand()
+                                }
                             }
                         }
-                    }
                 )
             }
 

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,6 +35,7 @@ import com.example.domes.presentation.routes.settings.SettingsScreen
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationScreen
 import com.example.domes.presentation.routes.settings.routes.location.LocationScreen
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsScreen
+import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
 import com.example.domes.presentation.routes.settings.routes.notifications.routes.ManagePrayerScreen
 import com.example.domes.ui.theme.DomesTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,6 +74,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
+                    val notificationsViewModel: NotificationsViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
 
                     NavHost(
                         navController = navController,
@@ -113,7 +117,10 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         composable(route = Screen.Prayers.route) {
-                            PrayersScreen(navController)
+                            PrayersScreen(
+                                navController,
+                                notificationsViewModel = notificationsViewModel
+                            )
                         }
                         composable(route = Screen.Qibla.route) {
                             QiblaScreen(navController)
@@ -128,7 +135,10 @@ class MainActivity : ComponentActivity() {
                             CalculationScreen(navController)
                         }
                         composable(route = Screen.Notifications.route) {
-                            NotificationsScreen(navController)
+                            NotificationsScreen(
+                                navController,
+                                viewModel = notificationsViewModel
+                            )
                         }
                         composable(
                             route = Screen.ManagePrayer.route + "?prayer={prayer}",

@@ -41,7 +41,7 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 @Composable
 fun NotificationsScreen(
     navController: NavController,
-    viewModel: NotificationsViewModel = hiltViewModel()
+    viewModel: NotificationsViewModel
 ) {
     val state = viewModel.state.value
     val scrollBehavior =
