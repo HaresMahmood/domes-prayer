@@ -2,6 +2,13 @@ package com.example.domes.presentation.routes.prayers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.EaseOutExpo
+import androidx.compose.animation.core.EaseOutQuad
+import androidx.compose.animation.core.EaseOutQuint
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,9 +21,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -27,8 +34,9 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,18 +45,19 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlurEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -65,6 +74,7 @@ import com.example.domes.presentation.routes.prayers.composables.PercentageWidth
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
+import com.google.android.material.shape.EdgeTreatment
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -101,9 +111,9 @@ fun PrayersScreen(
         if (state.selectedDate == LocalDate.now()) state.currentPrayerTimes else state.selectedPrayerTimes
 
     val scope = rememberCoroutineScope()
-    val bottomSheetShaffoldState = rememberBottomSheetScaffoldState()
-
-    val bottomSheetProgress = 1f // (bottomSheetHeight.value / screenHeight.value + 0.37f) * 0.73f
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState()
+    )
 
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = {
         viewModel.onEvent(
@@ -114,8 +124,24 @@ fun PrayersScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
+    // Animations
+    val transition = updateTransition(targetState = bottomSheetScaffoldState.bottomSheetState.targetValue, label = "BottomSheetTransition")
+
+    val blurRadius by transition.animateFloat(label = "BackgroundBlurRadius") { state ->
+        if (state == SheetValue.Expanded) 20f else 1f
+    }
+    val alpha by transition.animateFloat(label = "BackgroundAlpha") { state ->
+        if (state == SheetValue.Expanded) 0.5f else 1f
+    }
+    val scale by transition.animateFloat(
+        label = "BackgroundScale",
+        transitionSpec = { tween(1000, easing = EaseOutQuint) }
+    ) { state ->
+        if (state == SheetValue.Expanded) 0.95f else 1f
+    }
+
     BottomSheetScaffold(
-        scaffoldState = bottomSheetShaffoldState,
+        scaffoldState = bottomSheetScaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
         sheetPeekHeight = UIConstants.SHEET_PEEK_HEIGHT,
         sheetShape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp),
@@ -124,8 +150,8 @@ fun PrayersScreen(
             SelectedDateSection(
                 gregorianDate = state.selectedDate,
                 hijriDate = state.selectedHijriDate,
-                bottomSheetExpandAction = { scope.launch { bottomSheetShaffoldState.bottomSheetState.expand() } },
-                collapseBottomSheet = { scope.launch { bottomSheetShaffoldState.bottomSheetState.partialExpand() } }
+                bottomSheetExpandAction = { scope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } },
+                collapseBottomSheet = { scope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() } }
             ) { selectedDate ->
                 viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
             }
@@ -135,34 +161,21 @@ fun PrayersScreen(
             modifier = Modifier
                 .clickable(
                     interactionSource = MutableInteractionSource(),
-                    indication = null
+                    indication = null,
+                    enabled = bottomSheetScaffoldState.bottomSheetState.hasExpandedState
                 ) {
-                    if (bottomSheetShaffoldState.bottomSheetState.hasExpandedState) {
-                        scope.launch { bottomSheetShaffoldState.bottomSheetState.partialExpand() }
+                    if (bottomSheetScaffoldState.bottomSheetState.hasExpandedState) {
+                        scope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() }
                     }
                 }
                 .fillMaxSize()
                 .padding(innerPadding)
                 .pullRefresh(pullRefreshState)
                 .graphicsLayer {
-                    // TODO: Unoptimised
-                    if (bottomSheetShaffoldState.bottomSheetState.hasExpandedState) {
-                        // val from 1959.0.dp to 863.0.dp
-                        val bottomSheetHeight = bottomSheetShaffoldState.bottomSheetState.requireOffset().roundToInt()
-
-                        // Map the bottomSheetHeight to a range of 0f to 1f
-                        val progress = (bottomSheetHeight - 863) / (1959 - 863).toFloat()
-
-                        // Interpolate the blurRadius, alpha, and scale values based on the progress
-                        val blurRadius = lerp(start = 20f, stop = 1f, fraction = progress)
-                        val alpha = lerp(start = 0.5f, stop = 1f, fraction = progress)
-                        val scale = lerp(start = 0.95f, stop = 1f, fraction = progress)
-
-                        this.alpha = alpha
-                        this.scaleX = scale
-                        this.scaleY = scale
-                        this.renderEffect = BlurEffect(blurRadius, blurRadius)
-                    }
+                    this.alpha = alpha
+                    this.scaleX = scale
+                    this.scaleY = scale
+                    this.renderEffect = BlurEffect(blurRadius, blurRadius)
                 },
             contentAlignment = Alignment.Center
         ) {
