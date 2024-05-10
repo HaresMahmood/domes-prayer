@@ -35,14 +35,14 @@ fun SegmentedActionSection(
     fun corners(pos: Int): Shape {
         return when (pos) {
             0 -> MaterialTheme.shapes.extraLarge.copy(
-                topEnd = MaterialTheme.shapes.small.topEnd,
-                bottomEnd = MaterialTheme.shapes.small.bottomEnd
+                topEnd = MaterialTheme.shapes.extraSmall.topEnd,
+                bottomEnd = MaterialTheme.shapes.extraSmall.bottomEnd
             )
             children.size - 1 -> MaterialTheme.shapes.extraLarge.copy(
                 topStart = MaterialTheme.shapes.extraSmall.topStart,
                 bottomStart = MaterialTheme.shapes.extraSmall.bottomStart
             )
-            else -> MaterialTheme.shapes.small
+            else -> MaterialTheme.shapes.extraSmall
         }
     }
 
@@ -81,7 +81,13 @@ fun SegmentedButtonPreview() {
                     contentDescription = "Yesterday"
                 ),
             ),
-            null,
+            SegmentedAction(
+                onClick = {},
+                icon = IconSource(
+                    Icons.AutoMirrored.Outlined.NavigateNext,
+                    contentDescription = "Tomorrow"
+                )
+            ),
             SegmentedAction(
                 onClick = {},
                 icon = IconSource(
