@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -55,40 +56,55 @@ fun ExpandableCard(
     val bottomCornerSize by animateDpAsState(
         targetValue = if (isExpanded) 12.dp else if (isLastItem || isBeforeExpandedItem) 35.dp else 0.dp // TODO: Use material shapes
     )
-
     Column {
         AnimatedVisibility(isExpanded && !isFirstItem) {
             Spacer(Modifier.size(10.dp))
         }
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .animateContentSize()
-                .alpha(if (isEnabled) 1f else 0.5f)
-                .clickable(
-                    enabled = isEnabled,
-                ) {
-                    expand(isExpanded)
-                },
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
-                    backgroundElevation
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateContentSize()
+                    .alpha(if (isEnabled) 1f else 0.5f)
+                    .clickable(
+                        enabled = isEnabled,
+                    ) {
+                        expand(isExpanded)
+                    },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                        backgroundElevation
+                    )
+                ),
+                shape = RoundedCornerShape(
+                    topStart = topCornerSize,
+                    topEnd = topCornerSize,
+                    bottomStart = bottomCornerSize,
+                    bottomEnd = bottomCornerSize
                 )
-            ),
-            shape = RoundedCornerShape(
-                topStart = topCornerSize,
-                topEnd = topCornerSize,
-                bottomStart = bottomCornerSize,
-                bottomEnd = bottomCornerSize
-            )
-        ) { 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                content(isExpanded)
-                if (isExpanded) expandedContent()
-                else if (!isLastItem && !isBeforeExpandedItem) ListItemDivider()
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    content(isExpanded)
+                    if (isExpanded) expandedContent()
+                    else if (!isLastItem && !isBeforeExpandedItem) ListItemDivider()
+                }
+            }
+
+            if (!isEnabled) {
+                Box(
+                    Modifier
+                        .matchParentSize()
+                        .clickable(
+                            interactionSource = null,
+                            indication = null
+                        ) { }
+                )
             }
         }
 

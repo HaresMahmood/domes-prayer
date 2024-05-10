@@ -1,6 +1,7 @@
 package com.example.domes.presentation.common.utility
 
 import android.graphics.PointF
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -16,7 +17,6 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
@@ -188,20 +188,6 @@ fun smoothRotation(rotation: Float): MutableState<Float> {
     }
 
     return storedRotation
-}
-
-fun Modifier.gesturesDisabled(disabled: Boolean = true) = if (disabled) {
-    pointerInput(Unit) {
-        awaitPointerEventScope {
-            while (true) {
-                awaitPointerEvent(pass = PointerEventPass.Initial)
-                    .changes
-                    .forEach { it.consume() }
-            }
-        }
-    }
-} else {
-    this
 }
 
 internal const val DEBUG = false

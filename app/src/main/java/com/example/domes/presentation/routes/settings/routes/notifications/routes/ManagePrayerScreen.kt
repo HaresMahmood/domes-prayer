@@ -125,7 +125,6 @@ fun ManagePrayerScreen(
                                             modifier = Modifier.padding(top = if (index == 0) 0.dp else 20.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)
                                         )
                                     }
-
                                     ManagePrayerCard(
                                         time = state.time,
                                         notification = notification,
