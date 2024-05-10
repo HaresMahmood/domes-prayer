@@ -1,6 +1,6 @@
 package com.example.domes.presentation.common.composables.button
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -73,28 +74,28 @@ fun ActionSectionChip(
         )
     }
 
-    Box {
-        AssistChip(
-            modifier = modifier.then(
-                if (title == null) Modifier.width(AssistChipDefaults.Height) else Modifier
-            ),
-            onClick = onClick,
-            shape = cornerShapes,
-            border = null, // Use AssistChipDefaults.assistChipBorder() if needed based on variant
-            leadingIcon = {
-                icon?.let { IconComponent(modifier = Modifier.size(AssistChipDefaults.IconSize), iconSource = it) }
-            },
-            label = {
-                title?.let { Text(it) }
-            },
-            trailingIcon = {
-                trailingIcon?.let {
-                    IconComponent(modifier = Modifier, iconSource = it)
-                }
-            },
-            colors = colors,
-        )
-    }
+    AssistChip(
+        modifier = modifier.then(
+            if (title == null) Modifier.width(AssistChipDefaults.Height) else Modifier
+        ),
+        onClick = onClick,
+        shape = cornerShapes,
+        border = null, // Use AssistChipDefaults.assistChipBorder() if needed based on variant
+        leadingIcon = {
+            icon?.let { if (title != null) IconComponent(modifier = Modifier, iconSource = it) }
+        },
+        label = {
+            title?.let { Text(it) }
+        },
+        trailingIcon = {
+            trailingIcon?.let {
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                IconComponent(modifier = Modifier, iconSource = it)
+            }
+        },
+        colors = colors,
+    )
+
 }
 
 @Preview(

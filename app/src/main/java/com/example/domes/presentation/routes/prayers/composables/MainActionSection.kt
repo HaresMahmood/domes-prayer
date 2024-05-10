@@ -2,14 +2,17 @@ package com.example.domes.presentation.routes.prayers.composables
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.HourglassBottom
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.HourglassTop
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.domes.R
@@ -23,6 +26,7 @@ import java.time.Duration
 fun MainActionSection(
     timeLeft: Duration?,
     remainingTimePercentage: Float,
+    notificationsAllowed: Boolean,
     locale: String,
     navController: NavController,
     onSnooze: () -> Unit,
@@ -48,6 +52,7 @@ fun MainActionSection(
                 )
             }
         },
+        { if (!notificationsAllowed) ActionSectionChip("Notifications off", icon = IconSource(Icons.Outlined.NotificationsOff), onClick = { navController.navigate(Screen.Notifications.route) } ) },
         { ActionSectionChip(locale, icon = IconSource(Icons.Outlined.PinDrop), onClick = { navController.navigate(Screen.Location.route) }) },
         { ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze)) },
         {
