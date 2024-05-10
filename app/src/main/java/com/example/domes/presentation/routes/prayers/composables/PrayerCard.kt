@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -59,6 +59,7 @@ import com.example.domes.domain.model.prayer.PrayerRecordDetail
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.card.ExpandableCard
+import com.example.domes.presentation.common.composables.listitem.ListItemDivider
 import com.example.domes.presentation.common.composables.shape.Circle
 import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
@@ -243,9 +244,44 @@ fun PrayerCard(
             // TODO: Is this bad?
             val isDropDownExpanded = remember { mutableStateOf(false) }
 
-            Divider()
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                item {
+                    ActionSectionChip(
+                        "Snooze alert",
+                        icon = IconSource(Icons.Outlined.Snooze),
+                        modifier = Modifier.padding(
+                            start = 16.dp
+                        )
+                    )
+                }
+                item {
+                    ActionSectionChip(
+                        "Manage notifications",
+                        icon = IconSource(Icons.Outlined.Notifications),
+                        onClick = {
+                            navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayerTime.prayer.name}")
+                        }
+                    )
+                }
+                item {
+                    ActionSectionChip(
+                        "Snooze alert",
+                        icon = IconSource(Icons.Outlined.Snooze),
+                        modifier = Modifier.padding(
+                            end = 16.dp
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.size(8.dp))
+            ListItemDivider()
+            Spacer(modifier = Modifier.size(8.dp))
+
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 if (hasPassed && prayerTime.prayer.displayable && prayerRecordDetail?.prayed == false) {
@@ -329,27 +365,6 @@ fun PrayerCard(
                     placeholder = { Text("Reason missed • Raka'ats prayed • Du'as read") },
                     maxLines = 2,
                 )
-            }
-            Divider()
-            LazyRow(
-                modifier = Modifier.padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(5.dp)
-            ) {
-                item {
-                    ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze))
-                }
-                item {
-                    ActionSectionChip(
-                        "Manage notifications",
-                        icon = IconSource(Icons.Outlined.Notifications),
-                        onClick = {
-                            navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayerTime.prayer.name}")
-                        }
-                    )
-                }
-                item {
-                    ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze))
-                }
             }
         },
         expand = expand,
