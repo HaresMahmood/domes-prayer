@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.EaseOutExpo
+import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -76,37 +76,37 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = Screen.Prayers.route,
                         enterTransition = {
-                            fadeIn(animationSpec = tween(500, easing = EaseOutExpo)) +
+                            fadeIn(animationSpec = tween(750, easing = EaseOutQuint)) +
                                     slideIntoContainer(
                                         AnimatedContentTransitionScope.SlideDirection.Left,
-                                        animationSpec = tween(500, easing = EaseOutExpo)
+                                        animationSpec = tween(750, easing = EaseOutQuint)
                                     ) { offsetForFullSlide ->
                                         offsetForFullSlide / 8
                                     }
                         },
                         exitTransition = {
-                            fadeOut(animationSpec = tween(500, easing = EaseOutExpo)) +
+                            fadeOut(animationSpec = tween(750, easing = EaseOutQuint)) +
                                     slideOutOfContainer(
                                         AnimatedContentTransitionScope.SlideDirection.Left,
-                                        animationSpec = tween(500, easing = EaseOutExpo)
+                                        animationSpec = tween(750, easing = EaseOutQuint)
                                     ) { offsetForFullSlide ->
                                         offsetForFullSlide / 8
                                     }
                         },
                         popEnterTransition = {
-                            fadeIn(animationSpec = tween(500, easing = EaseOutExpo)) +
+                            fadeIn(animationSpec = tween(750, easing = EaseOutQuint)) +
                                     slideIntoContainer(
                                         AnimatedContentTransitionScope.SlideDirection.Right,
-                                        animationSpec = tween(500, easing = EaseOutExpo)
+                                        animationSpec = tween(750, easing = EaseOutQuint)
                                     ) { offsetForFullSlide ->
                                         offsetForFullSlide / 8
                                     }
                         },
                         popExitTransition = {
-                            fadeOut(animationSpec = tween(500, easing = EaseOutExpo)) +
+                            fadeOut(animationSpec = tween(750, easing = EaseOutQuint)) +
                                     slideOutOfContainer(
                                         AnimatedContentTransitionScope.SlideDirection.Right,
-                                        animationSpec = tween(500, easing = EaseOutExpo)
+                                        animationSpec = tween(750, easing = EaseOutQuint)
                                     ) { offsetForFullSlide ->
                                         offsetForFullSlide / 8
                                     }
