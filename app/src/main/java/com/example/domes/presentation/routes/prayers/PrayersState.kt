@@ -27,7 +27,6 @@ data class PrayersState(
     val expandedPrayer: PrayerTime? = null,
     val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,
     val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now()),
-    val prayerNotifications: List<PrayerNotification> = emptyList(),
     var isRefreshing: Boolean = false,
     var showOverarchingDropdown: Boolean = false
 )

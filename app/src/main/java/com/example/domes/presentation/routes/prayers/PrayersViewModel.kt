@@ -93,7 +93,6 @@ class PrayersViewModel @Inject constructor(
 
             _state.value.location?.let { location ->
                 updateCurrentPrayerTimes(location, _state.value.calculationParameters)
-                getNotifications()
             }
         }
     }
@@ -252,13 +251,5 @@ class PrayersViewModel @Inject constructor(
                 )
             }
         }
-    }
-
-    private fun getNotifications() {
-        prayersUseCases.getPrayerNotifications().onEach { notifications ->
-            _state.value = _state.value.copy(
-                prayerNotifications = notifications
-            )
-        }.launchIn(viewModelScope)
     }
 }
