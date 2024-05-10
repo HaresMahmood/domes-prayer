@@ -79,6 +79,7 @@ fun PrayerCard(
     isCurrent: Boolean = false,
     hasPassed: Boolean = false,
     isSilent: Boolean = false,
+    isNotificationsAllowed: Boolean = true,
     isFirstItem: Boolean = false,
     isLastItem: Boolean = false,
     isBeforeExpandedItem: Boolean = false,
@@ -256,14 +257,16 @@ fun PrayerCard(
                         )
                     )
                 }
-                item {
-                    ActionSectionChip(
-                        "Manage notifications",
-                        icon = IconSource(Icons.Outlined.Notifications),
-                        onClick = {
-                            navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayerTime.prayer.name}")
-                        }
-                    )
+                if (isNotificationsAllowed) {
+                    item {
+                        ActionSectionChip(
+                            "Manage notifications",
+                            icon = IconSource(Icons.Outlined.Notifications),
+                            onClick = {
+                                navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayerTime.prayer.name}")
+                            }
+                        )
+                    }
                 }
                 item {
                     ActionSectionChip(
