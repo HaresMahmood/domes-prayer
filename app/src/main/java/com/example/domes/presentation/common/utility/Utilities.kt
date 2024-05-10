@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.BiasAlignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -15,6 +16,8 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.graphics.plus
@@ -185,6 +188,20 @@ fun smoothRotation(rotation: Float): MutableState<Float> {
     }
 
     return storedRotation
+}
+
+fun Modifier.gesturesDisabled(disabled: Boolean = true) = if (disabled) {
+    pointerInput(Unit) {
+        awaitPointerEventScope {
+            while (true) {
+                awaitPointerEvent(pass = PointerEventPass.Initial)
+                    .changes
+                    .forEach { it.consume() }
+            }
+        }
+    }
+} else {
+    this
 }
 
 internal const val DEBUG = false

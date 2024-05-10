@@ -2,16 +2,12 @@ package com.example.domes.presentation.routes.prayers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.EaseOutExpo
-import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -34,8 +29,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.rememberBottomSheetState
-import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -49,7 +42,6 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -60,8 +52,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
@@ -74,13 +66,11 @@ import com.example.domes.presentation.routes.prayers.composables.PercentageWidth
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
-import com.google.android.material.shape.EdgeTreatment
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import kotlin.math.roundToInt
 
 class UIConstants {
     companion object {
@@ -111,9 +101,7 @@ fun PrayersScreen(
         if (state.selectedDate == LocalDate.now()) state.currentPrayerTimes else state.selectedPrayerTimes
 
     val scope = rememberCoroutineScope()
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState()
-    )
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
 
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = {
         viewModel.onEvent(
@@ -159,28 +147,20 @@ fun PrayersScreen(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null,
-                    enabled = bottomSheetScaffoldState.bottomSheetState.hasExpandedState
-                ) {
-                    if (bottomSheetScaffoldState.bottomSheetState.hasExpandedState) {
-                        scope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() }
-                    }
-                }
                 .fillMaxSize()
                 .padding(innerPadding)
-                .pullRefresh(pullRefreshState)
-                .graphicsLayer {
-                    this.alpha = alpha
-                    this.scaleX = scale
-                    this.scaleY = scale
-                    this.renderEffect = BlurEffect(blurRadius, blurRadius)
-                },
+                .pullRefresh(pullRefreshState),
             contentAlignment = Alignment.Center
         ) {
             Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                modifier = Modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .graphicsLayer {
+                        this.alpha = alpha
+                        this.scaleX = scale
+                        this.scaleY = scale
+                        this.renderEffect = BlurEffect(blurRadius, blurRadius)
+                    },
                 topBar = {
                     val (foregroundText, backgroundText) = if (state.selectedDate == LocalDate.now()) {
                         (state.currentPrayer?.prayer?.name ?: "") to (state.currentPrayer?.prayer?.arabicName ?: "")
@@ -390,6 +370,20 @@ fun PrayersScreen(
                         }
                     }
                 }
+            }
+
+            if (bottomSheetScaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                        detectTapGestures {
+                            scope.launch {
+                                bottomSheetScaffoldState.bottomSheetState.partialExpand()
+                            }
+                        }
+                    }
+                )
             }
 
             PullRefreshIndicator(
