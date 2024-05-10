@@ -346,7 +346,7 @@ fun PrayersScreen(
                                         isExpanded = state.expandedPrayer === prayerTime,
                                         isCurrent = prayerTime == state.currentPrayer,
                                         hasPassed = prayerTime.timeWindow.isBefore(LocalDateTime.now()) && prayerTime != state.currentPrayer,
-                                        isSilent = false,
+                                        isSilent = state.prayerNotifications.find { it.prayer == prayerTime.prayer }?.isNotificationAllowed === false,
                                         isFirstItem = index == 0,
                                         isLastItem = index == prayerTimes.lastIndex,
                                         isBeforeExpandedItem = index == expandedPrayerIndex - 1,
@@ -394,15 +394,3 @@ fun PrayersScreen(
         }
     }
 }
-
-//@RequiresApi(Build.VERSION_CODES.S)
-//@Preview(
-//    showBackground = true,
-//    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
-//)
-//@Composable
-//fun DomesPreview() {
-//    DomesTheme {
-//        PrayersScreen()
-//    }
-//}
