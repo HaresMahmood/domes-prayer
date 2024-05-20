@@ -79,9 +79,6 @@ fun ManagePrayerCard(
                     }
                 },
                 isLastItem = true,
-                onClick = {
-                    expand(isExpanded)
-                },
             )
         },
         expandedContent = {
@@ -146,7 +143,6 @@ fun ManagePrayerCard(
                 icon = IconSource(Icons.Outlined.MarkChatUnread),
                 value = notification?.alertType.toString(),
                 isLastItem = true,
-                onClick = {}
             )
             SettingsListItem(
                 title = "Sound",

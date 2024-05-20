@@ -41,7 +41,7 @@ fun SettingsListItem(
     trailingContent: @Composable (() -> Unit)? = null,
     isEnabled: Boolean = true,
     isLastItem: Boolean = false,
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
 ) {
     val supportingColor = (description?.let { ListItemDefaults.contentColor.copy(alpha = 0.5f) }
         ?: value?.let { MaterialTheme.colorScheme.tertiary })
@@ -72,11 +72,7 @@ fun SettingsListItem(
                     end = 5.dp,
                 )
                 .alpha(if (isEnabled) 1f else 0.5f)
-                .clickable(
-                    enabled = isEnabled
-                ) {
-                    onClick()
-                },
+                .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
             colors = colors,
             headlineContent = { Text(title) },
             leadingContent = {
