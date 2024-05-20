@@ -113,9 +113,9 @@ fun SelectedDateSection(
 //                        verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         Text(
-                            text = gregorianDate.dayOfWeek.name.take(1),
+                            text = gregorianDate.dayOfWeek.name.take(3),
                             style = MaterialTheme.typography.labelMedium,
-                            fontSize = 8.sp,
+                            fontSize = (7).sp,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
                         )
                         Text(
