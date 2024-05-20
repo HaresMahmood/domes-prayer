@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,13 +54,17 @@ fun SegmentedActionSection(
         children.forEachIndexed { index, child ->
             child?.let {
                 FilledTonalIconButton(
-                    modifier = Modifier.then(Modifier.size(40.dp)),
+                    modifier = Modifier.then(
+                        Modifier
+                            .size(32.dp)
+                            .alpha(if (child.enabled) 1f else 0.5f)
+                    ),
                     onClick = child.onClick,
                     shape = corners(index),
                     colors = child.colors ?: IconButtonDefaults.filledTonalIconButtonColors()
                 ) {
                     child.icon?.let {
-                        IconComponent(modifier = Modifier, iconSource = it)
+                        IconComponent(modifier = Modifier.size(22.dp), iconSource = it)
                     }
                 }
             }

@@ -12,11 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
-import androidx.compose.material.icons.outlined.Today
+import androidx.compose.material.icons.outlined.CalendarViewDay
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -28,8 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.domes.presentation.common.composables.button.SegmentedAction
 import com.example.domes.presentation.common.composables.button.SegmentedActionSection
+import com.example.domes.presentation.common.composables.shape.Shape
+import com.example.domes.presentation.common.utility.RoundedPolygonShape
 import com.example.domes.presentation.routes.prayers.UIConstants
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.maxkeppeker.sheets.core.models.base.IconSource
@@ -59,6 +61,20 @@ fun SelectedDateSection(
         style = CalendarStyle.MONTH,
     )
 
+    val shapeParam = Shape(
+        sides = 4,
+        innerRadius = .352f,
+        roundness = .32f,
+        rotation = 45f,
+        shapeId = Shape.ShapeId.Star
+    )
+    val shape = remember {
+        shapeParam.genShape()
+    }
+    val clip = remember(shape) {
+        RoundedPolygonShape(polygon = shape)
+    }
+
     fun updateDate(days: Long, isToday: Boolean = false) {
         selectedDate.value = if (isToday) todayDate else selectedDate.value?.plusDays(days)
         selectedDate.value?.let { onDateChange(it) }
@@ -82,30 +98,30 @@ fun SelectedDateSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                horizontalArrangement = Arrangement.spacedBy(7.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                // A circle with the day of the month, and the corresponding weekday name above it
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                Box(
+                    modifier = Modifier
+                        .clip(clip)
+                        .size(52.dp)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = gregorianDate.dayOfWeek.name.take(3),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.secondaryContainer),
-                        contentAlignment = Alignment.Center,
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+//                        verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         Text(
+                            text = gregorianDate.dayOfWeek.name.take(1),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontSize = 8.sp,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        )
+                        Text(
                             text = "${gregorianDate.dayOfMonth}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
                         )
                     }
                 }
@@ -135,37 +151,30 @@ fun SelectedDateSection(
 //                    )
 //                }
 
-                val selectionActions = mutableListOf<SegmentedAction>().apply {
-                    add(
+                SegmentedActionSection(
+                    children = listOf(
                         SegmentedAction(
                             { updateDate(-1) },
                             icon = IconSource(
                                 Icons.AutoMirrored.Outlined.NavigateBefore,
                                 "Yesterday"
                             )
-                        )
-                    )
-                    if (selectedDate.value?.equals(todayDate) == false) {
-                        add(
-                            SegmentedAction(
-                                { updateDate(0, true) },
-                                icon = IconSource(Icons.Outlined.Today, "Today"),
-                                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.inversePrimary,
-                                    contentColor = MaterialTheme.colorScheme.primary
-                                )
-                            )
-                        )
-                    }
-                    add(
+                        ),
+                        SegmentedAction(
+                            { updateDate(0, true) },
+                            icon = IconSource(Icons.Outlined.CalendarViewDay, "Today"),
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            enabled = selectedDate.value?.equals(todayDate) == false
+                        ),
                         SegmentedAction(
                             { updateDate(1) },
                             icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "Tomorrow")
                         )
                     )
-                }
-
-                SegmentedActionSection(children = selectionActions)
+                )
             }
         }
     }
@@ -194,3 +203,47 @@ fun SelectedDateSection(
         )
     }
 }
+
+//@Preview
+//@Composable
+//fun SelectedDateSectionPreview() {
+//    val shapeParam = Shape(
+//        sides = 4,
+//        innerRadius = .352f,
+//        roundness = .32f,
+//        rotation = 45f,
+//        shapeId = Shape.ShapeId.Star
+//    )
+//    val shape = remember {
+//        shapeParam.genShape()
+//    }
+//    val clip = remember(shape) {
+//        RoundedPolygonShape(polygon = shape)
+//    }
+//
+//    Box(
+//        modifier = Modifier
+//            .clip(clip)
+//            .size(52.dp)
+//            .background(MaterialTheme.colorScheme.tertiaryContainer),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Column(
+//            horizontalAlignment = Alignment.CenterHorizontally,
+////                        verticalArrangement = Arrangement.spacedBy(2.dp)
+//        ) {
+//            Text(
+//                text = "M",
+//                style = MaterialTheme.typography.labelMedium,
+//                fontSize = 8.sp,
+//                color = MaterialTheme.colorScheme.onTertiaryContainer,
+//            )
+//            Text(
+//                text = "20",
+//                style = MaterialTheme.typography.labelLarge,
+//                color = MaterialTheme.colorScheme.onTertiaryContainer,
+//            )
+//        }
+//    }
+//}
+//}
