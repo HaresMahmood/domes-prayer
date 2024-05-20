@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +38,7 @@ import com.example.domes.presentation.common.composables.listitem.ListItemDivide
 
 @Composable
 fun ExpandableCard(
-    content: @Composable (ColumnScope.(Boolean) -> Unit) = {},
+    content: @Composable (BoxScope.(Boolean) -> Unit) = {},
     expandedContent: @Composable (ColumnScope.() -> Unit) = {},
     isEnabled: Boolean = true,
     isExpanded: Boolean = false,
@@ -68,12 +69,7 @@ fun ExpandableCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .animateContentSize()
-                    .alpha(if (isEnabled) 1f else 0.5f)
-                    .clickable(
-                        enabled = isEnabled,
-                    ) {
-                        expand(isExpanded)
-                    },
+                    .alpha(if (isEnabled) 1f else 0.5f),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
                         backgroundElevation
@@ -86,11 +82,18 @@ fun ExpandableCard(
                     bottomEnd = bottomCornerSize
                 )
             ) {
-
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    content(isExpanded)
+                    Box(
+                        modifier = Modifier.clickable(
+                            enabled = isEnabled,
+                        ) {
+                            expand(isExpanded)
+                        }
+                    ) {
+                        content(isExpanded)
+                    }
                     if (isExpanded) expandedContent()
                     else if (!isLastItem && !isBeforeExpandedItem) ListItemDivider()
                 }
