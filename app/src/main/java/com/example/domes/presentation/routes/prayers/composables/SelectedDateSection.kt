@@ -112,6 +112,7 @@ fun SelectedDateSection(
                         horizontalAlignment = Alignment.CenterHorizontally,
 //                        verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
+                        // TODO: Make hideable through setting under `Appearance`
                         Text(
                             text = gregorianDate.dayOfWeek.name.take(3),
                             style = MaterialTheme.typography.labelMedium,
