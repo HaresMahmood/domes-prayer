@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
@@ -31,16 +33,20 @@ import androidx.compose.ui.unit.sp
 import com.example.domes.R
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LayeredTopAppBar(
     foregroundText: String,
     backgroundText: String? = "",
+    isLoading: Boolean = true,
     navigationIcon: @Composable () -> Unit = {},
     topActions: @Composable (RowScope.() -> Unit) = {},
     bottomActions: List<@Composable () -> Unit> = emptyList(),
-    scrollBehavior: TopAppBarScrollBehavior,
+    scrollBehavior: TopAppBarScrollBehavior
 ) {
     val collapsedTextSize = 22
     val expandedTextSize = 36
@@ -96,7 +102,25 @@ fun LayeredTopAppBar(
             LazyRow(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(bottom = 16.dp),
+                    .padding(
+                        start = if (isLoading) 16.dp else 0.dp,
+                        end = if (isLoading) 16.dp else 0.dp,
+                        bottom = 16.dp
+                    )
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        shape = RoundedCornerShape(100),
+                    )
+                    .then(
+                        if (isLoading) {
+                            Modifier
+                                .fillMaxWidth()
+                        }
+                        else {
+                            Modifier
+                        }
+                    ),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {

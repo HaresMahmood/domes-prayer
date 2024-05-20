@@ -4,7 +4,6 @@ import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
 import com.batoulapps.adhan2.PrayerTimes
-import com.example.domes.domain.model.prayer.PrayerNotification
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
 import java.time.Duration
@@ -27,6 +26,7 @@ data class PrayersState(
     val expandedPrayer: PrayerTime? = null,
     val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,
     val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now()),
+    var isLoading: Boolean = true,
     var isRefreshing: Boolean = false,
     var showOverarchingDropdown: Boolean = false
 )

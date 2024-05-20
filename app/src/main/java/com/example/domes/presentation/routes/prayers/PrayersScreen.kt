@@ -56,6 +56,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.shape.Polygon
 import com.example.domes.presentation.common.composables.shape.Shape
@@ -167,7 +168,7 @@ fun PrayersScreen(
                     },
                 topBar = {
                     val (foregroundText, backgroundText) = if (prayersState.selectedDate == LocalDate.now()) {
-                        (prayersState.currentPrayer?.prayer?.name ?: "") to (prayersState.currentPrayer?.prayer?.arabicName ?: "")
+                        (prayersState.currentPrayer?.prayer?.name ?: "Domes") to (prayersState.currentPrayer?.prayer?.arabicName ?: "")
                     } else {
                         prayersState.selectedDate.format(UIConstants.getFormatter("d MMMM")) to
                         prayersState.selectedHijriDate.format(UIConstants.getArabicFormatter("MMM d"))
@@ -176,6 +177,7 @@ fun PrayersScreen(
                     LayeredTopAppBar(
                         foregroundText,
                         backgroundText,
+                        isLoading = prayersState.isLoading,
                         topActions = {
                             IconButton(
                                 onClick = { prayersViewModel.onEvent(PrayersEvent.SetOverarchingDropdownVisibility()) }
@@ -341,17 +343,26 @@ fun PrayersScreen(
                             }
                         }
                         item {
-                            Column {
+                            Column(
+//                                modifier = Modifier
+//                                    .placeholder(
+//                                        visible = true,
+//                                        highlight = PlaceholderHighlight.shimmer(),
+//                                    )
+                            ) {
                                 val expandedPrayerIndex = prayerTimes.indexOf(prayersState.expandedPrayer)
 
-                                prayerTimes.forEachIndexed { index, prayerTime ->
+                                Prayer.ALL.forEachIndexed { index, prayer ->
+                                    val prayerTime = prayerTimes.find { it.prayer == prayer }
+
                                     PrayerCard(
+                                        prayer = prayer,
                                         prayerTime = prayerTime,
-                                        prayerRecordDetail = prayersState.selectedPrayerRecord.details.find { it.prayer == prayerTime.prayer },
-                                        isExpanded = prayersState.expandedPrayer === prayerTime,
-                                        isCurrent = prayerTime == prayersState.currentPrayer,
-                                        hasPassed = prayerTime.timeWindow.isBefore(LocalDateTime.now()) && prayerTime != prayersState.currentPrayer,
-                                        isSilent = notificationsState.prayerNotifications.find { it.prayer == prayerTime.prayer }?.isNotificationAllowed === false,
+                                        prayerRecordDetail = prayersState.selectedPrayerRecord.details.find { it.prayer == prayer },
+                                        isExpanded = prayerTime != null && prayersState.expandedPrayer === prayerTime,
+                                        isCurrent = prayerTime != null && prayerTime == prayersState.currentPrayer,
+                                        hasPassed = prayerTime?.timeWindow?.isBefore(LocalDateTime.now()) == true && prayerTime != prayersState.currentPrayer,
+                                        isSilent = notificationsState.prayerNotifications.find { it.prayer == prayer }?.isNotificationAllowed === false,
                                         isNotificationsAllowed = notificationsState.isNotificationsAllowed,
                                         isFirstItem = index == 0,
                                         isLastItem = index == prayerTimes.lastIndex,
@@ -365,7 +376,7 @@ fun PrayersScreen(
                                         onPrayerRecordDetailValueChange = { prayed, notes, missedReason ->
                                             prayersViewModel.onEvent(
                                                 PrayersEvent.ChangePrayerRecord(
-                                                    prayerTime.prayer,
+                                                    prayer,
                                                     prayed, notes, missedReason
                                                 )
                                             )

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMissedOutgoing
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
@@ -65,6 +66,9 @@ import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.LocalDateTime
 
@@ -72,7 +76,8 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrayerCard(
-    prayerTime: PrayerTime,
+    prayer: Prayer,
+    prayerTime: PrayerTime?,
     prayerRecordDetail: PrayerRecordDetail?,
     navController: NavController,
     isExpanded: Boolean = false,
@@ -115,7 +120,7 @@ fun PrayerCard(
                                     alpha = 0.5f
                                 )
                             ),
-                            enabled = prayerTime.prayer.displayable,
+                            enabled = prayerTime?.prayer?.displayable ?: false,
                             onClick = {
                                 prayerRecordDetail?.let {
                                     onPrayerRecordDetailValueChange(
@@ -126,7 +131,7 @@ fun PrayerCard(
                                 }
                             }
                         ) {
-                            if (prayerTime.prayer.displayable && prayerRecordDetail != null) {
+                            if (prayerTime?.prayer?.displayable == true && prayerRecordDetail != null) {
                                 if (prayerRecordDetail.prayed) {
                                     Icon(Icons.Outlined.CheckCircle, "Prayed")
                                 } else {
@@ -156,7 +161,7 @@ fun PrayerCard(
                     },
                     headlineContent = {
                         Text(
-                            prayerTime.prayer.name,
+                            prayer.name,
                             style = if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
                         )
                     },
@@ -165,7 +170,15 @@ fun PrayerCard(
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(prayerTime.time.format(getFormatter("HH:mm a")))
+                            Text(
+                                prayerTime?.time?.format(getFormatter("HH:mm a")) ?: "00:00 am",
+                                modifier = Modifier
+                                    .placeholder(
+                                        visible = prayerTime == null,
+                                        highlight = PlaceholderHighlight.shimmer(),
+                                        shape = RoundedCornerShape(100),
+                                    ),
+                            )
 
                             if (isSilent) {
                                 Icon(
@@ -205,8 +218,8 @@ fun PrayerCard(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                painterResource(prayerTime.prayer.iconResId),
-                                prayerTime.prayer.name,
+                                painterResource(prayer.iconResId),
+                                prayer.name,
                                 tint = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                         }
@@ -232,8 +245,8 @@ fun PrayerCard(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                painterResource(prayerTime.prayer.iconResId),
-                                prayerTime.prayer.name,
+                                painterResource(prayer.iconResId),
+                                prayer.name,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -263,7 +276,7 @@ fun PrayerCard(
                             "Manage notifications",
                             icon = IconSource(Icons.Outlined.Notifications),
                             onClick = {
-                                navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayerTime.prayer.name}")
+                                navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
                             }
                         )
                     }
@@ -287,7 +300,7 @@ fun PrayerCard(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                if (hasPassed && prayerTime.prayer.displayable && prayerRecordDetail?.prayed == false) {
+                if (hasPassed && prayerTime?.prayer?.displayable == true && prayerRecordDetail?.prayed == false) {
                     ExposedDropdownMenuBox(
                         modifier = Modifier.fillMaxWidth(),
                         expanded = isDropDownExpanded.value,
@@ -387,6 +400,7 @@ fun Preview() {
 
     Column(Modifier.padding(15.dp)) {
         PrayerCard(
+            Prayer.FAJR,
             prayerTime = PrayerTime(
                 Prayer.FAJR,
                 LocalDateTime.now(),
@@ -401,18 +415,29 @@ fun Preview() {
         )
 
         PrayerCard(
-            prayerTime = PrayerTime(
-                Prayer.DHUHR,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(10)
-            ),
+            Prayer.DHUHR,
+            prayerTime = null,
+//            prayerTime = PrayerTime(
+//                Prayer.DHUHR,
+//                LocalDateTime.now(),
+//                LocalDateTime.now().plusMinutes(10)
+//            ),
             prayerRecordDetail = PrayerRecordDetail(Prayer.DHUHR, false),
             isCurrent = true,
             isSilent = true,
             remainingTimePercentage = 0.5f,
             isExpanded = false,
-            isLastItem = true,
             isAfterExpandedItem = true,
+            expand = {},
+            navController = navController
+        )
+        PrayerCard(
+            Prayer.ASR,
+            prayerTime = null,
+            prayerRecordDetail = PrayerRecordDetail(Prayer.ASR, false),
+            remainingTimePercentage = 0.5f,
+            isExpanded = false,
+            isLastItem = true,
             expand = {},
             navController = navController
         )

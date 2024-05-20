@@ -18,6 +18,7 @@ import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -80,8 +81,10 @@ class PrayersViewModel @Inject constructor(
             notificationActionReceiver,
             IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED)
         )
-
         viewModelScope.launch {
+            // Add artificial delay to simulate loading
+            delay(10000)
+
             val coordinates = prayersUseCases.getLocation()
 
             if (_state.value.isTodaySelected) {
@@ -94,6 +97,8 @@ class PrayersViewModel @Inject constructor(
             _state.value.location?.let { location ->
                 updateCurrentPrayerTimes(location, _state.value.calculationParameters)
             }
+
+            _state.value.isLoading = false
         }
     }
 
@@ -150,6 +155,7 @@ class PrayersViewModel @Inject constructor(
 
             is PrayersEvent.RefreshLocation -> {
                 _state.value.isRefreshing = true
+                _state.value.isLoading = true
 
                 viewModelScope.launch {
                     val coordinates = prayersUseCases.fetchLocation()
@@ -164,6 +170,7 @@ class PrayersViewModel @Inject constructor(
                 )
 
                 _state.value.isRefreshing = false
+                _state.value.isLoading = false
             }
             is PrayersEvent.ChangePrayerRecord -> {
                 // TODO: Creating a map, really?
