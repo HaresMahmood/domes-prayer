@@ -27,8 +27,6 @@ class NotificationsViewModel @Inject constructor(
         }
 
         getNotification()
-
-        println("INITIALISED")
     }
 
     fun onEvent(event: NotificationsEvent) {

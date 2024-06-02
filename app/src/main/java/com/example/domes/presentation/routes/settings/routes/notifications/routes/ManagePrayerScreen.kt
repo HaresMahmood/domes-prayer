@@ -1,5 +1,7 @@
 package com.example.domes.presentation.routes.settings.routes.notifications.routes
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,10 +37,14 @@ import com.example.domes.presentation.common.composables.card.Variant
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.example.domes.presentation.routes.settings.routes.notifications.routes.composables.ManagePrayerCard
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.maxkeppeker.sheets.core.models.base.IconSource
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class
 )
 @Composable
 fun ManagePrayerScreen(
@@ -47,8 +53,18 @@ fun ManagePrayerScreen(
     viewModel: ManagePrayerViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
+
+    val notificationPermissionState =
+        rememberPermissionState(
+            android.Manifest.permission.POST_NOTIFICATIONS,
+            onPermissionResult = {
+                viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed(true))
+            }
+        )
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    val isNotificationsAllowed = notificationPermissionState.status.isGranted && state.notification?.isNotificationAllowed == true
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -65,18 +81,20 @@ fun ManagePrayerScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.onEvent(ManagePrayerEvent.AddNotification)
-                },
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary,
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 0.dp,
-                    pressedElevation = 0.dp,
-                )
-            ) {
-                Icon(Icons.Filled.AddAlert, "Add")
+            if (isNotificationsAllowed) {
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.onEvent(ManagePrayerEvent.AddNotification)
+                    },
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                    elevation = FloatingActionButtonDefaults.elevation(
+                        defaultElevation = 0.dp,
+                        pressedElevation = 0.dp,
+                    )
+                ) {
+                    Icon(Icons.Filled.AddAlert, "Add")
+                }
             }
         },
     ) { innerPadding ->
@@ -93,22 +111,32 @@ fun ManagePrayerScreen(
             ) {
                 item {
                     FixedCard(
-                        if (state.notification?.isNotificationAllowed == true) Variant.VISUAL else Variant.FADED
+                        if (isNotificationsAllowed) Variant.VISUAL else Variant.FADED
                     ) {
                         SettingsListItem(
                             title = "Allow notifications",
                             icon = IconSource(Icons.Outlined.Notifications),
                             trailingContent = {
                                 Switch(
-                                    checked = state.notification?.isNotificationAllowed == true,
+                                    checked = isNotificationsAllowed,
                                     onCheckedChange = {
-                                        viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
+                                        if (notificationPermissionState.status.isGranted) {
+                                            viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
+                                        }
+                                        else {
+                                            notificationPermissionState.launchPermissionRequest()
+                                        }
                                     }
                                 )
                             },
                             isLastItem = true,
                             onClick = {
-                                viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
+                                if (notificationPermissionState.status.isGranted) {
+                                    viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
+                                }
+                                else {
+                                    notificationPermissionState.launchPermissionRequest()
+                                }
                             }
                         )
                     }
@@ -128,7 +156,7 @@ fun ManagePrayerScreen(
                                     ManagePrayerCard(
                                         time = state.time,
                                         notification = notification,
-                                        isEnabled = state.notification.isNotificationAllowed,
+                                        isEnabled = isNotificationsAllowed,
                                         isExpanded = state.expandedNotificationIndex == index,
                                         isFirstItem = index == 0 || index == 1,
                                         isDefaultNotification = index == 0,

@@ -1,5 +1,8 @@
 package com.example.domes.presentation.routes.settings.routes.notifications
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +14,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -27,12 +31,16 @@ import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.card.Variant
+import com.example.domes.presentation.common.composables.card.concretions.NoticeCard
 import com.example.domes.presentation.common.composables.listitem.IndicativeTrailingContent
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.maxkeppeker.sheets.core.models.base.IconSource
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
     ExperimentalFoundationApi::class
@@ -43,11 +51,22 @@ fun NotificationsScreen(
     viewModel: NotificationsViewModel
 ) {
     val state = viewModel.state.value
+
+    val notificationPermissionState =
+        rememberPermissionState(
+            android.Manifest.permission.POST_NOTIFICATIONS,
+            onPermissionResult = {
+                viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed(true))
+            }
+        )
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
+    val isNotificationsAllowed = notificationPermissionState.status.isGranted && state.isNotificationsAllowed
+
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LayeredTopAppBar(
                 "Notifications",
@@ -68,35 +87,55 @@ fun NotificationsScreen(
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .animateContentSize(),
                 contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 item {
                     FixedCard(
-                        if (state.isNotificationsAllowed) Variant.VISUAL else Variant.FADED
+                        if (isNotificationsAllowed) Variant.VISUAL else Variant.FADED
                     ) {
                         SettingsListItem(
                             "Allow notifications",
                             IconSource(Icons.Outlined.Notifications),
                             trailingContent = {
                                 Switch(
-                                    checked = state.isNotificationsAllowed,
+                                    checked = isNotificationsAllowed,
                                     onCheckedChange = {
-                                        viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed())
+                                        if (notificationPermissionState.status.isGranted) {
+                                            viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed())
+                                        }
+                                        else {
+                                            notificationPermissionState.launchPermissionRequest()
+                                        }
                                     }
                                 )
                             },
                             isLastItem = true,
                             onClick = {
-                                viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed())
+                                if (notificationPermissionState.status.isGranted) {
+                                    viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed())
+                                }
+                                else {
+                                    notificationPermissionState.launchPermissionRequest()
+                                }
                             },
+                        )
+                    }
+                }
+                if (!notificationPermissionState.status.isGranted) {
+                    item {
+                        NoticeCard(
+                            "Notifications are disabled",
+                            IconSource(Icons.Outlined.NotificationsOff),
+                            "Press the button above to enable them, or go to settings and enable them manually",
                         )
                     }
                 }
                 item {
                     FixedCard(
-                        if (state.isNotificationsAllowed) Variant.DEFAULT else Variant.FADED
+                        if (isNotificationsAllowed) Variant.DEFAULT else Variant.FADED
                     ) {
                         Prayer.ALL.forEachIndexed { index, prayer ->
                             val notification = state.prayerNotifications.firstOrNull { it.prayer == prayer }
@@ -123,7 +162,7 @@ fun NotificationsScreen(
                                         )
                                     }
                                 },
-                                isEnabled = state.isNotificationsAllowed,
+                                isEnabled = isNotificationsAllowed,
                                 isLastItem = index == Prayer.ALL.lastIndex,
                                 onClick = {
                                     navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")

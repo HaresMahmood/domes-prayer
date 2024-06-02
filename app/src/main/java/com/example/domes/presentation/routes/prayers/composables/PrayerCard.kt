@@ -259,7 +259,8 @@ fun PrayerCard(
             val isDropDownExpanded = remember { mutableStateOf(false) }
 
             LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
             ) {
                 if (isCurrent) {
                     item {
@@ -267,7 +268,7 @@ fun PrayerCard(
                             "Snooze alert",
                             icon = IconSource(Icons.Outlined.Snooze),
                             modifier = Modifier.padding(
-                                end = 16.dp
+                                start = if (!isNotificationsAllowed) 16.dp else 0.dp,
                             )
                         )
                     }
@@ -277,6 +278,9 @@ fun PrayerCard(
                         ActionSectionChip(
                             "Manage notifications",
                             icon = IconSource(if (isSilent) Icons.Outlined.NotificationsOff else Icons.Outlined.Notifications),
+                            modifier = Modifier.padding(
+                                start = if (!isCurrent) 16.dp else 0.dp,
+                            ),
                             onClick = {
                                 navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
                             }
