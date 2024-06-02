@@ -26,6 +26,7 @@ import java.time.Duration
 fun MainActionSection(
     timeLeft: Duration?,
     remainingTimePercentage: Float,
+    notificationsGranted: Boolean,
     notificationsAllowed: Boolean,
     locale: String,
     navController: NavController,
@@ -52,7 +53,9 @@ fun MainActionSection(
                 )
             }
         },
-        { if (!notificationsAllowed) ActionSectionChip("Notifications off", icon = IconSource(Icons.Outlined.NotificationsOff), onClick = { navController.navigate(Screen.Notifications.route) } ) },
+        { if (!notificationsAllowed) ActionSectionChip(
+                if (!notificationsGranted) "Notifications disabled" else "Notifications off",
+            icon = IconSource(Icons.Outlined.NotificationsOff), onClick = { navController.navigate(Screen.Notifications.route) } ) },
         { ActionSectionChip(locale, icon = IconSource(Icons.Outlined.PinDrop), onClick = { navController.navigate(Screen.Location.route) }) },
         { ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze)) },
         {

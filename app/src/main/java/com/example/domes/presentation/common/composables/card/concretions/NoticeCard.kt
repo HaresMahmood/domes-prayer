@@ -43,7 +43,7 @@ fun NoticeCard(
                 .align(Alignment.Start),
         ) {
             IconComponent(Modifier, iconSource = icon)
-            Text(title, style = MaterialTheme.typography.headlineSmall)
+            Text(title, style = MaterialTheme.typography.titleLarge)
             description?.let {
                 Spacer(Modifier.size(5.dp))
                 Text(it, style = MaterialTheme.typography.bodySmall)

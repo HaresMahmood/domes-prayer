@@ -68,6 +68,9 @@ import com.example.domes.presentation.routes.prayers.composables.PercentageWidth
 import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -91,7 +94,7 @@ class UIConstants {
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(
     ExperimentalMaterial3Api::class,
-    ExperimentalMaterialApi::class
+    ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class
 )
 @Composable
 fun PrayersScreen(
@@ -108,14 +111,18 @@ fun PrayersScreen(
     val scope = rememberCoroutineScope()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
 
+    val notificationPermissionState =
+        rememberPermissionState(
+            android.Manifest.permission.POST_NOTIFICATIONS)
     val pullRefreshState = rememberPullRefreshState(refreshing = prayersState.isRefreshing, onRefresh = {
         prayersViewModel.onEvent(
             PrayersEvent.RefreshLocation
         )
     })
-
-    val scrollBehavior =
+    val scrollBehaviourState =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    val isNotificationsAllowed = notificationPermissionState.status.isGranted && notificationsState.isNotificationsAllowed
 
     // Animations
     val transition = updateTransition(targetState = bottomSheetScaffoldState.bottomSheetState.targetValue, label = "BottomSheetTransition")
@@ -159,7 +166,7 @@ fun PrayersScreen(
         ) {
             Scaffold(
                 modifier = Modifier
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .nestedScroll(scrollBehaviourState.nestedScrollConnection)
                     .graphicsLayer {
                         this.alpha = alpha
                         this.scaleX = scale
@@ -230,13 +237,14 @@ fun PrayersScreen(
                         bottomActions = MainActionSection(
                             prayersState.timeLeft,
                             prayersViewModel.calculateRemainingPrayerTime(),
-                            notificationsState.isNotificationsAllowed,
+                            notificationPermissionState.status.isGranted,
+                            isNotificationsAllowed,
                             prayersState.locale,
                             navController = navController,
                         ) {
                             //viewModel.onEvent(PrayersEvent.Snooze)
                         },
-                        scrollBehavior = scrollBehavior
+                        scrollBehavior = scrollBehaviourState
                     )
                 },
                 floatingActionButton = {
@@ -363,7 +371,7 @@ fun PrayersScreen(
                                         isCurrent = prayerTime != null && prayerTime == prayersState.currentPrayer,
                                         hasPassed = prayerTime?.timeWindow?.isBefore(LocalDateTime.now()) == true && prayerTime != prayersState.currentPrayer,
                                         isSilent = notificationsState.prayerNotifications.find { it.prayer == prayer }?.isNotificationAllowed === false,
-                                        isNotificationsAllowed = notificationsState.isNotificationsAllowed,
+                                        isNotificationsAllowed = isNotificationsAllowed,
                                         isFirstItem = index == 0,
                                         isLastItem = index == prayerTimes.lastIndex,
                                         isBeforeExpandedItem = index == expandedPrayerIndex - 1,
