@@ -34,16 +34,21 @@ import com.example.domes.presentation.routes.qibla.QiblaScreen
 import com.example.domes.presentation.routes.settings.SettingsScreen
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationScreen
 import com.example.domes.presentation.routes.settings.routes.location.LocationScreen
+import com.example.domes.presentation.routes.settings.routes.location.LocationViewModel
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsScreen
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
 import com.example.domes.presentation.routes.settings.routes.notifications.routes.ManagePrayerScreen
 import com.example.domes.ui.theme.DomesTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 //        deleteDatabase("prayer_records")
 
@@ -69,16 +74,22 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DomesTheme {
+                val locationPermissionState =
+                    rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                val navController = rememberNavController()
+
+                val locationViewModel: LocationViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
+                val notificationsViewModel: NotificationsViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
+
+                val isLocationKnown = locationPermissionState.status.isGranted || locationViewModel.state.value.location != null
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    val notificationsViewModel: NotificationsViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Prayers.route,
+                        startDestination = if (isLocationKnown) Screen.Prayers.route else Screen.Location.route,
                         enterTransition = {
                             fadeIn(animationSpec = tween(750, easing = EaseOutQuint)) +
                                     slideIntoContainer(
@@ -116,42 +127,48 @@ class MainActivity : ComponentActivity() {
                                     }
                         }
                     ) {
-                        composable(route = Screen.Prayers.route) {
-                            PrayersScreen(
-                                navController,
-                                notificationsViewModel = notificationsViewModel
-                            )
-                        }
-                        composable(route = Screen.Qibla.route) {
-                            QiblaScreen(navController)
-                        }
-                        composable(route = Screen.Settings.route) {
-                            SettingsScreen(navController)
-                        }
                         composable(route = Screen.Location.route) {
-                            LocationScreen(navController)
-                        }
-                        composable(route = Screen.Calculation.route) {
-                            CalculationScreen(navController)
-                        }
-                        composable(route = Screen.Notifications.route) {
-                            NotificationsScreen(
+                            LocationScreen(
                                 navController,
-                                viewModel = notificationsViewModel
+                                viewModel = locationViewModel
                             )
                         }
-                        composable(
-                            route = Screen.ManagePrayer.route + "?prayer={prayer}",
-                            arguments = listOf(
-                                navArgument(name = "prayer") {
-                                    type = NavType.StringType
-                                    defaultValue = ""
-                                }
-                            )
-                        ) {
-                            val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
 
-                            ManagePrayerScreen(navController, prayer)
+                        if (isLocationKnown) {
+                            composable(route = Screen.Prayers.route) {
+                                PrayersScreen(
+                                    navController,
+                                    notificationsViewModel = notificationsViewModel
+                                )
+                            }
+                            composable(route = Screen.Qibla.route) {
+                                QiblaScreen(navController)
+                            }
+                            composable(route = Screen.Settings.route) {
+                                SettingsScreen(navController)
+                            }
+                            composable(route = Screen.Calculation.route) {
+                                CalculationScreen(navController)
+                            }
+                            composable(route = Screen.Notifications.route) {
+                                NotificationsScreen(
+                                    navController,
+                                    viewModel = notificationsViewModel
+                                )
+                            }
+                            composable(
+                                route = Screen.ManagePrayer.route + "?prayer={prayer}",
+                                arguments = listOf(
+                                    navArgument(name = "prayer") {
+                                        type = NavType.StringType
+                                        defaultValue = ""
+                                    }
+                                )
+                            ) {
+                                val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
+
+                                ManagePrayerScreen(navController, prayer)
+                            }
                         }
                     }
                 }

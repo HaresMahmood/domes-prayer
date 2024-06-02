@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
@@ -55,7 +54,7 @@ class UIConstants {
 @Composable
 fun LocationScreen(
     navController: NavController,
-    viewModel: LocationViewModel = hiltViewModel()
+    viewModel: LocationViewModel
 ) {
     val state = viewModel.state.value
 
@@ -70,8 +69,10 @@ fun LocationScreen(
             LayeredTopAppBar(
                 "Location",
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
+                    if (state.location != null && navController.previousBackStackEntry != null) {
+                        IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                            Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
+                        }
                     }
                 },
                 bottomActions = listOf {
@@ -156,6 +157,7 @@ fun LocationScreen(
                 icon = IconSource(Icons.Outlined.Language),
                 inputs = listOf(
                     InputTextField(
+                        text = state.location?.latitude.toString(),
                         header = InputHeader(
                             title = "Latitude",
                             icon = IconSource(Icons.Outlined.SwapHoriz)
@@ -172,6 +174,7 @@ fun LocationScreen(
                         }
                     ),
                     InputTextField(
+                        text = state.location?.longitude.toString(),
                         header = InputHeader(
                             title = "Longitude",
                             icon = IconSource(Icons.Outlined.SwapVert)
