@@ -34,15 +34,15 @@ import com.example.domes.R
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LayeredTopAppBar(
     foregroundText: String,
     backgroundText: String? = "",
-    isLoading: Boolean = true,
+    isLoading: Boolean = false,
     navigationIcon: @Composable () -> Unit = {},
     topActions: @Composable (RowScope.() -> Unit) = {},
     bottomActions: List<@Composable () -> Unit> = emptyList(),
@@ -109,15 +109,14 @@ fun LayeredTopAppBar(
                     )
                     .placeholder(
                         visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                         shape = RoundedCornerShape(100),
                     )
                     .then(
                         if (isLoading) {
                             Modifier
                                 .fillMaxWidth()
-                        }
-                        else {
+                        } else {
                             Modifier
                         }
                     ),

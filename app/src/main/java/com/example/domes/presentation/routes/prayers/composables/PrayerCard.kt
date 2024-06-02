@@ -67,8 +67,8 @@ import com.example.domes.presentation.common.utility.RoundedPolygonShape
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.LocalDateTime
 
@@ -175,7 +175,7 @@ fun PrayerCard(
                                 modifier = Modifier
                                     .placeholder(
                                         visible = prayerTime == null,
-                                        highlight = PlaceholderHighlight.shimmer(),
+                                        highlight = PlaceholderHighlight.fade(),
                                         shape = RoundedCornerShape(100),
                                     ),
                             )
@@ -261,34 +261,27 @@ fun PrayerCard(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                item {
-                    ActionSectionChip(
-                        "Snooze alert",
-                        icon = IconSource(Icons.Outlined.Snooze),
-                        modifier = Modifier.padding(
-                            start = 16.dp
+                if (isCurrent) {
+                    item {
+                        ActionSectionChip(
+                            "Snooze alert",
+                            icon = IconSource(Icons.Outlined.Snooze),
+                            modifier = Modifier.padding(
+                                end = 16.dp
+                            )
                         )
-                    )
+                    }
                 }
                 if (isNotificationsAllowed) {
                     item {
                         ActionSectionChip(
                             "Manage notifications",
-                            icon = IconSource(Icons.Outlined.Notifications),
+                            icon = IconSource(if (isSilent) Icons.Outlined.NotificationsOff else Icons.Outlined.Notifications),
                             onClick = {
                                 navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
                             }
                         )
                     }
-                }
-                item {
-                    ActionSectionChip(
-                        "Snooze alert",
-                        icon = IconSource(Icons.Outlined.Snooze),
-                        modifier = Modifier.padding(
-                            end = 16.dp
-                        )
-                    )
                 }
             }
 

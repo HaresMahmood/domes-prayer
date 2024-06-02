@@ -83,7 +83,7 @@ class PrayersViewModel @Inject constructor(
         )
         viewModelScope.launch {
             // Add artificial delay to simulate loading
-            delay(10000)
+            delay(2000)
 
             val coordinates = prayersUseCases.getLocation()
 
