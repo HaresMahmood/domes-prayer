@@ -1,7 +1,7 @@
 package com.example.domes.presentation.routes.settings.routes.location
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.batoulapps.adhan2.Coordinates
@@ -13,8 +13,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LocationViewModel @Inject constructor(
     private val prayersUseCases: PrayerUseCases,
+    private val _state: MutableState<LocationState>
 ) : ViewModel() {
-    private val _state = mutableStateOf(LocationState())
     val state: State<LocationState> = _state
 
     init {
@@ -53,7 +53,7 @@ class LocationViewModel @Inject constructor(
                 }
             }
             is LocationEvent.ToggleAutoUpdate -> {
-                _state.value = state.value.copy(
+                _state.value = _state.value.copy(
                     isAutoUpdateEnabled = !_state.value.isAutoUpdateEnabled
                 )
             }

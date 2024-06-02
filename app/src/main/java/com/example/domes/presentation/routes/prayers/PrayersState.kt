@@ -2,7 +2,6 @@ package com.example.domes.presentation.routes.prayers
 
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.CalculationParameters
-import com.batoulapps.adhan2.Coordinates
 import com.batoulapps.adhan2.PrayerTimes
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
@@ -14,8 +13,6 @@ data class PrayersState(
     val selectedDate: LocalDate = LocalDate.now(),
     val selectedHijriDate: HijrahDate = HijrahDate.now(),
     val isTodaySelected: Boolean = true,
-    val location: Coordinates? = null,
-    val locale: String = "",
     val currentRawPrayerTimes: PrayerTimes? = null,
     val currentPrayerTimes: List<PrayerTime> = emptyList(),
     val selectedPrayerTimes: List<PrayerTime> = emptyList(),

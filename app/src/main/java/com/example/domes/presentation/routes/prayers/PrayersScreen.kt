@@ -102,7 +102,8 @@ fun PrayersScreen(
     prayersViewModel: PrayersViewModel = hiltViewModel(),
     notificationsViewModel: NotificationsViewModel,
 ) {
-    val prayersState = prayersViewModel.state.value
+    val prayersState = prayersViewModel.prayersState.value
+    val locationState = prayersViewModel.locationState.value
     val notificationsState = notificationsViewModel.state.value
 
     val prayerTimes =
@@ -239,7 +240,7 @@ fun PrayersScreen(
                             prayersViewModel.calculateRemainingPrayerTime(),
                             notificationPermissionState.status.isGranted,
                             isNotificationsAllowed,
-                            prayersState.locale,
+                            locationState.locale,
                             navController = navController,
                         ) {
                             //viewModel.onEvent(PrayersEvent.Snooze)

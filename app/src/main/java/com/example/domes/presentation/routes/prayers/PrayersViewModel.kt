@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,7 @@ import com.example.domes.data.service.NotificationService.Companion.ACTION_NOTIF
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.domain.usecase.PrayerUseCases
+import com.example.domes.presentation.routes.settings.routes.location.LocationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -28,12 +30,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PrayersViewModel @Inject constructor(
-    private val context: Application, private val prayersUseCases: PrayerUseCases
+    private val context: Application,
+    private val prayersUseCases: PrayerUseCases,
+    private val _locationState: MutableState<LocationState>
 ) : ViewModel() {
     private var getPrayerRecordJob: Job? = null
 
     private val _state = mutableStateOf(PrayersState())
-    val state: State<PrayersState> = _state
+    val prayersState: State<PrayersState> = _state
+    val locationState: State<LocationState> = _locationState
 
     private val currentTime = LocalDateTime.now()
 
@@ -84,17 +89,7 @@ class PrayersViewModel @Inject constructor(
         viewModelScope.launch {
             // Add artificial delay to simulate loading
             delay(2000)
-
-            val coordinates = prayersUseCases.getLocation()
-
-            if (_state.value.isTodaySelected) {
-                _state.value = _state.value.copy(
-                    location = coordinates,
-                    locale = prayersUseCases.getLocale(coordinates),
-                )
-            }
-
-            _state.value.location?.let { location ->
+            locationState.value.location?.let { location ->
                 updateCurrentPrayerTimes(location, _state.value.calculationParameters)
             }
 
@@ -148,29 +143,29 @@ class PrayersViewModel @Inject constructor(
 
                 getPrayerTimes(
                     _state.value.selectedDate,
-                    _state.value.location!!,
+                    locationState.value.location!!,
                     _state.value.calculationParameters
                 )
             }
 
             is PrayersEvent.RefreshLocation -> {
-                _state.value.isRefreshing = true
-                _state.value.isLoading = true
-
-                viewModelScope.launch {
-                    val coordinates = prayersUseCases.fetchLocation()
-
-                    _state.value = _state.value.copy(
-                        location = coordinates, locale = prayersUseCases.getLocale(coordinates)
-                    )
-                }
-
-                updateCurrentPrayerTimes(
-                    _state.value.location!!, _state.value.calculationParameters
-                )
-
-                _state.value.isRefreshing = false
-                _state.value.isLoading = false
+//                _state.value.isRefreshing = true
+//                _state.value.isLoading = true
+//
+//                viewModelScope.launch {
+//                    val coordinates = prayersUseCases.fetchLocation()
+//
+//                    _state.value = _state.value.copy(
+//                        location = coordinates, locale = prayersUseCases.getLocale(coordinates)
+//                    )
+//                }
+//
+//                updateCurrentPrayerTimes(
+//                    _state.value.location!!, _state.value.calculationParameters
+//                )
+//
+//                _state.value.isRefreshing = false
+//                _state.value.isLoading = false
             }
             is PrayersEvent.ChangePrayerRecord -> {
                 // TODO: Creating a map, really?
