@@ -1,7 +1,7 @@
 package com.example.domes.presentation.routes.settings.routes.calculation
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.batoulapps.adhan2.CalculationMethod
@@ -14,8 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CalculationViewModel @Inject constructor(
     private val prayersUseCases: PrayerUseCases,
+    private val _state: MutableState<CalculationState>
 ) : ViewModel() {
-    private val _state = mutableStateOf(CalculationState())
     val state: State<CalculationState> = _state
 
     init {

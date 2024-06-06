@@ -33,6 +33,7 @@ import com.example.domes.presentation.routes.prayers.PrayersScreen
 import com.example.domes.presentation.routes.qibla.QiblaScreen
 import com.example.domes.presentation.routes.settings.SettingsScreen
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationScreen
+import com.example.domes.presentation.routes.settings.routes.calculation.CalculationViewModel
 import com.example.domes.presentation.routes.settings.routes.location.LocationScreen
 import com.example.domes.presentation.routes.settings.routes.location.LocationViewModel
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsScreen
@@ -79,6 +80,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 val locationViewModel: LocationViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
+                val calculationViewModel: CalculationViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
                 val notificationsViewModel: NotificationsViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
 
                 val isLocationKnown = locationPermissionState.status.isGranted || locationViewModel.state.value.location != null
@@ -138,7 +140,7 @@ class MainActivity : ComponentActivity() {
                             composable(route = Screen.Prayers.route) {
                                 PrayersScreen(
                                     navController,
-                                    notificationsViewModel = notificationsViewModel
+                                    notificationsViewModel = notificationsViewModel,
                                 )
                             }
                             composable(route = Screen.Qibla.route) {
@@ -148,7 +150,10 @@ class MainActivity : ComponentActivity() {
                                 SettingsScreen(navController)
                             }
                             composable(route = Screen.Calculation.route) {
-                                CalculationScreen(navController)
+                                CalculationScreen(
+                                    navController,
+                                    viewModel = calculationViewModel
+                                )
                             }
                             composable(route = Screen.Notifications.route) {
                                 NotificationsScreen(

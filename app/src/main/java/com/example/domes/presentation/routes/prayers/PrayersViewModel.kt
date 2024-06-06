@@ -17,6 +17,7 @@ import com.example.domes.data.service.NotificationService.Companion.ACTION_NOTIF
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.domain.usecase.PrayerUseCases
+import com.example.domes.presentation.routes.settings.routes.calculation.CalculationState
 import com.example.domes.presentation.routes.settings.routes.location.LocationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -32,7 +33,8 @@ import javax.inject.Inject
 class PrayersViewModel @Inject constructor(
     private val context: Application,
     private val prayersUseCases: PrayerUseCases,
-    private val _locationState: MutableState<LocationState>
+    private val _locationState: MutableState<LocationState>,
+    private val _calculationState: MutableState<CalculationState>
 ) : ViewModel() {
     private var getPrayerRecordJob: Job? = null
 
@@ -89,8 +91,12 @@ class PrayersViewModel @Inject constructor(
         viewModelScope.launch {
             // Add artificial delay to simulate loading
             delay(2000)
-            locationState.value.location?.let { location ->
-                updateCurrentPrayerTimes(location, _state.value.calculationParameters)
+            _locationState.value.location?.let { location ->
+                println("juristic: ${_calculationState.value.juristic}")
+                updateCurrentPrayerTimes(
+                    location,
+                    _calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                )
             }
 
             _state.value.isLoading = false
@@ -123,11 +129,13 @@ class PrayersViewModel @Inject constructor(
                     )
                 )
             }
+
             is PrayersEvent.ChangeExpandedPrayer -> {
                 _state.value = _state.value.copy(
                     expandedPrayer = event.prayerTime
                 )
             }
+
             is PrayersEvent.ChangeDate -> {
                 val isTodaySelected = event.date == currentTime.toLocalDate()
                 _state.value = _state.value.copy(
@@ -143,8 +151,8 @@ class PrayersViewModel @Inject constructor(
 
                 getPrayerTimes(
                     _state.value.selectedDate,
-                    locationState.value.location!!,
-                    _state.value.calculationParameters
+                    _locationState.value.location!!,
+                    _calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
                 )
             }
 
@@ -167,6 +175,7 @@ class PrayersViewModel @Inject constructor(
 //                _state.value.isRefreshing = false
 //                _state.value.isLoading = false
             }
+
             is PrayersEvent.ChangePrayerRecord -> {
                 // TODO: Creating a map, really?
                 val updatedDetails = _state.value.selectedPrayerRecord.details.map { detail ->
@@ -180,7 +189,8 @@ class PrayersViewModel @Inject constructor(
                         detail
                     }
                 }
-                val updatedPrayerRecord = _state.value.selectedPrayerRecord.copy(details = updatedDetails)
+                val updatedPrayerRecord =
+                    _state.value.selectedPrayerRecord.copy(details = updatedDetails)
 
                 _state.value = _state.value.copy(selectedPrayerRecord = updatedPrayerRecord)
 
@@ -188,6 +198,7 @@ class PrayersViewModel @Inject constructor(
                     prayersUseCases.addPrayerRecord(updatedPrayerRecord)
                 }
             }
+
             is PrayersEvent.SetOverarchingDropdownVisibility -> {
                 _state.value = _state.value.copy(
                     showOverarchingDropdown = event.isVisible

@@ -49,6 +49,7 @@ import com.example.domes.domain.usecase.SetJuristic
 import com.example.domes.domain.usecase.SetLocation
 import com.example.domes.domain.usecase.SetNotificationsAllowed
 import com.example.domes.domain.usecase.UpdatePrayerTimes
+import com.example.domes.presentation.routes.settings.routes.calculation.CalculationState
 import com.example.domes.presentation.routes.settings.routes.location.LocationState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -154,6 +155,12 @@ object AppModule {
     @Singleton
     fun provideLocationState(): MutableState<LocationState> {
         return mutableStateOf(LocationState())
+    }
+
+    @Provides
+    @Singleton
+    fun provideCalculationState(): MutableState<CalculationState> {
+        return mutableStateOf(CalculationState())
     }
 
     @Provides

@@ -1,7 +1,5 @@
 package com.example.domes.presentation.routes.prayers
 
-import com.batoulapps.adhan2.CalculationMethod
-import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.PrayerTimes
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
@@ -21,7 +19,6 @@ data class PrayersState(
     val timeLeft: Duration? = null,
     val dayFraction: Double = 0.0,
     val expandedPrayer: PrayerTime? = null,
-    val calculationParameters: CalculationParameters = CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters,
     val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now()),
     var isLoading: Boolean = true,
     var isRefreshing: Boolean = false,
