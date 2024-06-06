@@ -374,7 +374,7 @@ fun PrayersScreen(
                                         isSilent = notificationsState.prayerNotifications.find { it.prayer == prayer }?.isNotificationAllowed === false,
                                         isNotificationsAllowed = isNotificationsAllowed,
                                         isFirstItem = index == 0,
-                                        isLastItem = index == prayerTimes.lastIndex,
+                                        isLastItem = index == Prayer.ALL.lastIndex,
                                         isBeforeExpandedItem = index == expandedPrayerIndex - 1,
                                         isAfterExpandedItem = index == expandedPrayerIndex + 1,
                                         remainingTimePercentage = prayersViewModel.calculateRemainingPrayerTime(),

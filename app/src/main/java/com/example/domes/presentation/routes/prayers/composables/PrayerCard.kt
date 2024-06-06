@@ -268,7 +268,7 @@ fun PrayerCard(
                             "Snooze alert",
                             icon = IconSource(Icons.Outlined.Snooze),
                             modifier = Modifier.padding(
-                                start = if (!isNotificationsAllowed) 16.dp else 0.dp,
+                                start = 16.dp,
                             )
                         )
                     }
@@ -299,7 +299,7 @@ fun PrayerCard(
             ) {
                 if (hasPassed && prayerTime?.prayer?.displayable == true && prayerRecordDetail?.prayed == false) {
                     ExposedDropdownMenuBox(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().background(Color.Transparent),
                         expanded = isDropDownExpanded.value,
                         onExpandedChange = {
                             isDropDownExpanded.value = it
@@ -332,7 +332,10 @@ fun PrayerCard(
                                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value)
                                 }
                             },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent
+                            ),
                         )
                         ExposedDropdownMenu(
                             expanded = isDropDownExpanded.value,
@@ -405,6 +408,7 @@ fun Preview() {
             ),
             prayerRecordDetail = PrayerRecordDetail(Prayer.FAJR, false),
             remainingTimePercentage = 0.5f,
+            isCurrent = true,
             isExpanded = true,
             hasPassed = true,
             expand = {},
