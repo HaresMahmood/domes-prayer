@@ -7,6 +7,7 @@ sealed class Screen(val route: String) {
     data object Calculation: Screen("calculation")
     data object Notifications: Screen("notifications")
     data object ManagePrayer: Screen("manage-prayer")
+    data object Appearance: Screen("appearance")
 
     data object Qibla: Screen("qibla")
 }

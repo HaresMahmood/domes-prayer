@@ -101,7 +101,8 @@ fun SettingsScreen(
                             "Appearance",
                             IconSource(Icons.Outlined.Palette),
                             "Theme • language • format",
-                            isLastItem = true
+                            isLastItem = true,
+                            onClick = { navController.navigate(Screen.Appearance.route) },
                         )
                     }
                 }

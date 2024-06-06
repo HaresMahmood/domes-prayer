@@ -67,10 +67,7 @@ fun SettingsListItem(
         ListItem(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    start = 5.dp,
-                    end = 5.dp,
-                )
+                .padding(horizontal = 5.dp)
                 .alpha(if (isEnabled) 1f else 0.5f)
                 .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
             colors = colors,
