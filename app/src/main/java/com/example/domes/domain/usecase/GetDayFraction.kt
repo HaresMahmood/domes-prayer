@@ -9,7 +9,7 @@ import kotlin.time.Duration.Companion.hours
 class GetDayFraction {
     private val systemTimeZone = ZoneId.systemDefault()
 
-    operator fun invoke(prayerTimes: PrayerTimes, currentTime: LocalDateTime): Double {
+    operator fun invoke(prayerTimes: PrayerTimes, currentTime: LocalDateTime): Float {
         val fajr = prayerTimes.fajr.minus(1.hours)
         val isha = prayerTimes.isha.plus(1.hours)
         val time = currentTime.atZone(systemTimeZone).toInstant().toKotlinInstant()
@@ -21,6 +21,6 @@ class GetDayFraction {
 
         println("DAYFRACTION: ${fajrToTime / fajrToIsha}")
 
-        return fajrToTime / fajrToIsha
+        return (fajrToTime / fajrToIsha).toFloat()
     }
 }

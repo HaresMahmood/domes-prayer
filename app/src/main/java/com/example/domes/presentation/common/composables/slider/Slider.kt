@@ -1,4 +1,4 @@
-package com.example.domes.presentation.routes.prayers.composables
+package com.example.domes.presentation.common.composables.slider
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,29 +10,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DisplaySlider(
-    sliderValue: Double, // The current value of the slider
-    onValueChange: (Float) -> Unit, // Function to handle value changes
+fun Slider(
+    value: Float,
     modifier: Modifier = Modifier,
-    sliderRange: ClosedFloatingPointRange<Float> = 0f..1f, // The range of the slider
+    range: ClosedFloatingPointRange<Float> = 0.0f..1f,
 ) {
-    // Calculate the width of the track based on the slider value and range
-    val trackWidth = remember { mutableStateOf(0f) }
-    val thumbPosition = remember { mutableStateOf(0f) }
+    if (value !in range) {
+        throw IllegalArgumentException("Value must be within the range $range")
+    }
 
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        // Textbox above the thumb
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -40,21 +36,21 @@ fun DisplaySlider(
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Left track (before thumb)
-            if (sliderValue > 0f) {
+            if (value > 0f) {
                 Box(
                     modifier = Modifier
-                        .weight(sliderValue.toFloat())
+                        .weight(value)
                         .height(20.dp)
                         .background(
                             MaterialTheme.colorScheme.secondaryContainer,
                             RoundedCornerShape(
                                 topStartPercent = 100,
-                                topEndPercent = 15,
-                                bottomStartPercent = 100,
-                                bottomEndPercent = 15
+                                bottomStartPercent = 100
+                            ).copy(
+                                topEnd = MaterialTheme.shapes.extraSmall.topStart,
+                                bottomEnd = MaterialTheme.shapes.extraSmall.bottomStart
                             )
-                        ),
+                        )
                 )
             }
             Box(
@@ -66,18 +62,19 @@ fun DisplaySlider(
                         RoundedCornerShape(100)
                     ),
             )
-            if (sliderValue < 1f) {
+            if (value < 1f) {
                 Box(
                     modifier = Modifier
-                        .weight((1f - sliderValue).toFloat())
+                        .weight((1f - value).toFloat())
                         .height(20.dp)
                         .background(
                             MaterialTheme.colorScheme.primary,
                             RoundedCornerShape(
-                                topStartPercent = 15,
                                 topEndPercent = 100,
-                                bottomStartPercent = 15,
                                 bottomEndPercent = 100
+                            ).copy(
+                                topStart = MaterialTheme.shapes.extraSmall.topStart,
+                                bottomStart = MaterialTheme.shapes.extraSmall.bottomStart
                             )
                         ),
                 )
@@ -89,9 +86,5 @@ fun DisplaySlider(
 @Preview(showBackground = true)
 @Composable
 fun DisplaySliderPreview() {
-    // Provide a sample slider value and a no-op for onValueChange
-    DisplaySlider(
-        sliderValue = 0.5,
-        onValueChange = {},
-    )
+    Slider(0.5f)
 }

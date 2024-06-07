@@ -17,7 +17,7 @@ data class PrayersState(
     var currentPrayer: PrayerTime? = null,
     val totalTime: Duration? = null,
     val timeLeft: Duration? = null,
-    val dayFraction: Double = 0.0,
+    val dayFraction: Float = 0.0f,
     val expandedPrayer: PrayerTime? = null,
     val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now()),
     var isLoading: Boolean = true,

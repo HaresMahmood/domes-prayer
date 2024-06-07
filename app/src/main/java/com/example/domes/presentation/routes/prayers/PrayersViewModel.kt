@@ -118,7 +118,7 @@ class PrayersViewModel @Inject constructor(
                     },
                     dayFraction = _state.value.currentRawPrayerTimes?.let {
                         prayersUseCases.getDayFraction(it, LocalDateTime.now())
-                    } ?: 0.0
+                    } ?: 0.0f
                 )
             }
 
@@ -144,9 +144,9 @@ class PrayersViewModel @Inject constructor(
                     isTodaySelected = isTodaySelected,
                     dayFraction = _state.value.currentRawPrayerTimes?.let { prayers ->
                         if (isTodaySelected) prayersUseCases.getDayFraction(prayers, currentTime)
-                        else if (event.date.isAfter(currentTime.toLocalDate())) 0.0
-                        else 1.0
-                    } ?: 0.0
+                        else if (event.date.isAfter(currentTime.toLocalDate())) 0.0f
+                        else 1.0f
+                    } ?: 0.0f
                 )
 
                 getPrayerTimes(

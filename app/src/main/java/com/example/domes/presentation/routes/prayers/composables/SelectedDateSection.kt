@@ -2,6 +2,7 @@ package com.example.domes.presentation.routes.prayers.composables
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
@@ -21,6 +23,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,44 +43,50 @@ import com.maxkeppeler.sheets.calendar.CalendarView
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.chrono.HijrahDate
 
 @SuppressLint("RestrictedApi")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SelectedDateSection(
     gregorianDate: LocalDate,
     hijriDate: HijrahDate,
+    scope: CoroutineScope,
     bottomSheetExpandAction: () -> Unit,
     collapseBottomSheet: () -> Unit,
     onDateChange: (LocalDate) -> Unit,
 ) {
     val todayDate = remember { LocalDate.now() }
-    val selectedDate = remember { mutableStateOf<LocalDate?>(todayDate) }
+    val selectedDate = remember { mutableStateOf<LocalDate>(todayDate) }
+    val yesterdayDate = selectedDate.value.minusDays(1)
+    val tomorrowDate = selectedDate.value.plusDays(1)
     val calendarConfig = CalendarConfig(
         yearSelection = true,
         monthSelection = true,
         style = CalendarStyle.MONTH,
     )
 
-    val shapeParam = Shape(
-        sides = 4,
-        innerRadius = .352f,
-        roundness = .32f,
-        rotation = 45f,
-        shapeId = Shape.ShapeId.Star
-    )
-    val shape = remember {
-        shapeParam.genShape()
-    }
-    val clip = remember(shape) {
-        RoundedPolygonShape(polygon = shape)
+    fun updateDate(date: LocalDate) {
+        selectedDate.value = date
+        onDateChange(selectedDate.value)
     }
 
-    fun updateDate(days: Long, isToday: Boolean = false) {
-        selectedDate.value = if (isToday) todayDate else selectedDate.value?.plusDays(days)
-        selectedDate.value?.let { onDateChange(it) }
+    val pagerState = rememberPagerState(initialPage = 1) { 3 }
+
+    LaunchedEffect(pagerState.settledPage) {
+        if (pagerState.settledPage == 0) {
+            updateDate(yesterdayDate)
+        }
+        else if (pagerState.settledPage == 2) {
+            updateDate(tomorrowDate)
+        }
+
+        scope.launch {
+            pagerState.scrollToPage(1)
+        }
     }
 
     Box(
@@ -89,7 +98,6 @@ fun SelectedDateSection(
             },
         contentAlignment = Alignment.Center,
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -97,81 +105,43 @@ fun SelectedDateSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(7.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(clip)
-                        .size(52.dp)
-                        .background(MaterialTheme.colorScheme.tertiaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-//                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        // TODO: Make hideable through setting under `Appearance`
-                        Text(
-                            text = gregorianDate.dayOfWeek.name.take(3),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontSize = (7).sp,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        )
-                        Text(
-                            text = "${gregorianDate.dayOfMonth}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        )
-                    }
-                }
+//            HorizontalPager(
+//                pagerState,
+//                pageSpacing = 16.dp,
+//                modifier = Modifier.fillMaxWidth()
+//            ) { index ->
+//                when (index) {
+//                    1 -> DateSection(gregorianDate, hijriDate)
+//                    0 -> DateSection(yesterdayDate)
+//                    else -> DateSection(tomorrowDate)
+//                }
+//            }
 
-                Column {
-                    Text(
-                        text = gregorianDate.format(getFormatter("MMMM yyyy")),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Text(
-                        text = getFormatter("MMMM d yyyy").format(hijriDate),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-            }
-
+            DateSection(gregorianDate, hijriDate)
             Row(
                 horizontalArrangement = Arrangement.spacedBy(3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // TODO: Make more efficient
-//                AnimatedVisibility (selectedDate.value != todayDate) {
-//                    AssistChip(
-//                        modifier = Modifier.padding(0.dp),
-//                        onClick = { /*TODO*/ },
-//                        label = { Text(todayDate.dayOfMonth.toString(), maxLines = 1, overflow = TextOverflow.Visible) }
-//                    )
-//                }
-
                 SegmentedActionSection(
                     children = listOf(
                         SegmentedAction(
-                            { updateDate(-1) },
+                            { updateDate(yesterdayDate) },
                             icon = IconSource(
                                 Icons.AutoMirrored.Outlined.NavigateBefore,
                                 "Yesterday"
                             )
                         ),
                         SegmentedAction(
-                            { updateDate(0, true) },
+                            { updateDate(todayDate) },
                             icon = IconSource(Icons.Outlined.CalendarViewDay, "Today"),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            enabled = selectedDate.value?.equals(todayDate) == false
+                            enabled = selectedDate.value != todayDate
                         ),
                         SegmentedAction(
-                            { updateDate(1) },
+                            { updateDate(tomorrowDate) },
                             icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "Tomorrow")
                         )
                     )
@@ -202,6 +172,70 @@ fun SelectedDateSection(
                 onDateChange(selectedDate.value!!)
             },
         )
+    }
+}
+
+@Composable
+private fun DateSection(
+    gregorianDate: LocalDate,
+    hijriDate: HijrahDate? = null
+) {
+    val shapeParam = Shape(
+        sides = 4,
+        innerRadius = .352f,
+        roundness = .32f,
+        rotation = 45f,
+        shapeId = Shape.ShapeId.Star
+    )
+    val shape = remember {
+        shapeParam.genShape()
+    }
+    val clip = remember(shape) {
+        RoundedPolygonShape(polygon = shape)
+    }
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(7.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(clip)
+                .size(52.dp)
+                .background(MaterialTheme.colorScheme.tertiaryContainer),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+//                        verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                // TODO: Make hideable through setting under `Appearance`
+                Text(
+                    text = gregorianDate.dayOfWeek.name.take(3),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontSize = (7).sp,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
+                Text(
+                    text = "${gregorianDate.dayOfMonth}",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
+            }
+        }
+
+        Column {
+            Text(
+                text = gregorianDate.format(getFormatter("MMMM yyyy")),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            hijriDate?.let {
+                Text(
+                    text = getFormatter("MMMM d yyyy").format(it),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
     }
 }
 
