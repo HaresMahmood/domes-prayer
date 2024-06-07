@@ -185,7 +185,6 @@ fun PrayersScreen(
                     LayeredTopAppBar(
                         foregroundText,
                         backgroundText,
-                        isLoading = prayersState.isLoading,
                         topActions = {
                             IconButton(
                                 onClick = { prayersViewModel.onEvent(PrayersEvent.SetOverarchingDropdownVisibility()) }

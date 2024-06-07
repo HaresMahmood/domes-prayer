@@ -3,6 +3,8 @@ package com.example.domes.presentation.routes.prayers.composables
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.HourglassBottom
@@ -19,6 +21,9 @@ import com.example.domes.R
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.routes.Screen
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.Duration
 
@@ -34,29 +39,48 @@ fun MainActionSection(
 ): List<@Composable () -> Unit> {
     return listOf(
         {
-            timeLeft?.let { timeLeft ->
-                val text = when {
-                    timeLeft.toHoursPart() == 0 -> "${timeLeft.toMinutesPart()} mins left"
-                    timeLeft.toMinutesPart() == 1 -> "${timeLeft.toHoursPart()}h 1 min left"
-                    else -> "${timeLeft.toHoursPart()}h ${timeLeft.toMinutesPart()} mins left"
-                }
-                val icon = when {
-                    remainingTimePercentage < 0.15 -> Icons.Outlined.HourglassEmpty
-                    remainingTimePercentage < 0.5 -> Icons.Outlined.HourglassBottom
-                    else -> Icons.Outlined.HourglassTop
-                }
+            println("timer null? ${timeLeft == null}")
 
-                ActionSectionChip(
-                    text,
-                    icon = IconSource(icon),
-                    variant = Variant.VISUAL
-                )
+            val text = when {
+                timeLeft == null -> "Loading..."
+                timeLeft.toHoursPart() == 0 -> "${timeLeft.toMinutesPart()} mins left"
+                timeLeft.toMinutesPart() == 1 -> "${timeLeft.toHoursPart()}h 1 min left"
+                else -> "${timeLeft.toHoursPart()}h ${timeLeft.toMinutesPart()} mins left"
             }
+            val icon = when {
+                remainingTimePercentage < 0.15 -> Icons.Outlined.HourglassEmpty
+                remainingTimePercentage < 0.5 -> Icons.Outlined.HourglassBottom
+                else -> Icons.Outlined.HourglassTop
+            }
+
+            ActionSectionChip(
+                text,
+                icon = IconSource(icon),
+                variant = Variant.VISUAL,
+                modifier = Modifier.placeholder(
+                    visible = timeLeft == null,
+                    highlight = PlaceholderHighlight.fade(),
+                    shape = RoundedCornerShape(100),
+                )
+            )
         },
-        { if (!notificationsAllowed) ActionSectionChip(
+        {
+            if (!notificationsAllowed) ActionSectionChip(
                 if (!notificationsGranted) "Notifications disabled" else "Notifications off",
-            icon = IconSource(Icons.Outlined.NotificationsOff), onClick = { navController.navigate(Screen.Notifications.route) } ) },
-        { ActionSectionChip(locale, icon = IconSource(Icons.Outlined.PinDrop), onClick = { navController.navigate(Screen.Location.route) }) },
+                icon = IconSource(Icons.Outlined.NotificationsOff),
+                onClick = { navController.navigate(Screen.Notifications.route) })
+        },
+        {
+            ActionSectionChip(
+                locale,
+                icon = IconSource(Icons.Outlined.PinDrop),
+                modifier = Modifier.placeholder(
+                    visible = locale.isEmpty(),
+                    highlight = PlaceholderHighlight.fade(),
+                    shape = RoundedCornerShape(100),
+                ),
+                onClick = { navController.navigate(Screen.Location.route) })
+        },
         { ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze)) },
         {
             ActionSectionChip(

@@ -280,6 +280,7 @@ fun PrayerCard(
                             icon = IconSource(if (isSilent) Icons.Outlined.NotificationsOff else Icons.Outlined.Notifications),
                             modifier = Modifier.padding(
                                 start = if (!isCurrent) 16.dp else 0.dp,
+                                end = 16.dp
                             ),
                             onClick = {
                                 navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
