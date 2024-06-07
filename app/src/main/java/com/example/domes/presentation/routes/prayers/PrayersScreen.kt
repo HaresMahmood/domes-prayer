@@ -50,6 +50,8 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +59,8 @@ import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -119,6 +123,7 @@ fun PrayersScreen(
     val prayerTimes =
         if (prayersState.selectedDate == LocalDate.now()) prayersState.currentPrayerTimes else prayersState.selectedPrayerTimes
 
+    val localDensity = LocalDensity.current
     val scope = rememberCoroutineScope()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
 
@@ -135,6 +140,7 @@ fun PrayersScreen(
     val scrollBehaviourState =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val pagerState = rememberPagerState(initialPage = 1) { 3 }
+    val prayerTimesSectionHeight = remember { mutableStateOf(0.dp) }
 
     LaunchedEffect(pagerState.settledPage) {
         if (pagerState.settledPage == 0) {
@@ -373,7 +379,14 @@ fun PrayersScreen(
                                 pageSpacing = 16.dp,
                             ) { index ->
                                 if (index == 1) {
-                                    Column {
+                                    Column(
+                                        modifier = Modifier.
+                                            onGloballyPositioned { layoutCoordinates ->
+                                                prayerTimesSectionHeight.value = with(localDensity) {
+                                                    layoutCoordinates.size.height.toDp()
+                                                }
+                                            }
+                                    ) {
                                         val expandedPrayerIndex =
                                             prayerTimes.indexOf(prayersState.expandedPrayer)
 
@@ -418,7 +431,8 @@ fun PrayersScreen(
                                     }
                                 } else if (index == 0) {
                                     FixedCard(
-                                        modifier = Modifier.fillMaxSize(),
+                                        modifier = Modifier
+                                            .height(prayerTimesSectionHeight.value),
                                         variant = Variant.FADED
                                     ) {
                                         Box(
@@ -435,7 +449,8 @@ fun PrayersScreen(
                                     }
                                 } else {
                                     FixedCard(
-                                        modifier = Modifier.fillMaxSize(),
+                                        modifier = Modifier
+                                            .height(prayerTimesSectionHeight.value),
                                         variant = Variant.FADED
                                     ) {
                                         Box(
