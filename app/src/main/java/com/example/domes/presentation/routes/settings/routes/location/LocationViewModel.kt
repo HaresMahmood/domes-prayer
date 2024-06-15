@@ -21,25 +21,30 @@ class LocationViewModel @Inject constructor(
         viewModelScope.launch {
             val coordinates = prayersUseCases.getLocation()
 
-            _state.value = _state.value.copy(
-                location = coordinates,
-                locale = prayersUseCases.getLocale(coordinates)
-            )
+            coordinates?.let {
+                _state.value = _state.value.copy(
+                    location = it,
+                    locale = prayersUseCases.getLocale(it)
+                )
+            }
         }
     }
 
     fun onEvent(event: LocationEvent) {
-        when(event) {
+        when (event) {
             is LocationEvent.RefreshLocation -> {
                 viewModelScope.launch {
-                    val coordinates = prayersUseCases.fetchLocation()
-
-                    _state.value = _state.value.copy(
-                        location = coordinates,
-                        locale = prayersUseCases.getLocale(coordinates)
-                    )
+                    val coordinates = prayersUseCases.getLocation()
+                    
+                    coordinates?.let {
+                        _state.value = _state.value.copy(
+                            location = it,
+                            locale = prayersUseCases.getLocale(it)
+                        )
+                    }
                 }
             }
+
             is LocationEvent.ChangeCoordinates -> {
                 val coordinates = Coordinates(event.latitude, event.longitude)
 
@@ -52,11 +57,13 @@ class LocationViewModel @Inject constructor(
                     prayersUseCases.setLocation(coordinates)
                 }
             }
+
             is LocationEvent.ToggleAutoUpdate -> {
                 _state.value = _state.value.copy(
                     isAutoUpdateEnabled = !_state.value.isAutoUpdateEnabled
                 )
             }
+
             is LocationEvent.SetCoordinatesDialogVisibility -> {
                 _state.value = _state.value.copy(
                     showCoordinatesDialog = event.isVisible ?: !_state.value.showCoordinatesDialog

@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.domes.R
+import com.example.domes.domain.model.location.Locale
+import com.example.domes.domain.model.location.isUnknown
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.routes.Screen
@@ -26,7 +28,7 @@ fun MainActionSection(
     remainingTimePercentage: Float,
     notificationsGranted: Boolean,
     notificationsAllowed: Boolean,
-    locale: String,
+    locale: Locale,
     navController: NavController,
     onSnooze: () -> Unit,
 ): List<@Composable () -> Unit> {
@@ -61,9 +63,9 @@ fun MainActionSection(
         },
         {
             ActionSectionChip(
-                locale,
+                "${locale.city}, ${locale.countryCode}",
                 icon = IconSource(Icons.Outlined.PinDrop),
-                placeholderText = if (locale.isEmpty()) "Loading..." else null,
+                placeholderText = if (locale.isUnknown()) "Loading..." else null,
                 onClick = { navController.navigate(Screen.Location.route) })
         },
         { ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze)) },

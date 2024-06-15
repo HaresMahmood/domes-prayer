@@ -20,11 +20,12 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @HiltViewModel
-class QiblaViewModel@Inject constructor(
+class QiblaViewModel @Inject constructor(
     application: Application,
     private val prayersUseCases: PrayerUseCases
 ) : ViewModel() {
-    private val sensorManager: SensorManager = application.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val sensorManager: SensorManager =
+        application.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private var sensor: Sensor? = null
 
     private val _state = mutableStateOf(QiblaState())
@@ -56,18 +57,18 @@ class QiblaViewModel@Inject constructor(
         viewModelScope.launch {
             val coordinates = prayersUseCases.getLocation()
 
-            _state.value = _state.value.copy(
-                location = coordinates,
-                locale = prayersUseCases.getLocale(coordinates),
-            )
+            coordinates?.let {
+                _state.value = _state.value.copy(
+                    location = coordinates,
+                    locale = prayersUseCases.getLocale(coordinates),
+                )
+            }
 
             _state.value.location?.let { location ->
                 _state.value = _state.value.copy(
                     qiblaDirection = prayersUseCases.getQiblaDirection(location)
                 )
             }
-
-            startHapticFeedbackLoop()
         }
 
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)?.also {

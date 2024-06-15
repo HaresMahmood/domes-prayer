@@ -65,8 +65,9 @@ fun QiblaScreen(
     viewModel: QiblaViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-    val vibratorManager = LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-    val vibrator = vibratorManager.getDefaultVibrator();
+    val vibratorManager =
+        LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+    val vibrator = vibratorManager.defaultVibrator
 
     val baseParameters = Shape(
         sides = 16,
@@ -111,7 +112,7 @@ fun QiblaScreen(
         containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
         topBar = {
             MediumTopAppBar(
-                titleText = state.locale,
+                titleText = state.locale.city ?: "Qibla",
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(Screen.Prayers.route) }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
@@ -138,7 +139,8 @@ fun QiblaScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     onClick = {
-                        val effect = VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
+                        val effect =
+                            VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
                         vibrator.vibrate(effect)
                     }
                 ) {
@@ -232,16 +234,16 @@ fun QiblaScreen(
                                 )
 
                                 Box(
-    //                          polygon = base,
-    //                          color = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier
-                                    .clip(fillClip)
-                                    .fillMaxHeight(0.75f)
-                                    .align(Alignment.Center)
+                                    //                          polygon = base,
+                                    //                          color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier
+                                        .clip(fillClip)
+                                        .fillMaxHeight(0.75f)
+                                        .align(Alignment.Center)
 //                                    .rotate(fillRotation)
-                                    .aspectRatio(1f, true)
-                                    .background(MaterialTheme.colorScheme.tertiary),
-                            )
+                                        .aspectRatio(1f, true)
+                                        .background(MaterialTheme.colorScheme.tertiary),
+                                )
                             }
                         }
 

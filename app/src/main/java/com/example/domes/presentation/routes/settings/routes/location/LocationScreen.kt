@@ -29,6 +29,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.domes.domain.model.location.isUnknown
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.Variant
@@ -45,9 +46,7 @@ import com.maxkeppeler.sheets.input.models.InputTextField
 import com.maxkeppeler.sheets.input.models.ValidationResult
 
 class UIConstants {
-    companion object {
-
-    }
+    companion object
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -77,8 +76,9 @@ fun LocationScreen(
                 },
                 bottomActions = listOf {
                     ActionSectionChip(
-                        state.locale,
+                        "${state.locale.city}, ${state.locale.countryCode}",
                         Variant.VISUAL,
+                        placeholderText = if (state.locale.isUnknown()) "Loading..." else null,
                         icon = IconSource(Icons.Outlined.PinDrop)
                     )
                 },

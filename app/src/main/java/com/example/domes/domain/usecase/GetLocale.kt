@@ -1,49 +1,63 @@
 package com.example.domes.domain.usecase
 
 import android.content.Context
+import android.location.Address
 import android.location.Geocoder
+import android.os.Build
+import android.util.Log
 import com.batoulapps.adhan2.Coordinates
-import java.util.Locale
+import com.example.domes.domain.model.location.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
-// TODO: Rename to something like `getLocale` and include country since it's required in UI
-class GetLocale(
-    private val context: Context
-) {
-    suspend operator fun invoke(coordinates: Coordinates?): String {
-        coordinates ?: return "Unknown"
+class GetLocale(private val context: Context) {
+    suspend operator fun invoke(coordinates: Coordinates): Locale {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (Build.VERSION.SDK_INT >= 33) {
+                    geocodeUsingModernApi(coordinates)
+                } else {
+                    geocodeUsingLegacyApi(coordinates)
+                }
+            } catch (e: IOException) {
+                Locale.unknown()
+            }
+        }
+    }
 
-        val geocoder = Geocoder(context, Locale.getDefault())
+    private suspend fun geocodeUsingModernApi(coordinates: Coordinates): Locale {
+        return suspendCoroutine { continuation ->
+            val geocoder = Geocoder(context, java.util.Locale.getDefault())
+            geocoder.getFromLocation(coordinates.latitude, coordinates.longitude, 1) { addresses ->
+                val locale = extractLocationFromAddress(addresses.firstOrNull())
+                
+                Log.d("GetLocale", "Modern API - Locale: $locale, Addresses: $addresses")
 
-        // if (Build.VERSION.SDK_INT >= 33) {
-        //     val geocodeListener = Geocoder.GeocodeListener { addresses ->
-        //         val city = addresses[0]?.run {
-        //             locality ?: subAdminArea ?: adminArea
-        //         } ?: "Unknown City 1"
+                continuation.resume(locale)
+            }
+        }
+    }
 
-        //         city
-        //     }
+    private fun geocodeUsingLegacyApi(coordinates: Coordinates): Locale {
+        val geocoder = Geocoder(context, java.util.Locale.getDefault())
+        val addresses = geocoder.getFromLocation(coordinates.latitude, coordinates.longitude, 1)
 
-        //     geocoder.getFromLocation(coordinates.latitude, coordinates.longitude, 1, geocodeListener)
-        // } 
-        // else {
-            
-        // }
+        Log.d("GetLocale", "Legacy API - Addresses: $addresses")
 
-        return geocoder.getFromLocation(
-                coordinates.latitude, coordinates.longitude, 1
-            )?.get(0)?.run {
-                "${locality ?: subAdminArea ?: adminArea}, $countryCode"
-            } ?: "Unknown"
+        return extractLocationFromAddress(addresses?.firstOrNull())
+    }
 
-        // return withContext(Dispatchers.IO) {
-        //     val addresses = Geocoder(context).getFromLocation(
-        //         coordinates.latitude, coordinates.longitude, 1
-        //     )
-        //     val city = addresses?.get(0)?.run {
-        //         locality ?: subAdminArea ?: subLocality ?: thoroughfare ?: subThoroughfare
-        //     } ?: "Unknown city"
-
-        //     city
-        // }
+    private fun extractLocationFromAddress(address: Address?): Locale {
+        return address?.let {
+            Locale(
+                city = it.locality ?: it.subAdminArea ?: it.adminArea,
+                country = it.countryName,
+                countryCode = it.countryCode,
+                state = it.adminArea
+            )
+        } ?: Locale.unknown()
     }
 }
