@@ -15,6 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.views.IconComponent
 
@@ -32,6 +35,7 @@ fun ActionSectionChip(
     variant: Variant = Variant.DEFAULT,
     icon: IconSource? = null,
     trailingIcon: IconSource? = null,
+    placeholderText: String? = null,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
@@ -66,6 +70,7 @@ fun ActionSectionChip(
             leadingIconContentColor = MaterialTheme.colorScheme.inversePrimary,
             trailingIconContentColor = MaterialTheme.colorScheme.inversePrimary
         )
+
         Variant.ERROR -> AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.errorContainer,
             labelColor = MaterialTheme.colorScheme.onErrorContainer,
@@ -85,7 +90,16 @@ fun ActionSectionChip(
             icon?.let { if (title != null) IconComponent(modifier = Modifier, iconSource = it) }
         },
         label = {
-            title?.let { Text(it) }
+            title?.let { text ->
+                Text(
+                    modifier = Modifier.placeholder(
+                        visible = placeholderText != null,
+                        highlight = PlaceholderHighlight.fade(),
+                        shape = RoundedCornerShape(100),
+                    ),
+                    text = placeholderText ?: text
+                )
+            }
         },
         trailingIcon = {
             trailingIcon?.let {
@@ -104,7 +118,8 @@ fun ActionSectionChip(
 @Composable
 fun ActionSectionChipPreview() {
     ActionSectionChip(
-//        title = "Test",
+        title = "Test",
+        placeholderText = "Testing",
         icon = IconSource(Icons.Outlined.PinDrop),
 //        variant = Variant.SELECTED,
     )

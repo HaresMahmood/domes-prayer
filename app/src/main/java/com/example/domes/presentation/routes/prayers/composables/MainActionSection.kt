@@ -2,9 +2,6 @@ package com.example.domes.presentation.routes.prayers.composables
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.HourglassBottom
@@ -14,16 +11,12 @@ import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.domes.R
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.routes.Screen
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material3.fade
-import com.google.accompanist.placeholder.material3.placeholder
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.Duration
 
@@ -57,11 +50,7 @@ fun MainActionSection(
                 text,
                 icon = IconSource(icon),
                 variant = Variant.VISUAL,
-                modifier = Modifier.placeholder(
-                    visible = timeLeft == null,
-                    highlight = PlaceholderHighlight.fade(),
-                    shape = RoundedCornerShape(100),
-                )
+                placeholderText = if (timeLeft == null) "Loading..." else null,
             )
         },
         {
@@ -74,11 +63,7 @@ fun MainActionSection(
             ActionSectionChip(
                 locale,
                 icon = IconSource(Icons.Outlined.PinDrop),
-                modifier = Modifier.placeholder(
-                    visible = locale.isEmpty(),
-                    highlight = PlaceholderHighlight.fade(),
-                    shape = RoundedCornerShape(100),
-                ),
+                placeholderText = if (locale.isEmpty()) "Loading..." else null,
                 onClick = { navController.navigate(Screen.Location.route) })
         },
         { ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze)) },
