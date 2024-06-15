@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.AccountTree
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationOn
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.QuestionAnswer
 import androidx.compose.material.icons.outlined.Security
+import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -39,9 +41,7 @@ import com.example.domes.ui.theme.DomesTheme
 import com.maxkeppeker.sheets.core.models.base.IconSource
 
 class UIConstants {
-    companion object {
-
-    }
+    companion object
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,14 +88,26 @@ fun SettingsScreen(
                         SettingsListItem(
                             "Calculation",
                             IconSource(Icons.Outlined.Calculate),
-                            "Method • corrections",
+                            "Method • juristic",
                             onClick = { navController.navigate(Screen.Calculation.route) },
                         )
                         SettingsListItem(
                             "Notifications",
                             IconSource(Icons.Outlined.Notifications),
-                            "Adhan • prayers",
+                            "Adhan • prayers • corrections",
                             onClick = { navController.navigate(Screen.Notifications.route) },
+                        )
+                        SettingsListItem(
+                            "Integrations",
+                            IconSource(Icons.Outlined.AccountTree),
+                            "Calendar • Google Nest",
+                            onClick = { navController.navigate(Screen.Integrations.route) },
+                        )
+                        SettingsListItem(
+                            "Widgets",
+                            IconSource(Icons.Outlined.Widgets),
+                            "Home screen widgets",
+                            isEnabled = false,
                         )
                         SettingsListItem(
                             "Appearance",

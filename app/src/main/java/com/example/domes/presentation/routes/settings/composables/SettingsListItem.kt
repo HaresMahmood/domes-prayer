@@ -69,7 +69,7 @@ fun SettingsListItem(
                 .fillMaxWidth()
                 .padding(horizontal = 5.dp)
                 .alpha(if (isEnabled) 1f else 0.5f)
-                .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
+                .then(if (onClick != null && isEnabled) Modifier.clickable { onClick() } else Modifier),
             colors = colors,
             headlineContent = { Text(title) },
             leadingContent = {
