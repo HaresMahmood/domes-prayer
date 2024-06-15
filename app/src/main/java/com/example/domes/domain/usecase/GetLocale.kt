@@ -5,6 +5,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.batoulapps.adhan2.Coordinates
 import com.example.domes.domain.model.location.Locale
 import kotlinx.coroutines.Dispatchers
@@ -28,12 +29,13 @@ class GetLocale(private val context: Context) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private suspend fun geocodeUsingModernApi(coordinates: Coordinates): Locale {
         return suspendCoroutine { continuation ->
             val geocoder = Geocoder(context, java.util.Locale.getDefault())
             geocoder.getFromLocation(coordinates.latitude, coordinates.longitude, 1) { addresses ->
                 val locale = extractLocationFromAddress(addresses.firstOrNull())
-                
+
                 Log.d("GetLocale", "Modern API - Locale: $locale, Addresses: $addresses")
 
                 continuation.resume(locale)
