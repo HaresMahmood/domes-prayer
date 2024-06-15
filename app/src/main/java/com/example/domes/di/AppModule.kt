@@ -175,6 +175,7 @@ object AppModule {
         app: Application
     ): PrayerUseCases {
         val oldPrayerTimesRepository = OldPrayerTimesRespitory()
+        val setLocation = SetLocation(userPreferencesRepository)
 
         return PrayerUseCases(
             getPrayerTimes = GetPrayerTimes(oldPrayerTimesRepository),
@@ -193,8 +194,8 @@ object AppModule {
             getNotificationsAllowed = GetNotificationsAllowed(userPreferencesRepository),
             setNotificationsAllowed = SetNotificationsAllowed(userPreferencesRepository),
             getLocale = GetLocale(app),
-            fetchLocation = FetchLocation(userPreferencesRepository, fusedLocationProviderClient, app),
-            setLocation = SetLocation(userPreferencesRepository),
+            fetchLocation = FetchLocation(fusedLocationProviderClient, app, setLocation),
+            setLocation = setLocation,
             getLocation = GetLocation(userPreferencesRepository),
             setJuristic = SetJuristic(userPreferencesRepository),
             getJuristic = GetJuristic(userPreferencesRepository),
