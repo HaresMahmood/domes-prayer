@@ -55,6 +55,7 @@ fun SelectedDateSection(
     gregorianDate: LocalDate,
     hijriDate: HijrahDate,
     scope: CoroutineScope,
+    isLoading: Boolean,
     bottomSheetExpandAction: () -> Unit,
     collapseBottomSheet: () -> Unit,
     onDateChange: (LocalDate) -> Unit,
@@ -79,8 +80,7 @@ fun SelectedDateSection(
     LaunchedEffect(pagerState.settledPage) {
         if (pagerState.settledPage == 0) {
             updateDate(yesterdayDate)
-        }
-        else if (pagerState.settledPage == 2) {
+        } else if (pagerState.settledPage == 2) {
             updateDate(tomorrowDate)
         }
 
@@ -125,13 +125,10 @@ fun SelectedDateSection(
                 SegmentedActionSection(
                     children = listOf(
                         SegmentedAction(
-                            { updateDate(yesterdayDate) },
-                            icon = IconSource(
-                                Icons.AutoMirrored.Outlined.NavigateBefore,
-                                "Yesterday"
-                            )
-                        ),
-                        SegmentedAction(
+                            { updateDate(yesterdayDate) }, icon = IconSource(
+                                Icons.AutoMirrored.Outlined.NavigateBefore, "Yesterday"
+                            ), enabled = !isLoading
+                        ), SegmentedAction(
                             { updateDate(todayDate) },
                             icon = IconSource(Icons.Outlined.CalendarViewDay, "Today"),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
@@ -139,10 +136,10 @@ fun SelectedDateSection(
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             enabled = selectedDate.value != todayDate
-                        ),
-                        SegmentedAction(
+                        ), SegmentedAction(
                             { updateDate(tomorrowDate) },
-                            icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "Tomorrow")
+                            icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "Tomorrow"),
+                            enabled = !isLoading
                         )
                     )
                 )
@@ -169,7 +166,7 @@ fun SelectedDateSection(
                 selectedDate = selectedDate.value,
             ) { newDate ->
                 selectedDate.value = newDate
-                onDateChange(selectedDate.value!!)
+                onDateChange(selectedDate.value)
             },
         )
     }
@@ -177,8 +174,7 @@ fun SelectedDateSection(
 
 @Composable
 private fun DateSection(
-    gregorianDate: LocalDate,
-    hijriDate: HijrahDate? = null
+    gregorianDate: LocalDate, hijriDate: HijrahDate? = null
 ) {
     val shapeParam = Shape(
         sides = 4,

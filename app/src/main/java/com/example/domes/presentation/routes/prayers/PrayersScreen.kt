@@ -145,8 +145,7 @@ fun PrayersScreen(
     LaunchedEffect(pagerState.settledPage) {
         if (pagerState.settledPage == 0) {
             prayersViewModel.onEvent(PrayersEvent.ChangeDate(prayersState.selectedDate.minusDays(1)))
-        }
-        else if (pagerState.settledPage == 2) {
+        } else if (pagerState.settledPage == 2) {
             prayersViewModel.onEvent(PrayersEvent.ChangeDate(prayersState.selectedDate.plusDays(1)))
         }
 
@@ -192,7 +191,8 @@ fun PrayersScreen(
                 hijriDate = prayersState.selectedHijriDate,
                 scope = scope,
                 bottomSheetExpandAction = { scope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } },
-                collapseBottomSheet = { scope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() } }
+                collapseBottomSheet = { scope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() } },
+                isLoading = prayersState.isLoading,
             ) { selectedDate ->
                 prayersViewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
             }
@@ -380,12 +380,11 @@ fun PrayersScreen(
                             ) { index ->
                                 if (index == 1) {
                                     Column(
-                                        modifier = Modifier.
-                                            onGloballyPositioned { layoutCoordinates ->
-                                                prayerTimesSectionHeight.value = with(localDensity) {
-                                                    layoutCoordinates.size.height.toDp()
-                                                }
+                                        modifier = Modifier.onGloballyPositioned { layoutCoordinates ->
+                                            prayerTimesSectionHeight.value = with(localDensity) {
+                                                layoutCoordinates.size.height.toDp()
                                             }
+                                        }
                                     ) {
                                         val expandedPrayerIndex =
                                             prayerTimes.indexOf(prayersState.expandedPrayer)
