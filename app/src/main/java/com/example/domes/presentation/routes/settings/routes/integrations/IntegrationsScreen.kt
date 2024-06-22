@@ -8,14 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.AccessTime
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Opacity
+import androidx.compose.material.icons.outlined.Event
+import androidx.compose.material.icons.outlined.HomeMini
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -27,9 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
-import com.example.domes.presentation.common.composables.button.SegmentedButtonItem
-import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.card.FixedCard
+import com.example.domes.presentation.common.composables.listitem.IndicativeTrailingContent
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -50,7 +48,7 @@ fun AppearanceScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LayeredTopAppBar(
-                "Appearance",
+                "Integrations",
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
@@ -73,60 +71,33 @@ fun AppearanceScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 item {
-                    FixedCard(
-                        com.example.domes.presentation.common.composables.card.Variant.VISUAL
-                    ) {
+                    FixedCard {
                         SettingsListItem(
-                            "",
-                            IconSource(Icons.Outlined.Opacity),
+                            "Calendar",
+                            IconSource(Icons.Outlined.Event),
+                            value = "Automatically add prayers to calendar",
                             trailingContent = {
-                                SegmentedButtons {
-                                    SegmentedButtonItem(
-                                        selected = true,
-                                        onClick = {},
-//                                        icon = { Icons.Outlined.BrightnessAuto },
-                                        label = { Text("System") },
-                                    )
-                                    SegmentedButtonItem(
-                                        selected = false,
-                                        onClick = {},
-//                                        icon = { Icons.Outlined.Brightness1 },
-                                        label = { Text("Light") },
-                                    )
-                                    SegmentedButtonItem(
-                                        selected = false,
-                                        onClick = {},
-//                                        icon = { Icons.Outlined.Brightness2 },
-                                        label = { Text("Dark") },
+                                IndicativeTrailingContent {
+                                    Switch(
+                                        checked = false,
+                                        onCheckedChange = { }
                                     )
                                 }
                             },
-                            isLastItem = true
-                        )
-                    }
-                }
-                item {
-                    FixedCard {
-                        SettingsListItem(
-                            "Time",
-                            IconSource(Icons.Outlined.AccessTime),
-                            value = "12-hour clock"
                         )
                         SettingsListItem(
-                            "Date",
-                            IconSource(Icons.Outlined.CalendarMonth),
-                            value = "Month and day",
-                            isLastItem = true
-                        )
-                    }
-                }
-                item {
-                    FixedCard {
-                        SettingsListItem(
-                            "Language",
-                            IconSource(Icons.Outlined.CalendarMonth),
-                            value = "System default • English",
-                            isLastItem = true
+                            "Google Nest",
+                            IconSource(Icons.Outlined.HomeMini),
+                            value = "Play Adhan on Google Nest",
+                            isLastItem = true,
+                            trailingContent = {
+                                IndicativeTrailingContent {
+                                    Switch(
+                                        checked = false,
+                                        onCheckedChange = { }
+                                    )
+                                }
+                            },
                         )
                     }
                 }

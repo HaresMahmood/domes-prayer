@@ -3,9 +3,12 @@ package com.example.domes.presentation.routes.settings.composables
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.LockReset
@@ -21,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import com.example.domes.presentation.common.composables.button.SegmentedButtonItem
+import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.listitem.ListItemDivider
 import com.example.domes.ui.theme.DomesTheme
 import com.maxkeppeker.sheets.core.models.base.IconSource
@@ -39,6 +44,7 @@ fun SettingsListItem(
     value: String? = null,
     variant: Variant = Variant.DEFAULT,
     trailingContent: @Composable (() -> Unit)? = null,
+    extendedContent: @Composable ((Boolean) -> Unit)? = null,
     isEnabled: Boolean = true,
     isLastItem: Boolean = false,
     onClick: (() -> Unit)? = null,
@@ -53,6 +59,7 @@ fun SettingsListItem(
             leadingIconColor = MaterialTheme.colorScheme.primary,
             supportingColor = supportingColor
         )
+
         Variant.ERROR -> ListItemDefaults.colors(
             containerColor = Color.Transparent,
             headlineColor = MaterialTheme.colorScheme.onErrorContainer,
@@ -83,6 +90,18 @@ fun SettingsListItem(
             trailingContent = trailingContent
         )
 
+        if (extendedContent != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 60.dp)
+                    .alpha(if (isEnabled) 1f else 0.5f)
+            ) {
+                extendedContent(isEnabled)
+            }
+            Spacer(Modifier.size(20.dp))
+        }
+
         if (!isLastItem) ListItemDivider()
     }
 }
@@ -99,7 +118,28 @@ fun DomesPreview() {
             SettingsListItem(
                 title = "Location",
                 description = "Auto-update, set manually",
-                icon = IconSource(Icons.Outlined.LocationOn)
+                icon = IconSource(Icons.Outlined.LocationOn),
+                extendedContent = { isEnabled ->
+                    SegmentedButtons(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        SegmentedButtonItem(
+                            selected = true,
+                            onClick = {},
+                            label = { Text("System") }
+                        )
+                        SegmentedButtonItem(
+                            selected = false,
+                            onClick = {},
+                            label = { Text("Light") }
+                        )
+                        SegmentedButtonItem(
+                            selected = false,
+                            onClick = {},
+                            label = { Text("Dark") }
+                        )
+                    }
+                }
             )
 
             SettingsListItem(

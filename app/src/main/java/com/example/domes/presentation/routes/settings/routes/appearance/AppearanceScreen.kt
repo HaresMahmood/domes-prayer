@@ -11,10 +11,13 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Opacity
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -73,13 +76,11 @@ fun AppearanceScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 item {
-                    FixedCard(
-                        com.example.domes.presentation.common.composables.card.Variant.VISUAL
-                    ) {
+                    FixedCard {
                         SettingsListItem(
-                            "",
+                            "Theme",
                             IconSource(Icons.Outlined.Opacity),
-                            trailingContent = {
+                            extendedContent = {
                                 SegmentedButtons {
                                     SegmentedButtonItem(
                                         selected = true,
@@ -106,6 +107,18 @@ fun AppearanceScreen(
                     }
                 }
                 item {
+                    Text(
+                        "General",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(
+                            top = 0.dp,
+                            bottom = 20.dp,
+                            start = 20.dp,
+                            end = 20.dp
+                        )
+                    )
+                }
+                item {
                     FixedCard {
                         SettingsListItem(
                             "Time",
@@ -127,6 +140,59 @@ fun AppearanceScreen(
                             IconSource(Icons.Outlined.CalendarMonth),
                             value = "System default • English",
                             isLastItem = true
+                        )
+                    }
+                }
+                item {
+                    FixedCard {
+                        SettingsListItem(
+                            "Haptic feedback",
+                            IconSource(Icons.Outlined.Vibration),
+                            value = "Pair interactions with haptic feedback when in vibration mode",
+                            isLastItem = true,
+                            trailingContent = {
+                                Switch(
+                                    checked = false,
+                                    onCheckedChange = { }
+                                )
+                            },
+                        )
+                    }
+                }
+                item {
+                    Text(
+                        "Prayers sceen",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(
+                            top = 0.dp,
+                            bottom = 20.dp,
+                            start = 20.dp,
+                            end = 20.dp
+                        )
+                    )
+                    FixedCard {
+                        SettingsListItem(
+                            "Main date format",
+                            IconSource(Icons.Outlined.CalendarMonth),
+                            value = "Switch Gregorian and Hijri dates",
+                            trailingContent = {
+                                Switch(
+                                    checked = false,
+                                    onCheckedChange = { }
+                                )
+                            },
+                        )
+                        SettingsListItem(
+                            "Quick date switching",
+                            IconSource(Icons.Outlined.CalendarMonth),
+                            value = "Allow going forward and backward by swiping left and right",
+                            isLastItem = true,
+                            trailingContent = {
+                                Switch(
+                                    checked = false,
+                                    onCheckedChange = { }
+                                )
+                            },
                         )
                     }
                 }
