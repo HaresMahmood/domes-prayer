@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class UserPreferencesRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
-): IUserPreferencesRepository {
+    private val dataStore: DataStore<Preferences>,
+) : IUserPreferencesRepository {
     object PreferencesKeys {
         val LOCATION_LATITUDE = doublePreferencesKey("location_latitude")
         val LOCATION_LONGITUDE = doublePreferencesKey("location_longitude")
@@ -57,6 +57,8 @@ class UserPreferencesRepository @Inject constructor(
     override suspend fun setJuristic(juristic: Int) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.JURISTIC] = juristic
+
+            println("juristic edited: $juristic")
         }
     }
 

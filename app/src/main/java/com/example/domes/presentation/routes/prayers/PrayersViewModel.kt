@@ -91,16 +91,14 @@ class PrayersViewModel @Inject constructor(
             notificationActionReceiver, IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED)
         )
         viewModelScope.launch {
-            _state.value.isLoading = true
-
-            getLocation { location ->
-                updateCurrentPrayerTimes(
-                    location,
-                    calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
-                )
+            getCalculationParameters().also {
+                getLocation { location ->
+                    updateCurrentPrayerTimes(
+                        location,
+                        calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                    )
+                }
             }
-
-            _state.value.isLoading = false
         }
     }
 
@@ -327,13 +325,18 @@ class PrayersViewModel @Inject constructor(
         }
     }?.toFloat() ?: 0.0f
 
+    // TODO: doesn't trigger recomposition on `Prayers` screen (due to shared viewmodel shenanigans?)
     private fun updateCurrentPrayerTimes(
         coordinates: Coordinates, parameters: CalculationParameters,
     ) {
+        _state.value.isLoading = true
+
         val currentTime = LocalDateTime.now()
         val (_, rawPrayerTimes) = prayersUseCases.getPrayerTimes(
             currentTime.toLocalDate(), coordinates, parameters
         )
+
+        println("re-eval triggered with parameters: ${currentTime.toLocalDate()}, ${coordinates.latitude}, ${coordinates.longitude}, $parameters")
 
         prayersUseCases.getCurrentPrayerTimes().onEach { prayerTimes ->
             val currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
@@ -351,7 +354,9 @@ class PrayersViewModel @Inject constructor(
             )
 
             getPrayerRecord(currentTime.toLocalDate())
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope).invokeOnCompletion {
+            _state.value.isLoading = false
+        }
     }
 
     private fun getPrayerTimes(
@@ -386,6 +391,15 @@ class PrayersViewModel @Inject constructor(
         )
 
         onDone(it)
+    }
+
+
+    private suspend fun getCalculationParameters() {
+        _calculationState.value = _calculationState.value.copy(
+            calculationMethod = prayersUseCases.getCalculationMethod()
+                ?: CalculationMethod.MUSLIM_WORLD_LEAGUE,
+            juristic = prayersUseCases.getJuristic() ?: Madhab.SHAFI,
+        )
     }
 
     private suspend fun fetchLocation(
