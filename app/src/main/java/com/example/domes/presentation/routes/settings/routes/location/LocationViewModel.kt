@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LocationViewModel @Inject constructor(
     private val prayersUseCases: PrayerUseCases,
-    private val _state: MutableState<LocationState>
+    private val _state: MutableState<LocationState>,
 ) : ViewModel() {
     val state: State<LocationState> = _state
 
@@ -35,7 +35,7 @@ class LocationViewModel @Inject constructor(
             is LocationEvent.RefreshLocation -> {
                 viewModelScope.launch {
                     val coordinates = prayersUseCases.getLocation()
-                    
+
                     coordinates?.let {
                         _state.value = _state.value.copy(
                             location = it,

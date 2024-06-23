@@ -6,22 +6,24 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
+import com.batoulapps.adhan2.Madhab
 import com.example.domes.data.service.NotificationService.Companion.ACTION_NOTIFICATION_ACTION_CLICKED
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.domain.usecase.PrayerUseCases
+import com.example.domes.presentation.routes.settings.routes.calculation.CalculationEvent
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationState
+import com.example.domes.presentation.routes.settings.routes.location.LocationEvent
 import com.example.domes.presentation.routes.settings.routes.location.LocationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -33,15 +35,16 @@ import javax.inject.Inject
 class PrayersViewModel @Inject constructor(
     private val context: Application,
     private val prayersUseCases: PrayerUseCases,
-    private val _locationState: MutableState<LocationState>,
-    private val _calculationState: MutableState<CalculationState>
 ) : ViewModel() {
-    private var getPrayerRecordJob: Job? = null
-
     private val _state = mutableStateOf(PrayersState())
+    private val _locationState = mutableStateOf(LocationState())
+    private val _calculationState = mutableStateOf(CalculationState())
+
     val prayersState: State<PrayersState> = _state
     val locationState: State<LocationState> = _locationState
+    val calculationState: State<CalculationState> = _calculationState
 
+    private var getPrayerRecordJob: Job? = null
     private val currentTime = LocalDateTime.now()
 
     // Events
@@ -85,17 +88,15 @@ class PrayersViewModel @Inject constructor(
     init {
         context.registerReceiver(timeReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
         context.registerReceiver(
-            notificationActionReceiver,
-            IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED)
+            notificationActionReceiver, IntentFilter(ACTION_NOTIFICATION_ACTION_CLICKED)
         )
         viewModelScope.launch {
-            // Add artificial delay to simulate loading
-            delay(2000)
-            _locationState.value.location?.let { location ->
-                println("juristic: ${_calculationState.value.juristic}")
+            _state.value.isLoading = true
+
+            getLocation().also {
                 updateCurrentPrayerTimes(
-                    location,
-                    _calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                    _locationState.value.location!!,
+                    calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
                 )
             }
 
@@ -112,14 +113,11 @@ class PrayersViewModel @Inject constructor(
     fun onEvent(event: PrayersEvent) {
         when (event) {
             is PrayersEvent.ChangeTime -> {
-                _state.value = _state.value.copy(
-                    timeLeft = _state.value.currentPrayer?.let {
-                        prayersUseCases.getPrayerTimeLeft(event.currentTime, it)
-                    },
-                    dayFraction = _state.value.currentRawPrayerTimes?.let {
-                        prayersUseCases.getDayFraction(it, LocalDateTime.now())
-                    } ?: 0.0f
-                )
+                _state.value = _state.value.copy(timeLeft = _state.value.currentPrayer?.let {
+                    prayersUseCases.getPrayerTimeLeft(event.currentTime, it)
+                }, dayFraction = _state.value.currentRawPrayerTimes?.let {
+                    prayersUseCases.getDayFraction(it, LocalDateTime.now())
+                } ?: 0.0f)
             }
 
             is PrayersEvent.ChangeCurrentPrayer -> {
@@ -138,16 +136,14 @@ class PrayersViewModel @Inject constructor(
 
             is PrayersEvent.ChangeDate -> {
                 val isTodaySelected = event.date == currentTime.toLocalDate()
-                _state.value = _state.value.copy(
-                    selectedDate = event.date,
+                _state.value = _state.value.copy(selectedDate = event.date,
                     selectedHijriDate = prayersUseCases.getHijriDate(event.date),
                     isTodaySelected = isTodaySelected,
                     dayFraction = _state.value.currentRawPrayerTimes?.let { prayers ->
                         if (isTodaySelected) prayersUseCases.getDayFraction(prayers, currentTime)
                         else if (event.date.isAfter(currentTime.toLocalDate())) 0.0f
                         else 1.0f
-                    } ?: 0.0f
-                )
+                    } ?: 0.0f)
 
                 getPrayerTimes(
                     _state.value.selectedDate,
@@ -208,6 +204,106 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
+    fun onEvent(event: LocationEvent) {
+        when (event) {
+            is LocationEvent.RefreshLocation -> {
+                println("refresh location...")
+                println("location 1: ${_locationState.value.location?.latitude}, ${_locationState.value.location?.longitude}")
+                viewModelScope.launch {
+                    fetchLocation().also {
+                        updateCurrentPrayerTimes(
+                            _locationState.value.location!!,
+                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                        )
+
+                        println("location 2: ${_locationState.value.location?.latitude}, ${_locationState.value.location?.longitude}")
+                    }
+                }
+            }
+
+            is LocationEvent.ChangeCoordinates -> {
+                val coordinates = Coordinates(event.latitude, event.longitude)
+
+                viewModelScope.launch {
+                    _locationState.value = _locationState.value.copy(
+                        location = coordinates,
+                        locale = prayersUseCases.getLocale(coordinates)
+                    ).also {
+                        updateCurrentPrayerTimes(
+                            _locationState.value.location!!,
+                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                        )
+
+                        prayersUseCases.setLocation(coordinates)
+                    }
+                }
+            }
+
+            is LocationEvent.ToggleAutoUpdate -> {
+                _locationState.value = _locationState.value.copy(
+                    isAutoUpdateEnabled = !_locationState.value.isAutoUpdateEnabled
+                )
+            }
+
+            is LocationEvent.SetCoordinatesDialogVisibility -> {
+                _locationState.value = _locationState.value.copy(
+                    showCoordinatesDialog = event.isVisible
+                        ?: !_locationState.value.showCoordinatesDialog
+                )
+            }
+        }
+    }
+
+    fun onEvent(event: CalculationEvent) {
+        when (event) {
+            is CalculationEvent.ChangeCalculationMethod -> {
+                _calculationState.value = _calculationState.value.copy(
+                    calculationMethod = event.calculationMethod
+                )
+
+                viewModelScope.launch {
+                    prayersUseCases.setCalculationMethod(event.calculationMethod)
+                }
+            }
+
+            is CalculationEvent.ChangeJuristic -> {
+                _calculationState.value = _calculationState.value.copy(
+                    juristic = event.juristic
+                )
+
+                viewModelScope.launch {
+                    prayersUseCases.setJuristic(event.juristic)
+                }
+            }
+
+            is CalculationEvent.ResetSettings -> {
+                viewModelScope.launch {
+                    _calculationState.value = _calculationState.value.copy(
+                        calculationMethod = CalculationMethod.MUSLIM_WORLD_LEAGUE,
+                        juristic = Madhab.SHAFI,
+                    )
+
+                    prayersUseCases.setCalculationMethod(_calculationState.value.calculationMethod)
+                    prayersUseCases.setJuristic(_calculationState.value.juristic)
+                }
+            }
+
+            is CalculationEvent.SetCalculationMethodDialogVisibility -> {
+                _calculationState.value = _calculationState.value.copy(
+                    showCalculationMethodDialog = event.isVisible
+                        ?: !_calculationState.value.showCalculationMethodDialog
+                )
+            }
+
+            is CalculationEvent.SetJuristicDialogVisibility -> {
+                _calculationState.value = _calculationState.value.copy(
+                    showJuristicDialog = event.isVisible
+                        ?: !_calculationState.value.showJuristicDialog
+                )
+            }
+        }
+    }
+
     // TODO: move to use case?
     fun calculateRemainingPrayerTime() = _state.value.timeLeft?.let { timeLeft ->
         _state.value.totalTime?.let { totalTime ->
@@ -216,7 +312,7 @@ class PrayersViewModel @Inject constructor(
     }?.toFloat() ?: 0.0f
 
     private fun updateCurrentPrayerTimes(
-        coordinates: Coordinates, parameters: CalculationParameters
+        coordinates: Coordinates, parameters: CalculationParameters,
     ) {
         val currentTime = LocalDateTime.now()
         val (_, rawPrayerTimes) = prayersUseCases.getPrayerTimes(
@@ -243,7 +339,7 @@ class PrayersViewModel @Inject constructor(
     }
 
     private fun getPrayerTimes(
-        date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters
+        date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters,
     ) {
         _state.value = _state.value.copy(
             selectedPrayerTimes = prayersUseCases.getPrayerTimes(
@@ -264,5 +360,19 @@ class PrayersViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun getLocation() = prayersUseCases.getLocation()?.let {
+        _locationState.value = _locationState.value.copy(
+            location = it, locale = prayersUseCases.getLocale(it)
+        )
+    }
+
+    private suspend fun fetchLocation() = prayersUseCases.fetchLocation()?.let {
+        _locationState.value = _locationState.value.copy(
+            location = it, locale = prayersUseCases.getLocale(it)
+        )
+
+        prayersUseCases.setLocation(_locationState.value.location!!)
     }
 }

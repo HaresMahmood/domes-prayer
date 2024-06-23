@@ -36,6 +36,7 @@ import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.dialog.InputDialog
 import com.example.domes.presentation.routes.Screen
+import com.example.domes.presentation.routes.prayers.PrayersViewModel
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -53,9 +54,9 @@ class UIConstants {
 @Composable
 fun LocationScreen(
     navController: NavController,
-    viewModel: LocationViewModel
+    prayersViewModel: PrayersViewModel,
 ) {
-    val state = viewModel.state.value
+    val state = prayersViewModel.locationState.value
 
     val locationPermissionState =
         rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -106,7 +107,7 @@ fun LocationScreen(
                             "Fetch up-to-date location via GPS",
                             onClick = {
                                 if (locationPermissionState.status.isGranted) {
-                                    viewModel.onEvent(LocationEvent.RefreshLocation)
+                                    prayersViewModel.onEvent(LocationEvent.RefreshLocation)
                                 } else {
                                     locationPermissionState.launchPermissionRequest()
                                 }
@@ -120,12 +121,12 @@ fun LocationScreen(
                                 Switch(
                                     checked = state.isAutoUpdateEnabled,
                                     onCheckedChange = {
-                                        viewModel.onEvent(LocationEvent.ToggleAutoUpdate)
+                                        prayersViewModel.onEvent(LocationEvent.ToggleAutoUpdate)
                                     }
                                 )
                             },
                             isLastItem = true,
-                            onClick = { viewModel.onEvent(LocationEvent.ToggleAutoUpdate) }
+                            onClick = { prayersViewModel.onEvent(LocationEvent.ToggleAutoUpdate) }
                         )
                     }
                 }
@@ -143,7 +144,7 @@ fun LocationScreen(
                             "Manually enter latitude and logitude",
                             isLastItem = true,
                             onClick = {
-                                viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
+                                prayersViewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
                             }
                         )
                     }
@@ -192,14 +193,14 @@ fun LocationScreen(
                     )
                 ),
                 setDialogVisibility = {
-                    viewModel.onEvent(
+                    prayersViewModel.onEvent(
                         LocationEvent.SetCoordinatesDialogVisibility(
                             false
                         )
                     )
                 }
             ) {
-                viewModel.onEvent(
+                prayersViewModel.onEvent(
                     LocationEvent.ChangeCoordinates(
                         it.getString("0")!!.toDouble(),
                         it.getString("1")!!.toDouble()

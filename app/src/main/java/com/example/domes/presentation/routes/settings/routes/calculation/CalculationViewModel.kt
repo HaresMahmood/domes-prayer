@@ -14,60 +14,17 @@ import javax.inject.Inject
 @HiltViewModel
 class CalculationViewModel @Inject constructor(
     private val prayersUseCases: PrayerUseCases,
-    private val _state: MutableState<CalculationState>
+    private val _calculationState: MutableState<CalculationState>,
 ) : ViewModel() {
-    val state: State<CalculationState> = _state
+    val state: State<CalculationState> = _calculationState
 
     init {
         viewModelScope.launch {
-            _state.value = _state.value.copy(
-                calculationMethod = prayersUseCases.getCalculationMethod() ?: CalculationMethod.MUSLIM_WORLD_LEAGUE,
+            _calculationState.value = _calculationState.value.copy(
+                calculationMethod = prayersUseCases.getCalculationMethod()
+                    ?: CalculationMethod.MUSLIM_WORLD_LEAGUE,
                 juristic = prayersUseCases.getJuristic() ?: Madhab.SHAFI,
             )
-        }
-    }
-
-    fun onEvent(event: CalculationEvent) {
-        when(event) {
-            is CalculationEvent.ChangeCalculationMethod -> {
-                _state.value = _state.value.copy(
-                    calculationMethod = event.calculationMethod
-                )
-
-                viewModelScope.launch {
-                    prayersUseCases.setCalculationMethod(event.calculationMethod)
-                }
-            }
-            is CalculationEvent.ChangeJuristic -> {
-                _state.value = _state.value.copy(
-                    juristic = event.juristic
-                )
-
-                viewModelScope.launch {
-                    prayersUseCases.setJuristic(event.juristic)
-                }
-            }
-            is CalculationEvent.ResetSettings -> {
-                viewModelScope.launch {
-                    _state.value = _state.value.copy(
-                        calculationMethod = CalculationMethod.MUSLIM_WORLD_LEAGUE,
-                        juristic = Madhab.SHAFI,
-                    )
-
-                    prayersUseCases.setCalculationMethod(_state.value.calculationMethod)
-                    prayersUseCases.setJuristic(_state.value.juristic)
-                }
-            }
-            is CalculationEvent.SetCalculationMethodDialogVisibility -> {
-                _state.value = _state.value.copy(
-                    showCalculationMethodDialog = event.isVisible ?: !_state.value.showCalculationMethodDialog
-                )
-            }
-            is CalculationEvent.SetJuristicDialogVisibility -> {
-                _state.value = _state.value.copy(
-                    showJuristicDialog = event.isVisible ?: !_state.value.showJuristicDialog
-                )
-            }
         }
     }
 }

@@ -62,7 +62,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
@@ -113,7 +112,7 @@ class UIConstants {
 @Composable
 fun PrayersScreen(
     navController: NavController,
-    prayersViewModel: PrayersViewModel = hiltViewModel(),
+    prayersViewModel: PrayersViewModel,
     notificationsViewModel: NotificationsViewModel,
 ) {
     val prayersState = prayersViewModel.prayersState.value
