@@ -93,9 +93,9 @@ class PrayersViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value.isLoading = true
 
-            getLocation().also {
+            getLocation { location ->
                 updateCurrentPrayerTimes(
-                    _locationState.value.location!!,
+                    location,
                     calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
                 )
             }
@@ -207,35 +207,38 @@ class PrayersViewModel @Inject constructor(
     fun onEvent(event: LocationEvent) {
         when (event) {
             is LocationEvent.RefreshLocation -> {
-                println("refresh location...")
-                println("location 1: ${_locationState.value.location?.latitude}, ${_locationState.value.location?.longitude}")
                 viewModelScope.launch {
-                    fetchLocation().also {
+                    fetchLocation { location ->
                         updateCurrentPrayerTimes(
-                            _locationState.value.location!!,
+                            location,
                             calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
                         )
-
-                        println("location 2: ${_locationState.value.location?.latitude}, ${_locationState.value.location?.longitude}")
                     }
                 }
             }
 
+            // TODO: Broken?
             is LocationEvent.ChangeCoordinates -> {
                 val coordinates = Coordinates(event.latitude, event.longitude)
+
+                println("changing location coordinates...")
+                println("location 1: ${_locationState.value.location?.latitude}, ${_locationState.value.location?.longitude}")
 
                 viewModelScope.launch {
                     _locationState.value = _locationState.value.copy(
                         location = coordinates,
                         locale = prayersUseCases.getLocale(coordinates)
-                    ).also {
-                        updateCurrentPrayerTimes(
-                            _locationState.value.location!!,
-                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
-                        )
+                    )
 
-                        prayersUseCases.setLocation(coordinates)
-                    }
+                    updateCurrentPrayerTimes(
+                        coordinates,
+                        calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                    )
+
+                    prayersUseCases.setLocation(coordinates)
+
+                    println("location coordinates: ${coordinates.latitude}, ${coordinates.longitude}")
+                    println("location 2: ${_locationState.value.location?.latitude}, ${_locationState.value.location?.longitude}")
                 }
             }
 
@@ -245,7 +248,10 @@ class PrayersViewModel @Inject constructor(
                 )
             }
 
+            // TODO: Broken?
             is LocationEvent.SetCoordinatesDialogVisibility -> {
+                println("set coordinates dialog visibility: ${event.isVisible}")
+
                 _locationState.value = _locationState.value.copy(
                     showCoordinatesDialog = event.isVisible
                         ?: !_locationState.value.showCoordinatesDialog
@@ -261,6 +267,11 @@ class PrayersViewModel @Inject constructor(
                     calculationMethod = event.calculationMethod
                 )
 
+                updateCurrentPrayerTimes(
+                    _locationState.value.location!!,
+                    event.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                )
+
                 viewModelScope.launch {
                     prayersUseCases.setCalculationMethod(event.calculationMethod)
                 }
@@ -269,6 +280,11 @@ class PrayersViewModel @Inject constructor(
             is CalculationEvent.ChangeJuristic -> {
                 _calculationState.value = _calculationState.value.copy(
                     juristic = event.juristic
+                )
+
+                updateCurrentPrayerTimes(
+                    _locationState.value.location!!,
+                    _calculationState.value.calculationMethod.parameters.copy(madhab = event.juristic)
                 )
 
                 viewModelScope.launch {
@@ -362,17 +378,24 @@ class PrayersViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getLocation() = prayersUseCases.getLocation()?.let {
+    private suspend fun getLocation(
+        onDone: (Coordinates) -> Unit = {},
+    ) = prayersUseCases.getLocation()?.let {
         _locationState.value = _locationState.value.copy(
             location = it, locale = prayersUseCases.getLocale(it)
         )
+
+        onDone(it)
     }
 
-    private suspend fun fetchLocation() = prayersUseCases.fetchLocation()?.let {
+    private suspend fun fetchLocation(
+        onDone: (Coordinates) -> Unit,
+    ) = prayersUseCases.fetchLocation()?.let {
         _locationState.value = _locationState.value.copy(
             location = it, locale = prayersUseCases.getLocale(it)
         )
 
-        prayersUseCases.setLocation(_locationState.value.location!!)
+        prayersUseCases.setLocation(it)
+        onDone(it)
     }
 }

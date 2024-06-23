@@ -2,8 +2,6 @@ package com.example.domes.di
 
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -49,8 +47,6 @@ import com.example.domes.domain.usecase.SetJuristic
 import com.example.domes.domain.usecase.SetLocation
 import com.example.domes.domain.usecase.SetNotificationsAllowed
 import com.example.domes.domain.usecase.UpdatePrayerTimes
-import com.example.domes.presentation.routes.settings.routes.calculation.CalculationState
-import com.example.domes.presentation.routes.settings.routes.location.LocationState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
@@ -135,7 +131,7 @@ object AppModule {
     @Provides
     @Singleton
     fun providesFusedLocationProviderClient(
-        app: Application
+        app: Application,
     ): FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(app)
 
@@ -153,18 +149,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLocationState(): MutableState<LocationState> {
-        return mutableStateOf(LocationState())
-    }
-
-    @Provides
-    @Singleton
-    fun provideCalculationState(): MutableState<CalculationState> {
-        return mutableStateOf(CalculationState())
-    }
-
-    @Provides
-    @Singleton
     fun providePrayerUseCases(
         prayerRecordRepository: IPrayerRecordRepository,
         prayerTimesRepository: PrayerTimesRepository,
@@ -172,7 +156,7 @@ object AppModule {
         userPreferencesRepository: IUserPreferencesRepository,
         notificationService: NotificationService,
         fusedLocationProviderClient: FusedLocationProviderClient,
-        app: Application
+        app: Application,
     ): PrayerUseCases {
         val oldPrayerTimesRepository = OldPrayerTimesRespitory()
         val setLocation = SetLocation(userPreferencesRepository)

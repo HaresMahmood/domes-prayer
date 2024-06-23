@@ -35,7 +35,6 @@ import com.example.domes.presentation.routes.qibla.QiblaScreen
 import com.example.domes.presentation.routes.settings.SettingsScreen
 import com.example.domes.presentation.routes.settings.routes.appearance.AppearanceScreen
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationScreen
-import com.example.domes.presentation.routes.settings.routes.calculation.CalculationViewModel
 import com.example.domes.presentation.routes.settings.routes.location.LocationScreen
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsScreen
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
@@ -81,9 +80,6 @@ class MainActivity : ComponentActivity() {
 
                 val prayersViewModel =
                     hiltViewModel<PrayersViewModel>(LocalContext.current as ComponentActivity)
-
-                val calculationViewModel: CalculationViewModel =
-                    hiltViewModel(LocalContext.current as ComponentActivity)
                 val notificationsViewModel: NotificationsViewModel =
                     hiltViewModel(LocalContext.current as ComponentActivity)
 

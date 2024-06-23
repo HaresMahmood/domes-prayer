@@ -305,6 +305,12 @@ fun PrayersScreen(
                     ) {
                         Icon(Icons.Filled.Explore, "Find Qibla")
                     }
+
+//                    ExpandableFloatingActionButton(
+//                        icon = IconSource(Icons.Filled.Explore)
+//                    ) {
+//                        QiblaScreen(navController = navController)
+//                    }
                 },
             ) { innerPadding ->
                 Box(

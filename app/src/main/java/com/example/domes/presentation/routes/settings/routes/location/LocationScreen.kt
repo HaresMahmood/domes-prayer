@@ -152,6 +152,7 @@ fun LocationScreen(
             }
         }
 
+        // TODO: Broken
         if (state.showCoordinatesDialog) {
             InputDialog(
                 title = "Coordinates",
