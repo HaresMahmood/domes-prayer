@@ -121,6 +121,16 @@ fun AppearanceScreen(
                 item {
                     FixedCard {
                         SettingsListItem(
+                            "Language",
+                            IconSource(Icons.Outlined.CalendarMonth),
+                            value = "System default • English",
+                            isLastItem = true
+                        )
+                    }
+                }
+                item {
+                    FixedCard {
+                        SettingsListItem(
                             "Time",
                             IconSource(Icons.Outlined.AccessTime),
                             value = "12-hour clock"
@@ -129,16 +139,6 @@ fun AppearanceScreen(
                             "Date",
                             IconSource(Icons.Outlined.CalendarMonth),
                             value = "Month and day",
-                            isLastItem = true
-                        )
-                    }
-                }
-                item {
-                    FixedCard {
-                        SettingsListItem(
-                            "Language",
-                            IconSource(Icons.Outlined.CalendarMonth),
-                            value = "System default • English",
                             isLastItem = true
                         )
                     }
