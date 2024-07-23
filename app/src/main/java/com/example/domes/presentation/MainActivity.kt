@@ -1,5 +1,6 @@
 package com.example.domes.presentation
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,6 +14,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -47,6 +50,7 @@ import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnrememberedGetBackStackEntry")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +95,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = if (isLocationKnown) Screen.Prayers.route else Screen.Location.route,
+                        startDestination = "main",
                         enterTransition = {
                             fadeIn(animationSpec = tween(750, easing = EaseOutQuint)) +
                                     slideIntoContainer(
@@ -129,54 +133,73 @@ class MainActivity : ComponentActivity() {
                                     }
                         }
                     ) {
-                        composable(route = Screen.Prayers.route) {
-                            PrayersScreen(
-                                navController,
-                                prayersViewModel = prayersViewModel,
-                                notificationsViewModel = notificationsViewModel,
-                            )
-                        }
-                        composable(route = Screen.Qibla.route) {
-                            QiblaScreen(navController)
-                        }
-                        composable(route = Screen.Settings.route) {
-                            SettingsScreen(navController)
-                        }
-                        composable(route = Screen.Location.route) {
-                            LocationScreen(
-                                navController,
-                                prayersViewModel = prayersViewModel
-                            )
-                        }
-                        composable(route = Screen.Calculation.route) {
-                            CalculationScreen(
-                                navController,
-                                viewModel = prayersViewModel
-                            )
-                        }
-                        composable(route = Screen.Notifications.route) {
-                            NotificationsScreen(
-                                navController,
-                                viewModel = notificationsViewModel
-                            )
-                        }
-                        composable(
-                            route = Screen.ManagePrayer.route + "?prayer={prayer}",
-                            arguments = listOf(
-                                navArgument(name = "prayer") {
-                                    type = NavType.StringType
-                                    defaultValue = ""
-                                }
-                            )
+                        navigation(
+                            startDestination = if (isLocationKnown) Screen.Prayers.route else Screen.Location.route,
+                            route = "main"
                         ) {
-                            val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
+                            composable(route = Screen.Prayers.route) {
+                                val backStackEntry = remember {
+                                    navController.getBackStackEntry("main")
+                                }
+                                val viewModel: PrayersViewModel = hiltViewModel(backStackEntry)
 
-                            ManagePrayerScreen(navController, prayer)
-                        }
-                        composable(route = Screen.Appearance.route) {
-                            AppearanceScreen(navController)
-                        }
+                                PrayersScreen(
+                                    navController,
+                                    viewModel = viewModel,
+                                    notificationsViewModel = notificationsViewModel,
+                                )
+                            }
+                            composable(route = Screen.Qibla.route) {
+                                QiblaScreen(navController)
+                            }
+                            composable(route = Screen.Settings.route) {
+                                SettingsScreen(navController)
+                            }
+                            composable(route = Screen.Location.route) {
+                                val backStackEntry = remember {
+                                    navController.getBackStackEntry("main")
+                                }
+                                val viewModel: PrayersViewModel = hiltViewModel(backStackEntry)
 
+                                LocationScreen(
+                                    navController,
+                                    viewModel = viewModel
+                                )
+                            }
+                            composable(route = Screen.Calculation.route) {
+                                val backStackEntry = remember {
+                                    navController.getBackStackEntry("main")
+                                }
+                                val viewModel: PrayersViewModel = hiltViewModel(backStackEntry)
+
+                                CalculationScreen(
+                                    navController,
+                                    viewModel = viewModel
+                                )
+                            }
+                            composable(route = Screen.Notifications.route) {
+                                NotificationsScreen(
+                                    navController,
+                                    viewModel = notificationsViewModel
+                                )
+                            }
+                            composable(
+                                route = Screen.ManagePrayer.route + "?prayer={prayer}",
+                                arguments = listOf(
+                                    navArgument(name = "prayer") {
+                                        type = NavType.StringType
+                                        defaultValue = ""
+                                    }
+                                )
+                            ) {
+                                val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
+
+                                ManagePrayerScreen(navController, prayer)
+                            }
+                            composable(route = Screen.Appearance.route) {
+                                AppearanceScreen(navController)
+                            }
+                        }
                     }
                 }
             }

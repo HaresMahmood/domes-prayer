@@ -112,11 +112,11 @@ class UIConstants {
 @Composable
 fun PrayersScreen(
     navController: NavController,
-    prayersViewModel: PrayersViewModel,
+    viewModel: PrayersViewModel,
     notificationsViewModel: NotificationsViewModel,
 ) {
-    val prayersState = prayersViewModel.prayersState.value
-    val locationState = prayersViewModel.locationState.value
+    val prayersState = viewModel.prayersState.value
+    val locationState = viewModel.locationState.value
     val notificationsState = notificationsViewModel.state.value
 
     val prayerTimes =
@@ -132,7 +132,7 @@ fun PrayersScreen(
         )
     val pullRefreshState =
         rememberPullRefreshState(refreshing = prayersState.isRefreshing, onRefresh = {
-            prayersViewModel.onEvent(
+            viewModel.onEvent(
                 PrayersEvent.RefreshLocation
             )
         })
@@ -143,9 +143,9 @@ fun PrayersScreen(
 
     LaunchedEffect(pagerState.settledPage) {
         if (pagerState.settledPage == 0) {
-            prayersViewModel.onEvent(PrayersEvent.ChangeDate(prayersState.selectedDate.minusDays(1)))
+            viewModel.onEvent(PrayersEvent.ChangeDate(prayersState.selectedDate.minusDays(1)))
         } else if (pagerState.settledPage == 2) {
-            prayersViewModel.onEvent(PrayersEvent.ChangeDate(prayersState.selectedDate.plusDays(1)))
+            viewModel.onEvent(PrayersEvent.ChangeDate(prayersState.selectedDate.plusDays(1)))
         }
 
         scope.launch {
@@ -157,7 +157,7 @@ fun PrayersScreen(
         notificationPermissionState.status.isGranted && notificationsState.isNotificationsAllowed
 
     // Animations
-    
+
     val transition = updateTransition(
         targetState = bottomSheetScaffoldState.bottomSheetState.targetValue,
         label = "BottomSheetTransition"
@@ -194,7 +194,7 @@ fun PrayersScreen(
                 collapseBottomSheet = { scope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() } },
                 isLoading = prayersState.isLoading,
             ) { selectedDate ->
-                prayersViewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
+                viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
             }
         }
     ) { innerPadding ->
@@ -232,7 +232,7 @@ fun PrayersScreen(
                         backgroundText,
                         topActions = {
                             IconButton(
-                                onClick = { prayersViewModel.onEvent(PrayersEvent.SetOverarchingDropdownVisibility()) }
+                                onClick = { viewModel.onEvent(PrayersEvent.SetOverarchingDropdownVisibility()) }
                             ) {
                                 Icon(
                                     Icons.Outlined.ExpandCircleDown,
@@ -243,7 +243,7 @@ fun PrayersScreen(
                             DropdownMenu(
                                 expanded = prayersState.showOverarchingDropdown,
                                 onDismissRequest = {
-                                    prayersViewModel.onEvent(
+                                    viewModel.onEvent(
                                         PrayersEvent.SetOverarchingDropdownVisibility(
                                             false
                                         )
@@ -254,7 +254,7 @@ fun PrayersScreen(
                                     text = { Text("Settings") },
                                     onClick = {
                                         navController.navigate(Screen.Settings.route)
-                                        prayersViewModel.onEvent(
+                                        viewModel.onEvent(
                                             PrayersEvent.SetOverarchingDropdownVisibility(
                                                 false
                                             )
@@ -281,7 +281,7 @@ fun PrayersScreen(
                         },
                         bottomActions = MainActionSection(
                             prayersState.timeLeft,
-                            prayersViewModel.calculateRemainingPrayerTime(),
+                            viewModel.calculateRemainingPrayerTime(),
                             notificationPermissionState.status.isGranted,
                             isNotificationsAllowed,
                             locationState.locale,
@@ -414,17 +414,17 @@ fun PrayersScreen(
                                                 isLastItem = index == Prayer.ALL.lastIndex,
                                                 isBeforeExpandedItem = index == expandedPrayerIndex - 1,
                                                 isAfterExpandedItem = index == expandedPrayerIndex + 1,
-                                                remainingTimePercentage = prayersViewModel.calculateRemainingPrayerTime(),
+                                                remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
                                                 navController = navController,
                                                 expand = {
-                                                    prayersViewModel.onEvent(
+                                                    viewModel.onEvent(
                                                         PrayersEvent.ChangeExpandedPrayer(
                                                             if (it) null else prayerTime
                                                         )
                                                     )
                                                 },
                                                 onPrayerRecordDetailValueChange = { prayed, notes, missedReason ->
-                                                    prayersViewModel.onEvent(
+                                                    viewModel.onEvent(
                                                         PrayersEvent.ChangePrayerRecord(
                                                             prayer,
                                                             prayed, notes, missedReason

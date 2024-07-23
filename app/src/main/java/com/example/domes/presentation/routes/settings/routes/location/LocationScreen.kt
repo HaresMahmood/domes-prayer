@@ -54,9 +54,9 @@ class UIConstants {
 @Composable
 fun LocationScreen(
     navController: NavController,
-    prayersViewModel: PrayersViewModel,
+    viewModel: PrayersViewModel,
 ) {
-    val state = prayersViewModel.locationState.value
+    val state = viewModel.locationState.value
 
     val locationPermissionState =
         rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -107,7 +107,7 @@ fun LocationScreen(
                             "Fetch up-to-date location via GPS",
                             onClick = {
                                 if (locationPermissionState.status.isGranted) {
-                                    prayersViewModel.onEvent(LocationEvent.RefreshLocation)
+                                    viewModel.onEvent(LocationEvent.RefreshLocation)
                                 } else {
                                     locationPermissionState.launchPermissionRequest()
                                 }
@@ -121,12 +121,12 @@ fun LocationScreen(
                                 Switch(
                                     checked = state.isAutoUpdateEnabled,
                                     onCheckedChange = {
-                                        prayersViewModel.onEvent(LocationEvent.ToggleAutoUpdate)
+                                        viewModel.onEvent(LocationEvent.ToggleAutoUpdate)
                                     }
                                 )
                             },
                             isLastItem = true,
-                            onClick = { prayersViewModel.onEvent(LocationEvent.ToggleAutoUpdate) }
+                            onClick = { viewModel.onEvent(LocationEvent.ToggleAutoUpdate) }
                         )
                     }
                 }
@@ -144,7 +144,7 @@ fun LocationScreen(
                             "Manually enter latitude and logitude",
                             isLastItem = true,
                             onClick = {
-                                prayersViewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
+                                viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
                             }
                         )
                     }
@@ -194,14 +194,14 @@ fun LocationScreen(
                     )
                 ),
                 setDialogVisibility = {
-                    prayersViewModel.onEvent(
+                    viewModel.onEvent(
                         LocationEvent.SetCoordinatesDialogVisibility(
                             false
                         )
                     )
                 }
             ) {
-                prayersViewModel.onEvent(
+                viewModel.onEvent(
                     LocationEvent.ChangeCoordinates(
                         it.getString("0")!!.toDouble(),
                         it.getString("1")!!.toDouble()
