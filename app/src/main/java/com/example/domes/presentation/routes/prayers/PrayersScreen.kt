@@ -157,6 +157,7 @@ fun PrayersScreen(
         notificationPermissionState.status.isGranted && notificationsState.isNotificationsAllowed
 
     // Animations
+    
     val transition = updateTransition(
         targetState = bottomSheetScaffoldState.bottomSheetState.targetValue,
         label = "BottomSheetTransition"

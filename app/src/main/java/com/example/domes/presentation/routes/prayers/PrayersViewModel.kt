@@ -329,7 +329,9 @@ class PrayersViewModel @Inject constructor(
     private fun updateCurrentPrayerTimes(
         coordinates: Coordinates, parameters: CalculationParameters,
     ) {
-        _state.value.isLoading = true
+        _state.value = _state.value.copy(
+            isLoading = false
+        )
 
         val currentTime = LocalDateTime.now()
         val (_, rawPrayerTimes) = prayersUseCases.getPrayerTimes(
@@ -355,7 +357,9 @@ class PrayersViewModel @Inject constructor(
 
             getPrayerRecord(currentTime.toLocalDate())
         }.launchIn(viewModelScope).invokeOnCompletion {
-            _state.value.isLoading = false
+            _state.value = _state.value.copy(
+                isLoading = false
+            )
         }
     }
 
