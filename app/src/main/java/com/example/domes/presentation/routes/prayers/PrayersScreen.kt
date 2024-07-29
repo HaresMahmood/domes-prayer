@@ -76,6 +76,7 @@ import com.example.domes.presentation.routes.prayers.composables.PercentageWidth
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
+import com.example.domes.presentation.routes.settings.routes.location.LocationEvent
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -293,9 +294,21 @@ fun PrayersScreen(
                     )
                 },
                 floatingActionButton = {
+                    // TODO: Debug
                     FloatingActionButton(
                         onClick = {
-                            navController.navigate(Screen.Qibla.route)
+                            viewModel.onEvent(
+                                if (locationState.location?.latitude != 38.71667) {
+                                    LocationEvent.ChangeCoordinates(
+                                        38.71667,
+                                        -9.13333
+                                    )
+                                } else {
+                                    LocationEvent.ChangeCoordinates(
+                                        55.3617609, -3.4433238
+                                    )
+                                }
+                            )
                         },
                         containerColor = MaterialTheme.colorScheme.tertiary,
                         contentColor = MaterialTheme.colorScheme.onTertiary,
@@ -306,6 +319,20 @@ fun PrayersScreen(
                     ) {
                         Icon(Icons.Filled.Explore, "Find Qibla")
                     }
+
+//                    FloatingActionButton(
+//                        onClick = {
+//                            navController.navigate(Screen.Qibla.route)
+//                        },
+//                        containerColor = MaterialTheme.colorScheme.tertiary,
+//                        contentColor = MaterialTheme.colorScheme.onTertiary,
+//                        elevation = FloatingActionButtonDefaults.elevation(
+//                            defaultElevation = 0.dp,
+//                            pressedElevation = 0.dp,
+//                        )
+//                    ) {
+//                        Icon(Icons.Filled.Explore, "Find Qibla")
+//                    }
 
 //                    ExpandableFloatingActionButton(
 //                        icon = IconSource(Icons.Filled.Explore)

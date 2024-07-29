@@ -10,11 +10,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.CalculationParameters
 import com.batoulapps.adhan2.Coordinates
 import com.batoulapps.adhan2.Madhab
 import com.example.domes.data.service.NotificationService.Companion.ACTION_NOTIFICATION_ACTION_CLICKED
+import com.example.domes.data.worker.PrayerTimesUpdateWorker
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.domain.usecase.PrayerUseCases
@@ -42,6 +47,8 @@ class PrayersViewModel @Inject constructor(
     val prayersState: State<PrayersState> = _state
     val locationState: State<LocationState> = _locationState
     val calculationState: State<CalculationState> = _calculationState
+
+    val workManager = WorkManager.getInstance(context)
 
     private var getPrayerRecordJob: Job? = null
     private val currentTime = LocalDateTime.now()
@@ -208,22 +215,16 @@ class PrayersViewModel @Inject constructor(
             is LocationEvent.RefreshLocation -> {
                 viewModelScope.launch {
                     fetchLocation { location ->
-                        viewModelScope.launch {
-                            updateCurrentPrayerTimes(
-                                location,
-                                calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
-                            )
-                        }
+                        updateCurrentPrayerTimes(
+                            location,
+                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                        )
                     }
                 }
             }
 
-            // TODO: Broken?
             is LocationEvent.ChangeCoordinates -> {
                 val coordinates = Coordinates(event.latitude, event.longitude)
-
-                println("changing location coordinates...")
-                println("location 1: ${_locationState.value.location?.latitude}, ${_locationState.value.location?.longitude}")
 
                 viewModelScope.launch {
                     _locationState.value = _locationState.value.copy(
@@ -231,15 +232,20 @@ class PrayersViewModel @Inject constructor(
                         locale = prayersUseCases.getLocale(coordinates)
                     )
 
-                    updateCurrentPrayerTimes(
-                        coordinates,
-                        calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
-                    )
+                    if (_state.value.selectedDate == LocalDate.now()) {
+                        updateCurrentPrayerTimes(
+                            coordinates,
+                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                        )
+                    } else {
+                        getPrayerTimes(
+                            _state.value.selectedDate,
+                            coordinates,
+                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                        )
+                    }
 
                     prayersUseCases.setLocation(coordinates)
-
-                    println("location coordinates: ${coordinates.latitude}, ${coordinates.longitude}")
-                    println("location 2: ${_locationState.value.location?.latitude}, ${_locationState.value.location?.longitude}")
                 }
             }
 
@@ -270,11 +276,12 @@ class PrayersViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     prayersUseCases.setCalculationMethod(event.calculationMethod)
-                    updateCurrentPrayerTimes(
-                        _locationState.value.location!!,
-                        event.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
-                    )
                 }
+
+                updateCurrentPrayerTimes(
+                    _locationState.value.location!!,
+                    event.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                )
             }
 
             is CalculationEvent.ChangeJuristic -> {
@@ -284,11 +291,12 @@ class PrayersViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     prayersUseCases.setJuristic(event.juristic)
-                    updateCurrentPrayerTimes(
-                        _locationState.value.location!!,
-                        _calculationState.value.calculationMethod.parameters.copy(madhab = event.juristic)
-                    )
                 }
+
+                updateCurrentPrayerTimes(
+                    _locationState.value.location!!,
+                    _calculationState.value.calculationMethod.parameters.copy(madhab = event.juristic)
+                )
             }
 
             is CalculationEvent.ResetSettings -> {
@@ -326,53 +334,68 @@ class PrayersViewModel @Inject constructor(
         }
     }?.toFloat() ?: 0.0f
 
-    // TODO: doesn't trigger recomposition on `Prayers` screen (due to shared viewmodel shenanigans?)
-    private suspend fun updateCurrentPrayerTimes(
+    private fun updateCurrentPrayerTimes(
         coordinates: Coordinates,
         parameters: CalculationParameters,
     ) {
-        _state.value = _state.value.copy(
-            isLoading = true
+        _state.value = _state.value.copy(isLoading = true)
+
+        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<PrayerTimesUpdateWorker>()
+            .build()
+        workManager.enqueueUniqueWork(
+            "oneTimeWorkRequest${System.currentTimeMillis()}",
+            ExistingWorkPolicy.KEEP,
+            oneTimeWorkRequest
         )
 
-        val currentTime = LocalDateTime.now()
-        val currentDate = currentTime.toLocalDate()
+        workManager.getWorkInfoByIdLiveData(oneTimeWorkRequest.id).observeForever { info ->
+            if (info.state == WorkInfo.State.SUCCEEDED) {
+                viewModelScope.launch {
+                    val currentTime = LocalDateTime.now()
+                    val currentDate = currentTime.toLocalDate()
+                    val (_, rawPrayerTimes) = prayersUseCases.getPrayerTimes(
+                        currentDate,
+                        coordinates,
+                        parameters
+                    )
 
-        val (_, rawPrayerTimes) = prayersUseCases.getPrayerTimes(
-            currentDate,
-            coordinates,
-            parameters
-        )
+                    println("re-eval triggered with parameters: $currentDate, ${coordinates.latitude}, ${coordinates.longitude}, $parameters")
+                    println("raw prayer times: ${rawPrayerTimes.fajr}")
 
-        println("re-eval triggered with parameters: $currentDate, ${coordinates.latitude}, ${coordinates.longitude}, $parameters")
+                    val prayerTimes = prayersUseCases.getCurrentPrayerTimes().first()
+                    val currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
 
-        val prayerTimes = prayersUseCases.getCurrentPrayerTimes().first()
-        val currentPrayer = prayersUseCases.getCurrentPrayer(prayerTimes, currentTime)
+                    getPrayerRecord(currentDate)
 
-        _state.value = _state.value.copy(
-            isLoading = false,
-            currentPrayerTimes = prayerTimes,
-            currentRawPrayerTimes = rawPrayerTimes,
-            currentPrayer = currentPrayer,
-            timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer),
-            totalTime = prayersUseCases.getPrayerTimeLeft(currentPrayer.time, currentPrayer),
-            selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
-            dayFraction = prayersUseCases.getDayFraction(rawPrayerTimes, currentTime)
-        )
-
-        getPrayerRecord(currentDate)
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        currentPrayerTimes = prayerTimes,
+                        currentRawPrayerTimes = rawPrayerTimes,
+                        currentPrayer = currentPrayer,
+                        timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer),
+                        totalTime = prayersUseCases.getPrayerTimeLeft(
+                            currentPrayer.time,
+                            currentPrayer
+                        ),
+                        selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
+                        dayFraction = prayersUseCases.getDayFraction(rawPrayerTimes, currentTime)
+                    )
+                }
+            }
+        }
     }
+
 
     private fun getPrayerTimes(
         date: LocalDate, coordinates: Coordinates, parameters: CalculationParameters,
     ) {
+        getPrayerRecord(date)
+
         _state.value = _state.value.copy(
             selectedPrayerTimes = prayersUseCases.getPrayerTimes(
                 date, coordinates, parameters
             ).first
         )
-
-        getPrayerRecord(date)
     }
 
     private fun getPrayerRecord(date: LocalDate) {

@@ -18,7 +18,7 @@ class PrayerTimesUpdateWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val alarmService: AlarmService,
-    private val useCases: PrayerUseCases
+    private val useCases: PrayerUseCases,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         // TODO: Might need to do extra work for prayers the next day depending of time of day called
@@ -27,7 +27,8 @@ class PrayerTimesUpdateWorker @AssistedInject constructor(
 
             val currentTime = LocalDateTime.now()
             val coordinates = useCases.getLocation()
-            val parameters = (useCases.getCalculationMethod() ?: CalculationMethod.MUSLIM_WORLD_LEAGUE).parameters
+            val parameters = (useCases.getCalculationMethod()
+                ?: CalculationMethod.MUSLIM_WORLD_LEAGUE).parameters
 
             coordinates?.let {
                 val (prayerTimes, _) = useCases.getPrayerTimes(
@@ -37,14 +38,13 @@ class PrayerTimesUpdateWorker @AssistedInject constructor(
                 )
 
                 useCases.updatePrayerTimes(prayerTimes.onEach { prayerTime ->
-                        if (currentTime.isBefore(prayerTime.time)) {
-                            alarmService.schedule(prayerTime)
-                        }
+                    if (currentTime.isBefore(prayerTime.time)) {
+                        alarmService.schedule(prayerTime)
                     }
+                }
                 )
             }
         } catch (e: Exception) {
-            // Handle any exceptions here
             e.message?.let { Log.e("PRAYER-TIMES-UPDATE-WORKER", it) }
             return Result.failure()
         }

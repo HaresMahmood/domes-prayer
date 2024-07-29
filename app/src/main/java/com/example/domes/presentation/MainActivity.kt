@@ -25,8 +25,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.domes.data.worker.PrayerTimesUpdateWorker
@@ -56,16 +54,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 //        deleteDatabase("prayer_records")
 
-        // Immediate execution
-        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<PrayerTimesUpdateWorker>()
-            .build()
-        WorkManager.getInstance(this).enqueueUniqueWork(
-            "oneTimePrayerTimesUpdate",
-            ExistingWorkPolicy.KEEP,
-            oneTimeWorkRequest
-        )
-
-        // Periodic execution
         val periodicWorkRequest =
             PeriodicWorkRequestBuilder<PrayerTimesUpdateWorker>(1, TimeUnit.DAYS)
                 .build()
