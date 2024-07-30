@@ -36,6 +36,7 @@ import com.example.domes.presentation.routes.qibla.QiblaScreen
 import com.example.domes.presentation.routes.settings.SettingsScreen
 import com.example.domes.presentation.routes.settings.routes.appearance.AppearanceScreen
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationScreen
+import com.example.domes.presentation.routes.settings.routes.integrations.IntegrationsScreen
 import com.example.domes.presentation.routes.settings.routes.location.LocationScreen
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsScreen
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
@@ -183,6 +184,9 @@ class MainActivity : ComponentActivity() {
                                 val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
 
                                 ManagePrayerScreen(navController, prayer)
+                            }
+                            composable(route = Screen.Integrations.route) {
+                                IntegrationsScreen(navController)
                             }
                             composable(route = Screen.Appearance.route) {
                                 AppearanceScreen(navController)

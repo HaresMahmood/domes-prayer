@@ -35,7 +35,7 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun AppearanceScreen(
+fun IntegrationsScreen(
     navController: NavController,
 //    viewModel: AppearanceViewModel = hiltViewModel()
 ) {
@@ -75,7 +75,7 @@ fun AppearanceScreen(
                         SettingsListItem(
                             "Calendar",
                             IconSource(Icons.Outlined.Event),
-                            value = "Automatically add prayers to calendar",
+                            description = "Automatically add prayers to calendar",
                             trailingContent = {
                                 IndicativeTrailingContent {
                                     Switch(
@@ -88,7 +88,7 @@ fun AppearanceScreen(
                         SettingsListItem(
                             "Google Nest",
                             IconSource(Icons.Outlined.HomeMini),
-                            value = "Play Adhan on Google Nest",
+                            description = "Play adhan on Google Nest devices",
                             isLastItem = true,
                             trailingContent = {
                                 IndicativeTrailingContent {
@@ -114,5 +114,5 @@ fun AppearanceScreen(
 fun AppearancePreview() {
     val navController = rememberNavController()
 
-    AppearanceScreen(navController)
+    IntegrationsScreen(navController)
 }
