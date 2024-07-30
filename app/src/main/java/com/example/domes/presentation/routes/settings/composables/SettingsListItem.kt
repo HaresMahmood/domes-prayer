@@ -2,13 +2,17 @@ package com.example.domes.presentation.routes.settings.composables
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.LockReset
@@ -45,6 +49,7 @@ fun SettingsListItem(
     variant: Variant = Variant.DEFAULT,
     trailingContent: @Composable (() -> Unit)? = null,
     extendedContent: @Composable ((Boolean) -> Unit)? = null,
+    extendedScrollingContent: @Composable ((Boolean) -> Unit)? = null,
     isEnabled: Boolean = true,
     isLastItem: Boolean = false,
     onClick: (() -> Unit)? = null,
@@ -94,11 +99,31 @@ fun SettingsListItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 60.dp)
+                    .padding(start = 60.dp, end = 21.dp)
                     .alpha(if (isEnabled) 1f else 0.5f)
             ) {
                 extendedContent(isEnabled)
             }
+
+            Spacer(Modifier.size(20.dp))
+        }
+
+        if (extendedScrollingContent != null) {
+            LazyRow(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                item {
+                    Box(
+                        modifier = Modifier.padding(
+                            start = 60.dp,
+                            end = 21.dp
+                        )
+                    ) {
+                        extendedScrollingContent(isEnabled)
+                    }
+                }
+            }
+
             Spacer(Modifier.size(20.dp))
         }
 
@@ -119,7 +144,7 @@ fun DomesPreview() {
                 title = "Location",
                 description = "Auto-update, set manually",
                 icon = IconSource(Icons.Outlined.LocationOn),
-                extendedContent = { isEnabled ->
+                extendedContent = {
                     SegmentedButtons(
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -137,6 +162,77 @@ fun DomesPreview() {
                             selected = false,
                             onClick = {},
                             label = { Text("Dark") }
+                        )
+                    }
+                },
+                extendedScrollingContent = {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
+                        )
+                        Box(
+                            Modifier
+                                .size(40.dp)
+                                .background(Color.Red)
                         )
                     }
                 }

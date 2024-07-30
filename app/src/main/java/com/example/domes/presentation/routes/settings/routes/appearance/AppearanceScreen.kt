@@ -80,6 +80,7 @@ fun AppearanceScreen(
                         SettingsListItem(
                             "Theme",
                             IconSource(Icons.Outlined.Opacity),
+                            description = "Custom",
                             extendedContent = {
                                 SegmentedButtons {
                                     SegmentedButtonItem(
@@ -148,7 +149,7 @@ fun AppearanceScreen(
                         SettingsListItem(
                             "Haptic feedback",
                             IconSource(Icons.Outlined.Vibration),
-                            value = "Pair interactions with haptic feedback when in vibration mode",
+                            description = "Pair interactions with haptic feedback when in vibration mode",
                             isLastItem = true,
                             trailingContent = {
                                 Switch(
@@ -174,7 +175,7 @@ fun AppearanceScreen(
                         SettingsListItem(
                             "Main date format",
                             IconSource(Icons.Outlined.CalendarMonth),
-                            value = "Switch Gregorian and Hijri dates",
+                            description = "Switch Gregorian and Hijri dates",
                             trailingContent = {
                                 Switch(
                                     checked = false,
@@ -185,7 +186,7 @@ fun AppearanceScreen(
                         SettingsListItem(
                             "Quick date switching",
                             IconSource(Icons.Outlined.CalendarMonth),
-                            value = "Allow going forward and backward by swiping left and right",
+                            description = "Allow going forward and backward by swiping left and right",
                             isLastItem = true,
                             trailingContent = {
                                 Switch(

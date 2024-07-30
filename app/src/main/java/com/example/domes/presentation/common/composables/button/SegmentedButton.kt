@@ -56,12 +56,15 @@ fun SegmentedButtons(
     colors: SegmentedButtonColors = SegmentedButtonsDefaults.colors(),
     outlineThickness: Dp = SegmentedButtonsDefaults.outlineThickness,
     border: BorderStroke = BorderStroke(outlineThickness, colors.outlineColor),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Surface(
         shape = shape,
         border = border,
-        modifier = modifier.defaultMinSize(minHeight = minimumHeight)
+        color = Color.Transparent,
+        modifier = modifier
+            .defaultMinSize(minHeight = minimumHeight)
+            .fillMaxWidth(),
     ) {
         SubcomposeLayout(Modifier.fillMaxWidth()) { constraints ->
             val bottonRowWidth = constraints.maxWidth
@@ -142,7 +145,7 @@ fun SegmentedButtonItem(
     label: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
     colors: SegmentedButtonColors = SegmentedButtonsDefaults.colors(),
-    textStyle: TextStyle = MaterialTheme.typography.labelLarge
+    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
 ) {
     val styledLabel: @Composable (() -> Unit)? =
         label?.let {
@@ -197,12 +200,12 @@ fun SegmentedButtonItem(
 object SegmentedButtonsDefaults {
     @Composable
     fun colors(
-        selectedTextColor: Color = MaterialTheme.colorScheme.primary,
-        selectedIconColor: Color = MaterialTheme.colorScheme.primary,
+        selectedTextColor: Color = MaterialTheme.colorScheme.secondary,
+        selectedIconColor: Color = MaterialTheme.colorScheme.secondary,
         unselectedTextColor: Color = MaterialTheme.colorScheme.onSurface,
         unselectedIconColor: Color = MaterialTheme.colorScheme.onSurface,
         indicatorColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-        outlineColor: Color = MaterialTheme.colorScheme.outlineVariant
+        outlineColor: Color = MaterialTheme.colorScheme.outlineVariant,
     ): SegmentedButtonColors = SegmentedButtonColors(
         selectedTextColor = selectedTextColor,
         selectedIconColor = selectedIconColor,
@@ -224,7 +227,7 @@ data class SegmentedButtonColors internal constructor(
     val unselectedTextColor: Color,
     val unselectedIconColor: Color,
     val indicatorColor: Color,
-    val outlineColor: Color
+    val outlineColor: Color,
 ) {
     @Composable
     internal fun textColor(selected: Boolean): State<Color> {
@@ -256,7 +259,7 @@ data class SegmentedButtonColors internal constructor(
     fun SegmentedDivider(
         modifier: Modifier = Modifier,
         thickness: Dp = outlineThickness,
-        color: Color = outlineColor
+        color: Color = outlineColor,
     ) {
         Box(
             modifier
