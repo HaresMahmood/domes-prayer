@@ -69,7 +69,13 @@ import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFo
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
+import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.option.OptionView
+import com.maxkeppeler.sheets.option.models.Option
+import com.maxkeppeler.sheets.option.models.OptionConfig
+import com.maxkeppeler.sheets.option.models.OptionSelection
 import java.time.LocalDateTime
 
 // TODO: Rewrite to be more compact
@@ -91,7 +97,7 @@ fun PrayerCard(
     isAfterExpandedItem: Boolean = false,
     remainingTimePercentage: Float,
     expand: (Boolean) -> Unit,
-    onPrayerRecordDetailValueChange: (prayed: Boolean?, notes: String?, missedReasons: MissedReason?) -> Unit = { b: Boolean?, s: String?, mr: MissedReason? -> }
+    onPrayerRecordDetailValueChange: (prayed: Boolean?, notes: String?, missedReasons: MissedReason?) -> Unit = { b: Boolean?, s: String?, mr: MissedReason? -> },
 ) {
     ExpandableCard(
         isExpanded = isExpanded,
@@ -299,8 +305,62 @@ fun PrayerCard(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 if (hasPassed && prayerTime?.prayer?.displayable == true && prayerRecordDetail?.prayed == false) {
+                    val options = MissedReason.ALL.map { missedReason ->
+                        Option(
+                            missedReason?.iconResId?.let { IconSource(it) },
+                            titleText = missedReason?.name ?: "None",
+                            selected = prayerRecordDetail.missedReason == missedReason,
+                            // TODO: make component
+                            customView = { selected ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(84.dp)
+                                        .background(
+                                            if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                                        ),
+                                ) {
+                                    Column {
+                                        missedReason?.iconResId?.let {
+                                            Icon(
+                                                painterResource(it),
+                                                missedReason.name
+                                            )
+                                        }
+                                        Text(
+                                            text = missedReason?.name ?: "None",
+                                            style = MaterialTheme.typography.labelLarge
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    }
+
+                    // TODO: create custom version of this
+                    OptionView(
+                        header = Header.Custom {
+                            Text(
+                                "Missed due to",
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        },
+                        useCaseState = rememberUseCaseState(
+                            visible = true,
+                            embedded = true,
+                            onCloseRequest = { }),
+                        selection = OptionSelection.Multiple(
+                            options,
+                            withButtonView = false
+                        ) { index, option ->
+                            // Handle selection
+                        },
+                        config = OptionConfig(mode = com.maxkeppeler.sheets.option.models.DisplayMode.GRID_HORIZONTAL)
+                    )
+
                     ExposedDropdownMenuBox(
-                        modifier = Modifier.fillMaxWidth().background(Color.Transparent),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Transparent),
                         expanded = isDropDownExpanded.value,
                         onExpandedChange = {
                             isDropDownExpanded.value = it

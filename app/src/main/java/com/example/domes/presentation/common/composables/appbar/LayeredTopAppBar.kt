@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -99,18 +100,12 @@ fun LayeredTopAppBar(
                     .padding(
                         bottom = 16.dp
                     ),
+                contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 items(bottomActions.size) { index ->
-                    Box(
-                        modifier = Modifier.padding(
-                            start = if (index == 0) 16.dp else 0.dp,
-                            end = if (index == bottomActions.size - 1) 16.dp else 0.dp
-                        )
-                    ) {
-                        bottomActions[index]()
-                    }
+                    bottomActions[index]()
                 }
             }
         }
