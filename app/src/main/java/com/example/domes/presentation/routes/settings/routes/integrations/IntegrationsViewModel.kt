@@ -19,21 +19,9 @@ class IntegrationsViewModel @Inject constructor(
 
     fun onEvent(event: IntegrationsEvent) {
         when (event) {
-            is IntegrationsEvent.RefreshLocation -> {
-            }
-
-            is IntegrationsEvent.ChangeCoordinates -> {
-            }
-
-            is IntegrationsEvent.ToggleAutoUpdate -> {
+            is IntegrationsEvent.ChangeExpandedSetting -> {
                 _state.value = _state.value.copy(
-                    isAutoUpdateEnabled = !_state.value.isAutoUpdateEnabled
-                )
-            }
-
-            is IntegrationsEvent.SetCoordinatesDialogVisibility -> {
-                _state.value = _state.value.copy(
-                    showCoordinatesDialog = event.isVisible ?: !_state.value.showCoordinatesDialog
+                    expandedSettingIndex = event.settingIndex
                 )
             }
         }

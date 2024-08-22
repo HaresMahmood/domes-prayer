@@ -24,7 +24,7 @@ enum class OffsetPolarity(val index: Int) {
 @HiltViewModel
 class ManagePrayerViewModel @Inject constructor(
     private val prayersUseCases: PrayerUseCases,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = mutableStateOf(ManagePrayerState())
     val state: State<ManagePrayerState> = _state
@@ -61,13 +61,13 @@ class ManagePrayerViewModel @Inject constructor(
                     updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
                 }
             }
-            is ManagePrayerEvent.ChangeExpandedNotification -> {
-                println("Notification: ${event.notificationIndex}")
 
+            is ManagePrayerEvent.ChangeExpandedNotification -> {
                 _state.value = _state.value.copy(
                     expandedNotificationIndex = event.notificationIndex
                 )
             }
+
             is ManagePrayerEvent.AddNotification -> {
                 val updatedNotifications =
                     _state.value.notification?.notifications?.toMutableList()?.apply {
@@ -86,6 +86,7 @@ class ManagePrayerViewModel @Inject constructor(
                     updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
                 }
             }
+
             is ManagePrayerEvent.RemoveNotification -> {
                 val updatedNotifications =
                     _state.value.notification?.notifications?.toMutableList()?.apply {
@@ -104,15 +105,18 @@ class ManagePrayerViewModel @Inject constructor(
                     updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
                 }
             }
+
             is ManagePrayerEvent.ChangeOffset -> {
-                val updatedNotifications = _state.value.notification?.notifications?.map { notification ->
-                    if (notification == event.notification) {
-                        val offset = (abs(notification.offset) + event.increment) * notification.offset.sign
-                        notification.copy(offset = offset)
-                    } else {
-                        notification
-                    }
-                } ?: listOf(Notification())
+                val updatedNotifications =
+                    _state.value.notification?.notifications?.map { notification ->
+                        if (notification == event.notification) {
+                            val offset =
+                                (abs(notification.offset) + event.increment) * notification.offset.sign
+                            notification.copy(offset = offset)
+                        } else {
+                            notification
+                        }
+                    } ?: listOf(Notification())
 
                 val updatedNotification = _state.value.notification?.copy(
                     notifications = updatedNotifications.toMutableList()
@@ -126,14 +130,16 @@ class ManagePrayerViewModel @Inject constructor(
                     updatedNotification?.let { prayersUseCases.addPrayerNotification(it) }
                 }
             }
+
             is ManagePrayerEvent.ToggleOffsetPolarity -> {
-                val updatedNotifications = _state.value.notification?.notifications?.map { notification ->
-                    if (notification == event.notification) {
-                        notification.copy(offset = notification.offset * -1)
-                    } else {
-                        notification
-                    }
-                } ?: listOf(Notification())
+                val updatedNotifications =
+                    _state.value.notification?.notifications?.map { notification ->
+                        if (notification == event.notification) {
+                            notification.copy(offset = notification.offset * -1)
+                        } else {
+                            notification
+                        }
+                    } ?: listOf(Notification())
 
                 val updatedNotification = _state.value.notification?.copy(
                     notifications = updatedNotifications.toMutableList()
