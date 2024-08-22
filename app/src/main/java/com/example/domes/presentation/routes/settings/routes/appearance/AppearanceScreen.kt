@@ -130,21 +130,6 @@ fun AppearanceScreen(
                 item {
                     FixedCard {
                         SettingsListItem(
-                            "Time",
-                            IconSource(Icons.Outlined.AccessTime),
-                            value = "12-hour clock"
-                        )
-                        SettingsListItem(
-                            "Date",
-                            IconSource(Icons.Outlined.CalendarMonth),
-                            value = "Month and day",
-                            isLastItem = true
-                        )
-                    }
-                }
-                item {
-                    FixedCard {
-                        SettingsListItem(
                             "Haptic feedback",
                             IconSource(Icons.Outlined.Vibration),
                             description = "Pair interactions with haptic feedback when in vibration mode",
@@ -160,7 +145,7 @@ fun AppearanceScreen(
                 }
                 item {
                     Text(
-                        "Prayers sceen",
+                        "Prayers screen",
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.padding(
                             top = 0.dp,
@@ -171,15 +156,53 @@ fun AppearanceScreen(
                     )
                     FixedCard {
                         SettingsListItem(
+                            "Time format",
+                            IconSource(Icons.Outlined.AccessTime),
+                            value = "18:20 pm",
+                            extendedContent = {
+                                SegmentedButtons {
+                                    SegmentedButtonItem(
+                                        selected = true,
+                                        onClick = {},
+                                        label = { Text("System") },
+                                    )
+                                    SegmentedButtonItem(
+                                        selected = false,
+                                        onClick = {},
+                                        label = { Text("12-hour") },
+                                    )
+                                    SegmentedButtonItem(
+                                        selected = false,
+                                        onClick = {},
+                                        label = { Text("24-hour") },
+                                    )
+                                }
+                            },
+                        )
+                        SettingsListItem(
+                            "Date format",
+                            IconSource(Icons.Outlined.CalendarMonth),
+                            value = "Month and day",
+                        )
+                        SettingsListItem(
                             "Main date format",
                             IconSource(Icons.Outlined.CalendarMonth),
-                            description = "Switch Gregorian and Hijri dates",
-                            trailingContent = {
-                                Switch(
-                                    checked = false,
-                                    onCheckedChange = { }
-                                )
+                            description = "More prominent date format",
+                            extendedContent = {
+                                SegmentedButtons {
+                                    SegmentedButtonItem(
+                                        selected = true,
+                                        onClick = {},
+                                        label = { Text("Gregorian") },
+                                    )
+                                    SegmentedButtonItem(
+                                        selected = false,
+                                        onClick = {},
+                                        label = { Text("Hijri") },
+                                    )
+                                }
                             },
+                            isLastItem = true
                         )
                         SettingsListItem(
                             "Quick date switching",
