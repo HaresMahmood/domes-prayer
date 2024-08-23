@@ -25,8 +25,6 @@ class PrayerTimesUpdateWorker @AssistedInject constructor(
         try {
             val prayerNotifications = useCases.getPrayerNotifications().firstOrNull().orEmpty()
 
-            println("Prayer notifications: $prayerNotifications")
-
             Prayer.ALL.forEach { prayer ->
                 prayerNotifications.find { it.prayer == prayer }?.notifications?.forEach {
                     alarmService.cancel(prayer, it)

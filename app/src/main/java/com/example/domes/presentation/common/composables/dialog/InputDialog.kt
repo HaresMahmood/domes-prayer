@@ -18,9 +18,9 @@ import com.maxkeppeler.sheets.input.models.InputSelection
 @Composable
 internal fun InputDialog(
     title: String,
+    icon: IconSource? = null,
     inputs: List<Input>,
     setDialogVisibility: (Boolean) -> Unit,
-    icon: IconSource? = null,
     affirmativeButton: SelectionButton? = null,
     onAffirmative: (result: Bundle) -> Unit,
 ) {
@@ -29,11 +29,19 @@ internal fun InputDialog(
             visible = true,
             onCloseRequest = { setDialogVisibility(false) },
         ),
-        header = Header.Default(title, icon),
+        header = Header.Custom { DialogHeader(title, icon) },
         selection = InputSelection(
             inputs,
-            positiveButton = affirmativeButton ?: SelectionButton("Done", IconSource(Icons.Outlined.Done), ButtonStyle.FILLED),
-            negativeButton = SelectionButton("Cancel", IconSource(Icons.Outlined.Close), ButtonStyle.OUTLINED),
+            positiveButton = affirmativeButton ?: SelectionButton(
+                "Done",
+                IconSource(Icons.Outlined.Done),
+                ButtonStyle.FILLED
+            ),
+            negativeButton = SelectionButton(
+                "Cancel",
+                IconSource(Icons.Outlined.Close),
+                ButtonStyle.TEXT
+            ),
             onPositiveClick = onAffirmative,
         ),
     )

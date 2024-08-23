@@ -18,9 +18,10 @@ data class PrayersState(
     val totalTime: Duration? = null,
     val timeLeft: Duration? = null,
     val dayFraction: Float = 0.0f,
+    val snoozeTimer: Duration? = null,
     val expandedPrayer: PrayerTime? = null,
     val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now()),
     var isLoading: Boolean = true,
     var isRefreshing: Boolean = false,
-    var showOverarchingDropdown: Boolean = false
+    var showOverarchingDropdown: Boolean = false,
 )
