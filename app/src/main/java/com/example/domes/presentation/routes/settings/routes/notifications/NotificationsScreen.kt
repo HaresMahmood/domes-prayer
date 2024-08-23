@@ -3,7 +3,6 @@ package com.example.domes.presentation.routes.settings.routes.notifications
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,13 +41,12 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class
 )
 @Composable
 fun NotificationsScreen(
     navController: NavController,
-    viewModel: NotificationsViewModel
+    viewModel: NotificationsViewModel,
 ) {
     val state = viewModel.state.value
 
@@ -62,7 +60,8 @@ fun NotificationsScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-    val isNotificationsAllowed = notificationPermissionState.status.isGranted && state.isNotificationsAllowed
+    val isNotificationsAllowed =
+        notificationPermissionState.status.isGranted && state.isNotificationsAllowed
 
     Scaffold(
         modifier = Modifier
@@ -105,8 +104,7 @@ fun NotificationsScreen(
                                     onCheckedChange = {
                                         if (notificationPermissionState.status.isGranted) {
                                             viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed())
-                                        }
-                                        else {
+                                        } else {
                                             notificationPermissionState.launchPermissionRequest()
                                         }
                                     }
@@ -116,8 +114,7 @@ fun NotificationsScreen(
                             onClick = {
                                 if (notificationPermissionState.status.isGranted) {
                                     viewModel.onEvent(NotificationsEvent.ChangeNotificationsAllowed())
-                                }
-                                else {
+                                } else {
                                     notificationPermissionState.launchPermissionRequest()
                                 }
                             },
@@ -138,26 +135,30 @@ fun NotificationsScreen(
                         if (isNotificationsAllowed) Variant.DEFAULT else Variant.FADED
                     ) {
                         Prayer.ALL.forEachIndexed { index, prayer ->
-                            val notification = state.prayerNotifications.firstOrNull { it.prayer == prayer }
-                            val notificationText = if (notification?.isNotificationAllowed != false) {
+                            val notification =
+                                state.prayerNotifications.firstOrNull { it.prayer == prayer }
+                            val notificationText = {
                                 val notifications = notification?.notifications?.size ?: 1
                                 val pluralText = if (notifications == 1) "" else "s"
 
                                 "$notifications notification$pluralText"
                             }
-                            else null
 
                             SettingsListItem(
                                 prayer.name,
                                 IconSource(painterResource(prayer.iconResId)),
-                                description = notificationText.isNullOrBlank().let { "Disabled" },
-                                value = notificationText,
+                                description = if (notification?.isNotificationAllowed === false) "Disabled" else null,
+                                value = notificationText(),
                                 trailingContent = {
-                                    IndicativeTrailingContent() {
+                                    IndicativeTrailingContent {
                                         Switch(
                                             checked = notification?.isNotificationAllowed != false,
                                             onCheckedChange = {
-                                                viewModel.onEvent(NotificationsEvent.ChangePrayerNotification(prayer))
+                                                viewModel.onEvent(
+                                                    NotificationsEvent.ChangePrayerNotification(
+                                                        prayer
+                                                    )
+                                                )
                                             }
                                         )
                                     }
