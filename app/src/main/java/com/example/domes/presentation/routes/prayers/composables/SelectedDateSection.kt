@@ -125,22 +125,20 @@ fun SelectedDateSection(
                 SegmentedActionSection(
                     children = listOf(
                         SegmentedAction(
-                            { updateDate(yesterdayDate) }, icon = IconSource(
+                            icon = IconSource(
                                 Icons.AutoMirrored.Outlined.NavigateBefore, "Yesterday"
                             ), enabled = !isLoading
-                        ), SegmentedAction(
-                            { updateDate(todayDate) },
+                        ) { updateDate(yesterdayDate) }, SegmentedAction(
                             icon = IconSource(Icons.Outlined.CalendarViewDay, "Today"),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             enabled = selectedDate.value != todayDate
-                        ), SegmentedAction(
-                            { updateDate(tomorrowDate) },
+                        ) { updateDate(todayDate) }, SegmentedAction(
                             icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "Tomorrow"),
                             enabled = !isLoading
-                        )
+                        ) { updateDate(tomorrowDate) }
                     )
                 )
             }
@@ -174,7 +172,7 @@ fun SelectedDateSection(
 
 @Composable
 private fun DateSection(
-    gregorianDate: LocalDate, hijriDate: HijrahDate? = null
+    gregorianDate: LocalDate, hijriDate: HijrahDate? = null,
 ) {
     val shapeParam = Shape(
         sides = 4,

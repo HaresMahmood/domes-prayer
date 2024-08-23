@@ -29,6 +29,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.models.base.SelectionButton
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +43,11 @@ fun DurationDialog(
 ) {
     val selectedTimeInSeconds = remember { mutableStateOf<Long>(240) }
 
+    val currentTime = Calendar.getInstance()
+
     val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(Calendar.MINUTE),
         is24Hour = true,
     )
 

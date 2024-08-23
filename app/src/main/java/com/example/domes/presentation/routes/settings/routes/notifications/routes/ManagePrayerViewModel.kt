@@ -111,7 +111,8 @@ class ManagePrayerViewModel @Inject constructor(
                     _state.value.notification?.notifications?.map { notification ->
                         if (notification == event.notification) {
                             val offset =
-                                (abs(notification.offset) + event.increment) * notification.offset.sign
+                                (abs(notification.offset) + event.increment) * (notification.offset.sign.takeIf { it != 0 }
+                                    ?: 1)
                             notification.copy(offset = offset)
                         } else {
                             notification

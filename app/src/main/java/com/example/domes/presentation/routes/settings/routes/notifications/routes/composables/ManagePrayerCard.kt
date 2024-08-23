@@ -72,9 +72,10 @@ fun ManagePrayerCard(
             SettingsListItem(
                 title = "Time",
                 icon = IconSource(Icons.Outlined.Timer),
-                value = time.plusMinutes(notification?.offset?.toLong() ?: 0).format(getFormatter("HH:mm a")),
+                value = time.plusMinutes(notification?.offset?.toLong() ?: 0)
+                    .format(getFormatter("HH:mm a")),
                 trailingContent = {
-                    IndicativeTrailingContent() {
+                    IndicativeTrailingContent {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
                     }
                 },
@@ -89,28 +90,23 @@ fun ManagePrayerCard(
                 trailingContent = {
                     SegmentedActionSection(listOf(
                         SegmentedAction(
-                            {
-                                if (notification?.offset != 0) {
-                                    notification?.let {
-                                        changeOffset(-1)
-                                    }
-                                }
-                            },
                             icon = IconSource(Icons.Outlined.Remove, "Less"),
                             enabled = notification?.offset != 0
-                        ),
+                        ) {
+                            notification?.let {
+                                changeOffset(-1)
+                            }
+                        },
                         SegmentedAction(
-                            {},
                             icon = IconSource(Icons.Outlined.Tune, "Custom"),
-                        ),
+                        ) {},
                         SegmentedAction(
-                            {
-                                notification?.let {
-                                    changeOffset(1)
-                                }
-                            },
                             icon = IconSource(Icons.Outlined.Add, "More")
-                        )
+                        ) {
+                            notification?.let {
+                                changeOffset(1)
+                            }
+                        }
                     ))
                 },
                 isLastItem = true
@@ -131,7 +127,11 @@ fun ManagePrayerCard(
                                         }
                                     }
                                 },
-                                label = { Text(offsetRelation.name.lowercase().replaceFirstChar { it.uppercase() }) },
+                                label = {
+                                    Text(
+                                        offsetRelation.name.lowercase()
+                                            .replaceFirstChar { it.uppercase() })
+                                },
                             )
                         }
                     }

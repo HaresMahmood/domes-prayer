@@ -13,7 +13,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,11 +20,11 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.views.IconComponent
 
 data class SegmentedAction(
-    val onClick: () -> Unit,
     val label: String? = null,
     val icon: IconSource? = null,
     val colors: IconButtonColors? = null,
     val enabled: Boolean = true,
+    val onClick: () -> Unit,
 )
 
 @Composable
@@ -39,10 +38,12 @@ fun SegmentedActionSection(
                 topEnd = MaterialTheme.shapes.extraSmall.topEnd,
                 bottomEnd = MaterialTheme.shapes.extraSmall.bottomEnd
             )
+
             children.size - 1 -> MaterialTheme.shapes.extraLarge.copy(
                 topStart = MaterialTheme.shapes.extraSmall.topStart,
                 bottomStart = MaterialTheme.shapes.extraSmall.bottomStart
             )
+
             else -> MaterialTheme.shapes.extraSmall
         }
     }
@@ -57,8 +58,8 @@ fun SegmentedActionSection(
                     modifier = Modifier.then(
                         Modifier
                             .size(32.dp)
-                            .alpha(if (child.enabled) 1f else 0.5f)
                     ),
+                    enabled = child.enabled,
                     onClick = child.onClick,
                     shape = corners(index),
                     colors = child.colors ?: IconButtonDefaults.filledTonalIconButtonColors()
