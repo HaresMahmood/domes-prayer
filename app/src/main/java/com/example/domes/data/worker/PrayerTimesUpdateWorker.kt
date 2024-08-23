@@ -11,6 +11,7 @@ import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.firstOrNull
 import java.time.LocalDateTime
 
 @HiltWorker
@@ -21,28 +22,48 @@ class PrayerTimesUpdateWorker @AssistedInject constructor(
     private val useCases: PrayerUseCases,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        // TODO: Might need to do extra work for prayers the next day depending of time of day called
         try {
-            Prayer.ALL.forEach(alarmService::cancel)
+            val prayerNotifications = useCases.getPrayerNotifications().firstOrNull().orEmpty()
 
-            val currentTime = LocalDateTime.now()
-            val coordinates = useCases.getLocation()
-            val parameters = (useCases.getCalculationMethod()
-                ?: CalculationMethod.MUSLIM_WORLD_LEAGUE).parameters
+            println("Prayer notifications: $prayerNotifications")
 
-            coordinates?.let {
-                val (prayerTimes, _) = useCases.getPrayerTimes(
-                    currentTime.toLocalDate(),
-                    it,
-                    parameters
-                )
+            Prayer.ALL.forEach { prayer ->
+                prayerNotifications.find { it.prayer == prayer }?.notifications?.forEach {
+                    alarmService.cancel(prayer, it)
+                } ?: alarmService.cancel(prayer)
+            }
 
-                useCases.updatePrayerTimes(prayerTimes.onEach { prayerTime ->
-                    if (currentTime.isBefore(prayerTime.time)) {
-                        alarmService.schedule(prayerTime)
-                    }
+            useCases.getLocation()?.let { coordinates ->
+                val currentTime = LocalDateTime.now()
+                val parameters = useCases.getCalculationMethod()?.parameters
+                    ?: CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters
+                val today = currentTime.toLocalDate()
+                val prayerTimes = listOf(today, today.plusDays(1)).flatMap { date ->
+                    useCases.getPrayerTimes(date, coordinates, parameters).first
                 }
-                )
+
+                println("All prayer times: $prayerTimes")
+
+                useCases.updatePrayerTimes(prayerTimes.filter {
+                    it.time.toLocalDate() == today
+                })
+
+                val filteredPrayerTimes = prayerTimes.filter {
+                    it.time.isAfter(currentTime) && it.time.isBefore(currentTime.plusDays(1))
+                }
+
+                filteredPrayerTimes.groupBy { it.prayer }
+                    .forEach { (prayer, times) ->
+                        useCases.getPrayerNotification(prayer)?.takeIf { it.isNotificationAllowed }
+                            ?.let { notification ->
+                                notification.notifications.forEach {
+                                    alarmService.schedule(
+                                        times.first(),
+                                        it
+                                    )
+                                }
+                            } ?: alarmService.schedule(times.first())
+                    }
             }
         } catch (e: Exception) {
             e.message?.let { Log.e("PRAYER-TIMES-UPDATE-WORKER", it) }
