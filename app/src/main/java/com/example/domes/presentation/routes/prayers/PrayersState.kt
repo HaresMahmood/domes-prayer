@@ -24,4 +24,5 @@ data class PrayersState(
     var isLoading: Boolean = true,
     var isRefreshing: Boolean = false,
     var showOverarchingDropdown: Boolean = false,
+    var showSnoozeDialog: Boolean = false,
 )

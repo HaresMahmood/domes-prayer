@@ -207,6 +207,13 @@ class PrayersViewModel @Inject constructor(
                         ?: !_state.value.showOverarchingDropdown
                 )
             }
+
+            is PrayersEvent.SetSnoozeDialogVisibility -> {
+                _state.value = _state.value.copy(
+                    showSnoozeDialog = event.isVisible
+                        ?: !_state.value.showSnoozeDialog
+                )
+            }
         }
     }
 

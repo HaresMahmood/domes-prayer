@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -35,6 +36,7 @@ import com.example.domes.presentation.common.composables.button.ActionSectionChi
 import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.dialog.InputDialog
+import com.example.domes.presentation.common.composables.listitem.IndicativeTrailingContent
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.PrayersViewModel
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
@@ -145,7 +147,12 @@ fun LocationScreen(
                             isLastItem = true,
                             onClick = {
                                 viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
-                            }
+                            },
+                            trailingContent = {
+                                IndicativeTrailingContent {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = false)
+                                }
+                            },
                         )
                     }
                 }

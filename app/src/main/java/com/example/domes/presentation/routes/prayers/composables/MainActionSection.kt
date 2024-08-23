@@ -68,14 +68,18 @@ fun MainActionSection(
                 placeholderText = if (locale.isUnknown()) "Loading..." else null,
                 onClick = { navController.navigate(Screen.Location.route) })
         },
-        { ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze)) },
+        {
+            ActionSectionChip(
+                "Snooze alert", icon = IconSource(Icons.Outlined.Snooze),
+                onClick = onSnooze
+            )
+        },
         {
             ActionSectionChip(
                 "Period",
                 icon = IconSource(painterResource(R.drawable.menstrual_health_fill0_wght400_grad0_opsz24)),
                 trailingIcon = IconSource(Icons.Outlined.Check),
-                variant = Variant.SELECTED,
-                onClick = onSnooze
+                variant = Variant.SELECTED
             )
         }
     )

@@ -3,6 +3,7 @@ package com.example.domes.presentation.common.composables.dialog
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -46,8 +47,8 @@ fun DurationDialog(
     val currentTime = Calendar.getInstance()
 
     val timePickerState = rememberTimePickerState(
-        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE),
+//        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+//        initialMinute = currentTime.get(Calendar.MINUTE),
         is24Hour = true,
     )
 
@@ -60,6 +61,8 @@ fun DurationDialog(
             tonalElevation = 6.dp,
             modifier =
             Modifier
+//                .width(IntrinsicSize.Min)
+                .fillMaxWidth(0.8f)
                 .background(
                     shape = MaterialTheme.shapes.extraLarge,
                     color = MaterialTheme.colorScheme.surface
@@ -68,10 +71,31 @@ fun DurationDialog(
             Column {
                 DialogHeader(title, icon)
                 Spacer(Modifier.size(32.dp))
-                TimePicker(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = timePickerState,
-                )
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    TimeInput(
+                        state = timePickerState,
+                    )
+                }
+
+//                DurationView(
+//                    useCaseState = rememberUseCaseState(
+//                        visible = true,
+//                        embedded = true,
+//                        onCloseRequest = { }),
+//                    selection = DurationSelection(
+//                        withButtonView = false,
+//                    ) { newTimeInSeconds ->
+//                        selectedTimeInSeconds.value = newTimeInSeconds
+//                    },
+////                    header = Header.Custom { DialogHeader(title, icon) },
+//                    config = DurationConfig(
+//                        timeFormat = DurationFormat.HH_MM,
+//                        minTime = 30,
+//                        maxTime = 240,
+//                        icons = LibIcons.Outlined,
+////                  orientation = LibOrientation.LANDSCAPE
+//                    ),
+//                )
                 Spacer(Modifier.size(16.dp))
                 Divider()
 
@@ -101,6 +125,7 @@ fun DurationDialog(
             }
         }
     }
+
 //    com.maxkeppeler.sheets.duration.DurationDialog(
 //        state = rememberUseCaseState(visible = true, onCloseRequest = { }),
 //        selection = DurationSelection(

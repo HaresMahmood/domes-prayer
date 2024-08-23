@@ -76,6 +76,7 @@ import com.example.domes.presentation.routes.prayers.composables.PercentageWidth
 import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
+import com.example.domes.presentation.routes.prayers.composables.SnoozePrayerDialog
 import com.example.domes.presentation.routes.settings.routes.location.LocationEvent
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -288,7 +289,7 @@ fun PrayersScreen(
                             locationState.locale,
                             navController = navController,
                         ) {
-                            //viewModel.onEvent(PrayersEvent.Snooze)
+                            viewModel.onEvent(PrayersEvent.SetSnoozeDialogVisibility(true))
                         },
                         scrollBehavior = scrollBehaviourState
                     )
@@ -523,6 +524,16 @@ fun PrayersScreen(
                 pullRefreshState,
                 Modifier.align(Alignment.TopCenter)
             )
+
+            if (prayersState.showSnoozeDialog) {
+                prayersState.currentPrayer?.prayer?.let {
+                    SnoozePrayerDialog(
+                        prayer = it,
+                        onConfirm = { /*TODO*/ }) {
+
+                    }
+                }
+            }
         }
     }
 }

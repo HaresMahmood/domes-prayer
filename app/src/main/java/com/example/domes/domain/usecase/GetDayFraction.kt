@@ -21,6 +21,6 @@ class GetDayFraction {
 
         println("DAYFRACTION: ${fajrToTime / fajrToIsha}")
 
-        return (fajrToTime / fajrToIsha).toFloat()
+        return minOf((fajrToTime / fajrToIsha).toFloat(), 1.0f)
     }
 }
