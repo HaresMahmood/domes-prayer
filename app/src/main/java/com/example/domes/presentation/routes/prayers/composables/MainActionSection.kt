@@ -26,6 +26,7 @@ import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.S)
 fun MainActionSection(
+    isLoading: Boolean,
     prayerTimeLeft: Duration?,
     remainingTimePercentage: Float,
     notificationsGranted: Boolean,
@@ -38,7 +39,7 @@ fun MainActionSection(
     return listOf(
         {
             val text = when {
-                prayerTimeLeft == null -> "Loading..."
+                prayerTimeLeft == null || isLoading -> "Loading..."
                 prayerTimeLeft.toHoursPart() == 0 -> "${prayerTimeLeft.toMinutesPart()} mins left"
                 prayerTimeLeft.toMinutesPart() == 1 -> "${prayerTimeLeft.toHoursPart()}h 1 min left"
                 else -> "${prayerTimeLeft.toHoursPart()}h ${prayerTimeLeft.toMinutesPart()} mins left"
@@ -49,15 +50,15 @@ fun MainActionSection(
                 else -> Icons.Outlined.HourglassTop
             }
 
-            ActionSectionChip(
+            if (prayerTimeLeft != null) ActionSectionChip(
                 text,
                 icon = IconSource(icon),
                 variant = Variant.VISUAL,
-                placeholderText = if (prayerTimeLeft == null) "Loading..." else null,
+                placeholderText = if (isLoading) "Loading..." else null,
             )
         },
         {
-            if (!notificationsAllowed) ActionSectionChip(
+            if (!notificationsAllowed && !isLoading) ActionSectionChip(
                 if (!notificationsGranted) "Notifications disabled" else "Notifications off",
                 icon = IconSource(Icons.Outlined.NotificationsOff),
                 onClick = { navController.navigate(Screen.Notifications.route) })

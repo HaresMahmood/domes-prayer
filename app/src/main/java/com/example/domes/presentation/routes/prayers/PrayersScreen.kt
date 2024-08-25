@@ -282,11 +282,12 @@ fun PrayersScreen(
                             }
                         },
                         bottomActions = MainActionSection(
-                            prayersState.timeLeft,
-                            viewModel.calculateRemainingPrayerTime(),
-                            notificationPermissionState.status.isGranted,
-                            isNotificationsAllowed,
-                            locationState.locale,
+                            isLoading = prayersState.isLoading,
+                            prayerTimeLeft = prayersState.timeLeft,
+                            remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
+                            notificationsGranted = notificationPermissionState.status.isGranted,
+                            notificationsAllowed = isNotificationsAllowed,
+                            locale = locationState.locale,
                             snoozedUntil = prayersState.snoozedUntil,
                             navController = navController,
                         ) {
