@@ -12,12 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -29,8 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeker.sheets.core.models.base.SelectionButton
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,12 +42,9 @@ fun DurationDialog(
     icon: IconSource? = null,
     bottomActions: List<@Composable () -> Unit> = emptyList(),
     setDialogVisibility: (Boolean) -> Unit,
-    affirmativeButton: SelectionButton? = null,
     onAffirmative: (result: Bundle) -> Unit,
 ) {
     val selectedTimeInSeconds = remember { mutableStateOf<Long>(240) }
-
-    val currentTime = Calendar.getInstance()
 
     val timePickerState = rememberTimePickerState(
 //        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
@@ -53,14 +53,15 @@ fun DurationDialog(
     )
 
     Dialog(
-        onDismissRequest = {},
+        onDismissRequest = {
+            setDialogVisibility(false)
+        },
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Surface(
             shape = MaterialTheme.shapes.extraLarge,
             tonalElevation = 6.dp,
-            modifier =
-            Modifier
+            modifier = Modifier
 //                .width(IntrinsicSize.Min)
                 .fillMaxWidth(0.8f)
                 .background(
@@ -115,12 +116,31 @@ fun DurationDialog(
                 Divider()
                 Row(
                     modifier = Modifier
-                        .padding(7.dp)
+                        .padding(horizontal = 24.dp, vertical = 10.dp)
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    TextButton(onClick = {}) { Text("Cancel") }
-                    TextButton(onClick = {}) { Text("Done") }
+                    OutlinedButton(
+                        onClick = {
+                            setDialogVisibility(false)
+                        }
+                    ) {
+//                        Icon(Icons.Outlined.Close, "Cancel")
+//                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text("Cancel")
+                    }
+                    Button(modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            onAffirmative(
+                                Bundle().apply {
+                                    putLong("duration", selectedTimeInSeconds.value)
+                                }
+                            )
+                        }) {
+                        Icon(Icons.Outlined.Done, "Done")
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text("Done")
+                    }
                 }
             }
         }

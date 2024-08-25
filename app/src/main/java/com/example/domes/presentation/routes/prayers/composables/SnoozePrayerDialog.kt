@@ -1,5 +1,6 @@
 package com.example.domes.presentation.routes.prayers.composables
 
+import android.os.Bundle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.runtime.Composable
@@ -12,14 +13,14 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 @Composable
 fun SnoozePrayerDialog(
     prayer: Prayer,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
+    setDialogVisibility: (Boolean) -> Unit,
+    onAffirmative: (result: Bundle) -> Unit,
 ) {
     DurationDialog(
         title = "Snooze ${prayer.name}",
         icon = IconSource(Icons.Outlined.Schedule),
-        onAffirmative = {},
-        setDialogVisibility = {},
+        setDialogVisibility = setDialogVisibility,
+        onAffirmative = onAffirmative,
         bottomActions = listOf(
             { ActionSectionChip("5 mins") },
             { ActionSectionChip("15 mins") },
@@ -35,7 +36,7 @@ fun SnoozePrayerDialog(
 fun SnoozePrayerDialogPreview() {
     SnoozePrayerDialog(
         Prayer.FAJR,
-        onConfirm = {},
-        onDismiss = {},
+        setDialogVisibility = {},
+        onAffirmative = {},
     )
 }

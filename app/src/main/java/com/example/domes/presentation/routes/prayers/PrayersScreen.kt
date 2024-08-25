@@ -529,9 +529,9 @@ fun PrayersScreen(
                 prayersState.currentPrayer?.prayer?.let {
                     SnoozePrayerDialog(
                         prayer = it,
-                        onConfirm = { /*TODO*/ }) {
-
-                    }
+                        setDialogVisibility = { viewModel.onEvent(PrayersEvent.SetSnoozeDialogVisibility(it)) },
+                        onAffirmative = { /*TODO*/ }
+                    )
                 }
             }
         }
