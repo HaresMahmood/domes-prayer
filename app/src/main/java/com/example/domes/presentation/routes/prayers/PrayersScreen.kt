@@ -287,6 +287,7 @@ fun PrayersScreen(
                             notificationPermissionState.status.isGranted,
                             isNotificationsAllowed,
                             locationState.locale,
+                            snoozedUntil = prayersState.snoozedUntil,
                             navController = navController,
                         ) {
                             viewModel.onEvent(PrayersEvent.SetSnoozeDialogVisibility(true))
@@ -526,11 +527,19 @@ fun PrayersScreen(
             )
 
             if (prayersState.showSnoozeDialog) {
-                prayersState.currentPrayer?.prayer?.let {
+                prayersState.currentPrayer?.prayer?.let { prayer ->
                     SnoozePrayerDialog(
-                        prayer = it,
-                        setDialogVisibility = { viewModel.onEvent(PrayersEvent.SetSnoozeDialogVisibility(it)) },
-                        onAffirmative = { /*TODO*/ }
+                        prayer = prayer,
+                        setDialogVisibility = {
+                            viewModel.onEvent(
+                                PrayersEvent.SetSnoozeDialogVisibility(
+                                    it
+                                )
+                            )
+                        },
+                        onAffirmative = { duration ->
+                            viewModel.onEvent(PrayersEvent.SnoozePrayer(duration))
+                        }
                     )
                 }
             }

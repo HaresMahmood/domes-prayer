@@ -19,28 +19,29 @@ import com.example.domes.domain.model.location.isUnknown
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.routes.Screen
+import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.Duration
+import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.S)
 fun MainActionSection(
-    timeLeft: Duration?,
+    prayerTimeLeft: Duration?,
     remainingTimePercentage: Float,
     notificationsGranted: Boolean,
     notificationsAllowed: Boolean,
     locale: Locale,
+    snoozedUntil: LocalDateTime? = null,
     navController: NavController,
     onSnooze: () -> Unit,
 ): List<@Composable () -> Unit> {
     return listOf(
         {
-            println("timer null? ${timeLeft == null}")
-
             val text = when {
-                timeLeft == null -> "Loading..."
-                timeLeft.toHoursPart() == 0 -> "${timeLeft.toMinutesPart()} mins left"
-                timeLeft.toMinutesPart() == 1 -> "${timeLeft.toHoursPart()}h 1 min left"
-                else -> "${timeLeft.toHoursPart()}h ${timeLeft.toMinutesPart()} mins left"
+                prayerTimeLeft == null -> "Loading..."
+                prayerTimeLeft.toHoursPart() == 0 -> "${prayerTimeLeft.toMinutesPart()} mins left"
+                prayerTimeLeft.toMinutesPart() == 1 -> "${prayerTimeLeft.toHoursPart()}h 1 min left"
+                else -> "${prayerTimeLeft.toHoursPart()}h ${prayerTimeLeft.toMinutesPart()} mins left"
             }
             val icon = when {
                 remainingTimePercentage < 0.15 -> Icons.Outlined.HourglassEmpty
@@ -52,7 +53,7 @@ fun MainActionSection(
                 text,
                 icon = IconSource(icon),
                 variant = Variant.VISUAL,
-                placeholderText = if (timeLeft == null) "Loading..." else null,
+                placeholderText = if (prayerTimeLeft == null) "Loading..." else null,
             )
         },
         {
@@ -70,7 +71,13 @@ fun MainActionSection(
         },
         {
             ActionSectionChip(
-                "Snooze alert", icon = IconSource(Icons.Outlined.Snooze),
+                if (snoozedUntil == null) "Snooze alert" else "Snoozed until ${
+                    snoozedUntil.format(
+                        getFormatter("HH:mm a")
+                    )
+                }",
+                variant = if (snoozedUntil == null) Variant.DEFAULT else Variant.SELECTED,
+                icon = IconSource(Icons.Outlined.Snooze),
                 onClick = onSnooze
             )
         },

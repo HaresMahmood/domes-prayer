@@ -29,6 +29,7 @@ import com.example.domes.presentation.routes.settings.routes.location.LocationEv
 import com.example.domes.presentation.routes.settings.routes.location.LocationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -51,6 +52,7 @@ class PrayersViewModel @Inject constructor(
     val workManager = WorkManager.getInstance(context)
 
     private var getPrayerRecordJob: Job? = null
+    private var snoozePrayerJob: Job? = null
     private val currentTime = LocalDateTime.now()
 
     // Events
@@ -201,6 +203,16 @@ class PrayersViewModel @Inject constructor(
                 }
             }
 
+            is PrayersEvent.SnoozePrayer -> {
+                _state.value = _state.value.copy(snoozedUntil = currentTime.plus(event.duration))
+
+                snoozePrayerJob?.cancel()
+                snoozePrayerJob = viewModelScope.launch {
+                    delay(event.duration.toMillis())
+                    _state.value = _state.value.copy(snoozedUntil = null)
+                }
+            }
+
             is PrayersEvent.SetOverarchingDropdownVisibility -> {
                 _state.value = _state.value.copy(
                     showOverarchingDropdown = event.isVisible
@@ -214,6 +226,7 @@ class PrayersViewModel @Inject constructor(
                         ?: !_state.value.showSnoozeDialog
                 )
             }
+
         }
     }
 

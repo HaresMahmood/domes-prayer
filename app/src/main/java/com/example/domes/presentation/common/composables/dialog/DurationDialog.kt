@@ -1,6 +1,5 @@
 package com.example.domes.presentation.common.composables.dialog
 
-import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,14 +25,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.maxkeppeker.sheets.core.models.base.IconSource
+import java.time.Duration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,13 +40,9 @@ fun DurationDialog(
     icon: IconSource? = null,
     bottomActions: List<@Composable () -> Unit> = emptyList(),
     setDialogVisibility: (Boolean) -> Unit,
-    onAffirmative: (result: Bundle) -> Unit,
+    onAffirmative: (duration: Duration) -> Unit,
 ) {
-    val selectedTimeInSeconds = remember { mutableStateOf<Long>(240) }
-
     val timePickerState = rememberTimePickerState(
-//        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-//        initialMinute = currentTime.get(Calendar.MINUTE),
         is24Hour = true,
     )
 
@@ -129,13 +123,16 @@ fun DurationDialog(
 //                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                         Text("Cancel")
                     }
-                    Button(modifier = Modifier.fillMaxWidth(),
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = timePickerState.hour != 0 || timePickerState.minute != 0,
                         onClick = {
-                            onAffirmative(
-                                Bundle().apply {
-                                    putLong("duration", selectedTimeInSeconds.value)
-                                }
+                            val duration = Duration.ofMinutes(
+                                timePickerState.hour * 60L + timePickerState.minute
                             )
+
+                            onAffirmative(duration)
+                            setDialogVisibility(false)
                         }) {
                         Icon(Icons.Outlined.Done, "Done")
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))

@@ -5,6 +5,7 @@ import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.chrono.HijrahDate
 
 data class PrayersState(
@@ -18,7 +19,7 @@ data class PrayersState(
     val totalTime: Duration? = null,
     val timeLeft: Duration? = null,
     val dayFraction: Float = 0.0f,
-    val snoozeTimer: Duration? = null,
+    val snoozedUntil: LocalDateTime? = null,
     val expandedPrayer: PrayerTime? = null,
     val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now()),
     var isLoading: Boolean = true,

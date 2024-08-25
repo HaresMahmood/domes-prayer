@@ -3,6 +3,7 @@ package com.example.domes.presentation.routes.prayers
 import com.example.domes.domain.model.prayer.MissedReason
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerTime
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -18,6 +19,7 @@ sealed class PrayersEvent {
 
     data class ChangeExpandedPrayer(val prayerTime: PrayerTime?) : PrayersEvent()
     data class ChangeDate(val date: LocalDate) : PrayersEvent()
+    data class SnoozePrayer(val duration: Duration) : PrayersEvent()
     data object RefreshLocation : PrayersEvent()
     data class SetOverarchingDropdownVisibility(val isVisible: Boolean? = null) : PrayersEvent()
     data class SetSnoozeDialogVisibility(val isVisible: Boolean? = null) : PrayersEvent()
