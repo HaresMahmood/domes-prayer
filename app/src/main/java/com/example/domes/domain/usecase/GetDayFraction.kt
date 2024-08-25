@@ -17,10 +17,6 @@ class GetDayFraction {
         val fajrToIsha = isha - fajr
         val fajrToTime = time - fajr
 
-        println("DAYFRACTION: ${fajr},  ${isha}, ${time}")
-
-        println("DAYFRACTION: ${fajrToTime / fajrToIsha}")
-
-        return minOf((fajrToTime / fajrToIsha).toFloat(), 1.0f)
+        return maxOf(0.0f, minOf((fajrToTime / fajrToIsha).toFloat(), 1.0f))
     }
 }
