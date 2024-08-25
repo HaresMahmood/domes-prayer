@@ -59,7 +59,7 @@ class PrayersViewModel @Inject constructor(
 
     private val timeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
-            if (intent?.action == Intent.ACTION_TIME_TICK) {
+            if (intent?.action == Intent.ACTION_TIME_TICK && _state.value.currentPrayer != null) {
                 onEvent(PrayersEvent.ChangeTime(currentTime))
 
                 if (currentTime.isAfter(_state.value.currentPrayer?.timeWindow)) {
