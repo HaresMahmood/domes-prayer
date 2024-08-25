@@ -204,7 +204,8 @@ class PrayersViewModel @Inject constructor(
             }
 
             is PrayersEvent.SnoozePrayer -> {
-                _state.value = _state.value.copy(snoozedUntil = currentTime.plus(event.duration))
+                _state.value =
+                    _state.value.copy(snoozedUntil = LocalDateTime.now().plus(event.duration))
 
                 snoozePrayerJob?.cancel()
                 snoozePrayerJob = viewModelScope.launch {

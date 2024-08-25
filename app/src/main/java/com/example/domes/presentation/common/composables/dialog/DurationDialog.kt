@@ -30,15 +30,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import java.time.Duration
+
+data class DurationPreset(
+    val title: String,
+    val duration: Duration,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DurationDialog(
     title: String,
     icon: IconSource? = null,
-    bottomActions: List<@Composable () -> Unit> = emptyList(),
+    bottomActions: List<DurationPreset> = emptyList(),
     setDialogVisibility: (Boolean) -> Unit,
     onAffirmative: (duration: Duration) -> Unit,
 ) {
@@ -102,7 +108,10 @@ fun DurationDialog(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         items(bottomActions.size) { index ->
-                            bottomActions[index]()
+                            ActionSectionChip(
+                                title = bottomActions[index].title,
+                                onClick = {}
+                            )
                         }
                     }
                 }
