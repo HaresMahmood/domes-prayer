@@ -393,14 +393,19 @@ class PrayersViewModel @Inject constructor(
                         currentPrayerTimes = prayerTimes,
                         currentRawPrayerTimes = rawPrayerTimes,
                         currentPrayer = currentPrayer,
-                        timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, currentPrayer),
-                        totalTime = prayersUseCases.getPrayerTimeLeft(
-                            currentPrayer.time,
-                            currentPrayer
-                        ),
                         selectedHijriDate = prayersUseCases.getHijriDate(_state.value.selectedDate),
                         dayFraction = prayersUseCases.getDayFraction(rawPrayerTimes, currentTime)
                     )
+
+                    currentPrayer?.let {
+                        _state.value = _state.value.copy(
+                            timeLeft = prayersUseCases.getPrayerTimeLeft(currentTime, it),
+                            totalTime = prayersUseCases.getPrayerTimeLeft(
+                                it.time,
+                                it
+                            ),
+                        )
+                    }
                 }
             }
         }
