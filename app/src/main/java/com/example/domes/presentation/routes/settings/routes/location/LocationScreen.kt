@@ -2,41 +2,52 @@ package com.example.domes.presentation.routes.settings.routes.location
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Autorenew
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material.icons.outlined.SwapVert
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.domes.domain.model.location.isUnknown
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.Variant
+import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.card.FixedCard
-import com.example.domes.presentation.common.composables.dialog.InputDialog
+import com.example.domes.presentation.common.composables.card.sections.ActionSection
 import com.example.domes.presentation.common.composables.listitem.IndicativeTrailingContent
+import com.example.domes.presentation.common.composables.listitem.ListItemDivider
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.PrayersViewModel
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
@@ -44,9 +55,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeler.sheets.input.models.InputHeader
-import com.maxkeppeler.sheets.input.models.InputTextField
-import com.maxkeppeler.sheets.input.models.ValidationResult
 
 class UIConstants {
     companion object
@@ -68,24 +76,20 @@ fun LocationScreen(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LayeredTopAppBar(
-                "Location",
-                navigationIcon = {
-                    if (state.location != null && navController.previousBackStackEntry != null) {
-                        IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
-                            Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
-                        }
+            LayeredTopAppBar("Location", navigationIcon = {
+                if (state.location != null && navController.previousBackStackEntry != null) {
+                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
-                },
-                bottomActions = listOf {
-                    ActionSectionChip(
-                        "${state.locale.city}, ${state.locale.countryCode}",
-                        Variant.VISUAL,
-                        placeholderText = if (state.locale.isUnknown()) "Loading..." else null,
-                        icon = IconSource(Icons.Outlined.PinDrop)
-                    )
-                },
-                scrollBehavior = scrollBehavior
+                }
+            }, bottomActions = listOf {
+                ActionSectionChip(
+                    "${state.locale.city}, ${state.locale.countryCode}",
+                    Variant.VISUAL,
+                    placeholderText = if (state.locale.isUnknown()) "Loading..." else null,
+                    icon = IconSource(Icons.Outlined.PinDrop)
+                )
+            }, scrollBehavior = scrollBehavior
             )
         },
 
@@ -96,8 +100,7 @@ fun LocationScreen(
                 .padding(innerPadding),
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
@@ -115,44 +118,101 @@ fun LocationScreen(
                                 }
                             },
                         )
-                        SettingsListItem(
-                            "Auto-update",
+                        SettingsListItem("Auto-update",
                             IconSource(Icons.Outlined.Autorenew),
                             "Fetch location in the background",
                             trailingContent = {
-                                Switch(
-                                    checked = state.isAutoUpdateEnabled,
-                                    onCheckedChange = {
-                                        viewModel.onEvent(LocationEvent.ToggleAutoUpdate)
-                                    }
-                                )
+                                Switch(checked = state.isAutoUpdateEnabled, onCheckedChange = {
+                                    viewModel.onEvent(LocationEvent.ToggleAutoUpdate)
+                                })
                             },
                             isLastItem = true,
-                            onClick = { viewModel.onEvent(LocationEvent.ToggleAutoUpdate) }
-                        )
+                            onClick = { viewModel.onEvent(LocationEvent.ToggleAutoUpdate) })
                     }
                 }
                 item {
-                    FixedCard {
-                        SettingsListItem(
-                            "Map",
-                            IconSource(Icons.Outlined.Map),
-                            "Manually search for a location",
-                            onClick = { },
-                        )
-                        SettingsListItem(
-                            "Coordinates",
-                            IconSource(Icons.Outlined.Language),
-                            "Manually enter latitude and logitude",
-                            isLastItem = true,
-                            onClick = {
-                                viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
+                    Column {
+                        ExpandableCard(
+                            content = {
+                                SettingsListItem(
+                                    "Map",
+                                    IconSource(Icons.Outlined.Map),
+                                    "Manually search for a location",
+                                    onClick = { },
+                                    isLastItem = true,
+                                )
                             },
-                            trailingContent = {
-                                IndicativeTrailingContent {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = false)
+                            expand = {},
+                            isEnabled = false,
+                            isFirstItem = true,
+                            isBeforeExpandedItem = state.showCoordinatesDialog
+                        )
+                        ExpandableCard(
+                            content = {
+                                SettingsListItem(
+                                    "Coordinates",
+                                    IconSource(Icons.Outlined.Language),
+                                    "Manually enter latitude and logitude",
+                                    onClick = {
+                                        viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
+                                    },
+                                    trailingContent = {
+                                        IndicativeTrailingContent {
+                                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
+                                        }
+                                    },
+                                    isLastItem = true,
+                                )
+                            },
+                            expandedContent = {
+                                ListItemDivider()
+                                SettingsListItem(
+                                    icon = IconSource(Icons.Outlined.SwapHoriz),
+                                    trailingContent = {
+                                        OutlinedTextField(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            value = state.location?.latitude.toString(),
+                                            label = { Text("Latitude") },
+                                            onValueChange = {},
+                                            textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+                                        )
+                                    },
+                                    isLastItem = true
+                                )
+                                SettingsListItem(
+                                    icon = IconSource(Icons.Outlined.SwapVert),
+                                    trailingContent = {
+                                        OutlinedTextField(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            value = state.location?.latitude.toString(),
+                                            label = { Text("Latitude") },
+                                            onValueChange = {},
+                                            textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+                                        )
+                                    },
+                                    isLastItem = true
+                                )
+                                ActionSection {
+                                    FilledTonalButton(
+                                        onClick = {
+                                            viewModel.onEvent(
+                                                LocationEvent.SetCoordinatesDialogVisibility(
+                                                    false
+                                                )
+                                            )
+                                        }
+                                    ) {
+                                        Icon(Icons.Outlined.Done, "Done")
+                                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                        Text("Done")
+                                    }
                                 }
                             },
+                            isExpanded = state.showCoordinatesDialog,
+                            expand = {
+                                viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility(it))
+                            },
+                            isLastItem = true,
                         )
                     }
                 }
@@ -160,61 +220,61 @@ fun LocationScreen(
         }
 
         // TODO: Broken
-        if (state.showCoordinatesDialog) {
-            InputDialog(
-                title = "Coordinates",
-                icon = IconSource(Icons.Outlined.Language),
-                inputs = listOf(
-                    InputTextField(
-                        text = state.location?.latitude.toString(),
-                        header = InputHeader(
-                            title = "Latitude",
-                            icon = IconSource(Icons.Outlined.SwapHoriz)
-                        ),
-                        required = true,
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        validationListener = { value ->
-                            if ((value?.toDoubleOrNull()
-                                    ?: 100.0) <= 50.0 && ((value?.toDoubleOrNull()
-                                    ?: -100.0) >= -50.0)
-                            ) ValidationResult.Valid
-                            else ValidationResult.Invalid("Enter a valid value")
-                        }
-                    ),
-                    InputTextField(
-                        text = state.location?.longitude.toString(),
-                        header = InputHeader(
-                            title = "Longitude",
-                            icon = IconSource(Icons.Outlined.SwapVert)
-                        ),
-                        required = true,
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        validationListener = { value ->
-                            if ((value?.toDoubleOrNull()
-                                    ?: 100.0) <= 50.0 && ((value?.toDoubleOrNull()
-                                    ?: -100.0) >= -50.0)
-                            ) ValidationResult.Valid
-                            else ValidationResult.Invalid("Enter a valid value")
-                        }
-                    )
-                ),
-                setDialogVisibility = {
-                    viewModel.onEvent(
-                        LocationEvent.SetCoordinatesDialogVisibility(
-                            false
-                        )
-                    )
-                }
-            ) {
-                viewModel.onEvent(
-                    LocationEvent.ChangeCoordinates(
-                        it.getString("0")!!.toDouble(),
-                        it.getString("1")!!.toDouble()
-                    )
-                )
-            }
-        }
+//        if (state.showCoordinatesDialog) {
+//            InputDialog(
+//                title = "Coordinates",
+//                icon = IconSource(Icons.Outlined.Language),
+//                inputs = listOf(
+//                    InputTextField(
+//                        text = state.location?.latitude.toString(),
+//                        header = InputHeader(
+//                            title = "Latitude",
+//                            icon = IconSource(Icons.Outlined.SwapHoriz)
+//                        ),
+//                        required = true,
+//                        singleLine = true,
+//                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+//                        validationListener = { value ->
+//                            if ((value?.toDoubleOrNull()
+//                                    ?: 100.0) <= 50.0 && ((value?.toDoubleOrNull()
+//                                    ?: -100.0) >= -50.0)
+//                            ) ValidationResult.Valid
+//                            else ValidationResult.Invalid("Enter a valid value")
+//                        }
+//                    ),
+//                    InputTextField(
+//                        text = state.location?.longitude.toString(),
+//                        header = InputHeader(
+//                            title = "Longitude",
+//                            icon = IconSource(Icons.Outlined.SwapVert)
+//                        ),
+//                        required = true,
+//                        singleLine = true,
+//                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+//                        validationListener = { value ->
+//                            if ((value?.toDoubleOrNull()
+//                                    ?: 100.0) <= 50.0 && ((value?.toDoubleOrNull()
+//                                    ?: -100.0) >= -50.0)
+//                            ) ValidationResult.Valid
+//                            else ValidationResult.Invalid("Enter a valid value")
+//                        }
+//                    )
+//                ),
+//                setDialogVisibility = {
+//                    viewModel.onEvent(
+//                        LocationEvent.SetCoordinatesDialogVisibility(
+//                            false
+//                        )
+//                    )
+//                }
+//            ) {
+//                viewModel.onEvent(
+//                    LocationEvent.ChangeCoordinates(
+//                        it.getString("0")!!.toDouble(),
+//                        it.getString("1")!!.toDouble()
+//                    )
+//                )
+//            }
+//        }
     }
 }

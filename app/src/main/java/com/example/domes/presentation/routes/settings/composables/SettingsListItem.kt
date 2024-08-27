@@ -19,12 +19,14 @@ import androidx.compose.material.icons.outlined.LockReset
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
@@ -42,7 +44,7 @@ enum class Variant {
 
 @Composable
 fun SettingsListItem(
-    title: String,
+    title: String? = null,
     icon: IconSource,
     description: String? = null,
     value: String? = null,
@@ -83,7 +85,7 @@ fun SettingsListItem(
                 .alpha(if (isEnabled) 1f else 0.5f)
                 .then(if (onClick != null && isEnabled) Modifier.clickable { onClick() } else Modifier),
             colors = colors,
-            headlineContent = { Text(title) },
+            headlineContent = { if (title != null) Text(title) else if (trailingContent != null) trailingContent() },
             leadingContent = {
                 IconComponent(modifier = Modifier, iconSource = icon)
             },
@@ -92,7 +94,7 @@ fun SettingsListItem(
                     Text(description ?: value ?: "")
                 }
             },
-            trailingContent = trailingContent
+            trailingContent = { if (title != null) trailingContent?.invoke() }
         )
 
         if (extendedContent != null) {
@@ -243,6 +245,19 @@ fun DomesPreview() {
                 icon = IconSource(Icons.Outlined.LockReset),
                 variant = Variant.ERROR,
                 isLastItem = true
+            )
+
+            SettingsListItem(
+                icon = IconSource(Icons.Outlined.LockReset),
+                trailingContent = {
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = "00.00000000000000000000",
+                        onValueChange = {},
+                        label = { Text("Latitude") },
+                        textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+                    )
+                }
             )
         }
     }

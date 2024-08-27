@@ -112,7 +112,6 @@ fun ManagePrayerCard(
                 isLastItem = true
             )
             SettingsListItem(
-                title = "",
                 icon = IconSource(Icons.AutoMirrored.Outlined.CompareArrows),
                 trailingContent = {
                     SegmentedButtons {
@@ -172,8 +171,6 @@ fun ManagePrayerCard(
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text("Remove")
                 }
-
-//                ActionSectionChip("Snooze alert", icon = IconSource(Icons.Outlined.Snooze))
             }
         },
         expand = expand,
