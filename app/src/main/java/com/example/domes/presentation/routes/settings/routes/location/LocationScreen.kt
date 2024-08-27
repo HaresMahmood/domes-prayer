@@ -86,7 +86,12 @@ fun LocationScreen(
         topBar = {
             LayeredTopAppBar("Location", navigationIcon = {
                 if (state.location != null && navController.previousBackStackEntry != null) {
-                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                    IconButton(onClick = {
+                        navController.popBackStack(
+                            route = Screen.Settings.route,
+                            inclusive = false
+                        )
+                    }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 }

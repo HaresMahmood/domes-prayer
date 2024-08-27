@@ -50,7 +50,7 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 fun ManagePrayerScreen(
     navController: NavController,
     prayer: Prayer,
-    viewModel: ManagePrayerViewModel = hiltViewModel()
+    viewModel: ManagePrayerViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.value
 
@@ -64,7 +64,8 @@ fun ManagePrayerScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-    val isNotificationsAllowed = notificationPermissionState.status.isGranted && state.notification?.isNotificationAllowed == true
+    val isNotificationsAllowed =
+        notificationPermissionState.status.isGranted && state.notification?.isNotificationAllowed == true
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -73,7 +74,12 @@ fun ManagePrayerScreen(
                 prayer.name,
                 backgroundText = prayer.arabicName,
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Screen.Notifications.route) }) {
+                    IconButton(onClick = {
+                        navController.popBackStack(
+                            route = Screen.Notifications.route,
+                            inclusive = false
+                        )
+                    }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -122,8 +128,7 @@ fun ManagePrayerScreen(
                                     onCheckedChange = {
                                         if (notificationPermissionState.status.isGranted) {
                                             viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
-                                        }
-                                        else {
+                                        } else {
                                             notificationPermissionState.launchPermissionRequest()
                                         }
                                     }
@@ -133,8 +138,7 @@ fun ManagePrayerScreen(
                             onClick = {
                                 if (notificationPermissionState.status.isGranted) {
                                     viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed())
-                                }
-                                else {
+                                } else {
                                     notificationPermissionState.launchPermissionRequest()
                                 }
                             }
@@ -150,7 +154,12 @@ fun ManagePrayerScreen(
                                         Text(
                                             if (index == 0) "Default" else "Additional",
                                             style = MaterialTheme.typography.labelMedium,
-                                            modifier = Modifier.padding(top = if (index == 0) 0.dp else 20.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)
+                                            modifier = Modifier.padding(
+                                                top = if (index == 0) 0.dp else 20.dp,
+                                                bottom = 20.dp,
+                                                start = 20.dp,
+                                                end = 20.dp
+                                            )
                                         )
                                     }
                                     ManagePrayerCard(
@@ -164,10 +173,19 @@ fun ManagePrayerScreen(
                                         isBeforeExpandedItem = index == state.expandedNotificationIndex?.let { item -> item - 1 },
                                         isAfterExpandedItem = index == state.expandedNotificationIndex?.let { item -> item + 1 },
                                         changeOffset = { increment ->
-                                            viewModel.onEvent(ManagePrayerEvent.ChangeOffset(notification, increment))
+                                            viewModel.onEvent(
+                                                ManagePrayerEvent.ChangeOffset(
+                                                    notification,
+                                                    increment
+                                                )
+                                            )
                                         },
                                         changeOffsetRelation = {
-                                            viewModel.onEvent(ManagePrayerEvent.ToggleOffsetPolarity(notification))
+                                            viewModel.onEvent(
+                                                ManagePrayerEvent.ToggleOffsetPolarity(
+                                                    notification
+                                                )
+                                            )
                                         },
                                         expand = { expanded ->
                                             viewModel.onEvent(

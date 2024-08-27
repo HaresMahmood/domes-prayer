@@ -232,7 +232,12 @@ fun CalculationScreen(
             LayeredTopAppBar(
                 "Calculation",
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                    IconButton(onClick = {
+                        navController.popBackStack(
+                            route = Screen.Settings.route,
+                            inclusive = false
+                        )
+                    }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 },

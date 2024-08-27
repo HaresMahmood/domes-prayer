@@ -58,7 +58,12 @@ fun SettingsScreen(
             LayeredTopAppBar(
                 "Settings",
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Screen.Prayers.route) }) {
+                    IconButton(onClick = {
+                        navController.popBackStack(
+                            route = Screen.Prayers.route,
+                            inclusive = false
+                        )
+                    }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 },
