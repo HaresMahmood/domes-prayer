@@ -152,7 +152,7 @@ class MainActivity : ComponentActivity() {
 
                                 LocationScreen(
                                     navController,
-                                    viewModel = viewModel
+                                    prayersViewModel = viewModel,
                                 )
                             }
                             composable(route = Screen.Calculation.route) {

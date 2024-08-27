@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.domain.model.location.isUnknown
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
@@ -49,6 +50,7 @@ import com.example.domes.presentation.common.composables.card.sections.ActionSec
 import com.example.domes.presentation.common.composables.listitem.IndicativeTrailingContent
 import com.example.domes.presentation.common.composables.listitem.ListItemDivider
 import com.example.domes.presentation.routes.Screen
+import com.example.domes.presentation.routes.prayers.PrayersEvent
 import com.example.domes.presentation.routes.prayers.PrayersViewModel
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -64,9 +66,11 @@ class UIConstants {
 @Composable
 fun LocationScreen(
     navController: NavController,
-    viewModel: PrayersViewModel,
+    prayersViewModel: PrayersViewModel,
+    locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
-    val state = viewModel.locationState.value
+    val state = prayersViewModel.prayersState.value
+    val uiState = locationViewModel.state.value
 
     val locationPermissionState =
         rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -112,7 +116,7 @@ fun LocationScreen(
                             "Fetch up-to-date location via GPS",
                             onClick = {
                                 if (locationPermissionState.status.isGranted) {
-                                    viewModel.onEvent(LocationEvent.RefreshLocation)
+                                    prayersViewModel.onEvent(PrayersEvent.RefreshLocation)
                                 } else {
                                     locationPermissionState.launchPermissionRequest()
                                 }
@@ -122,12 +126,12 @@ fun LocationScreen(
                             IconSource(Icons.Outlined.Autorenew),
                             "Fetch location in the background",
                             trailingContent = {
-                                Switch(checked = state.isAutoUpdateEnabled, onCheckedChange = {
-                                    viewModel.onEvent(LocationEvent.ToggleAutoUpdate)
+                                Switch(checked = uiState.isAutoUpdateEnabled, onCheckedChange = {
+                                    locationViewModel.onEvent(LocationEvent.ToggleAutoUpdate)
                                 })
                             },
                             isLastItem = true,
-                            onClick = { viewModel.onEvent(LocationEvent.ToggleAutoUpdate) })
+                            onClick = { locationViewModel.onEvent(LocationEvent.ToggleAutoUpdate) })
                     }
                 }
                 item {
@@ -145,7 +149,7 @@ fun LocationScreen(
                             expand = {},
                             isEnabled = false,
                             isFirstItem = true,
-                            isBeforeExpandedItem = state.showCoordinatesDialog
+                            isBeforeExpandedItem = uiState.expandCoordinatesSetting
                         )
                         ExpandableCard(
                             content = {
@@ -154,7 +158,7 @@ fun LocationScreen(
                                     IconSource(Icons.Outlined.Language),
                                     "Manually enter latitude and logitude",
                                     onClick = {
-                                        viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility())
+                                        locationViewModel.onEvent(LocationEvent.ExpandCoordinatesSetting())
                                     },
                                     trailingContent = {
                                         IndicativeTrailingContent {
@@ -173,7 +177,11 @@ fun LocationScreen(
                                             modifier = Modifier.fillMaxWidth(),
                                             value = state.location?.latitude.toString(),
                                             label = { Text("Latitude") },
-                                            onValueChange = {},
+                                            onValueChange = {
+                                                locationViewModel.onEvent(
+                                                    LocationEvent.OnLatitudeTextChange(it)
+                                                )
+                                            },
                                             textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
                                         )
                                     },
@@ -186,7 +194,11 @@ fun LocationScreen(
                                             modifier = Modifier.fillMaxWidth(),
                                             value = state.location?.latitude.toString(),
                                             label = { Text("Latitude") },
-                                            onValueChange = {},
+                                            onValueChange = {
+                                                locationViewModel.onEvent(
+                                                    LocationEvent.OnLongitudeTextChange(it)
+                                                )
+                                            },
                                             textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
                                         )
                                     },
@@ -195,8 +207,8 @@ fun LocationScreen(
                                 ActionSection {
                                     FilledTonalButton(
                                         onClick = {
-                                            viewModel.onEvent(
-                                                LocationEvent.SetCoordinatesDialogVisibility(
+                                            locationViewModel.onEvent(
+                                                LocationEvent.ExpandCoordinatesSetting(
                                                     false
                                                 )
                                             )
@@ -208,9 +220,9 @@ fun LocationScreen(
                                     }
                                 }
                             },
-                            isExpanded = state.showCoordinatesDialog,
+                            isExpanded = uiState.expandCoordinatesSetting,
                             expand = {
-                                viewModel.onEvent(LocationEvent.SetCoordinatesDialogVisibility(it))
+                                locationViewModel.onEvent(LocationEvent.ExpandCoordinatesSetting(it))
                             },
                             isLastItem = true,
                         )

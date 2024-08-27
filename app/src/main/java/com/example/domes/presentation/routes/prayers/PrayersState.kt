@@ -1,6 +1,8 @@
 package com.example.domes.presentation.routes.prayers
 
+import com.batoulapps.adhan2.Coordinates
 import com.batoulapps.adhan2.PrayerTimes
+import com.example.domes.domain.model.location.Locale
 import com.example.domes.domain.model.prayer.PrayerRecord
 import com.example.domes.domain.model.prayer.PrayerTime
 import java.time.Duration
@@ -19,6 +21,8 @@ data class PrayersState(
     val totalTime: Duration? = null,
     val timeLeft: Duration? = null,
     val dayFraction: Float = 0.0f,
+    val location: Coordinates? = null,
+    val locale: Locale = Locale.unknown(),
     val snoozedUntil: LocalDateTime? = null,
     val expandedPrayer: PrayerTime? = null,
     val selectedPrayerRecord: PrayerRecord = PrayerRecord(LocalDate.now()),

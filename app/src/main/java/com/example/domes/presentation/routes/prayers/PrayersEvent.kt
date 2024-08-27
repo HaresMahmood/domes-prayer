@@ -21,6 +21,7 @@ sealed class PrayersEvent {
     data class ChangeDate(val date: LocalDate) : PrayersEvent()
     data class SnoozePrayer(val duration: Duration) : PrayersEvent()
     data object RefreshLocation : PrayersEvent()
+    data class ChangeCoordinates(val latitude: Double, val longitude: Double) : PrayersEvent()
     data class SetOverarchingDropdownVisibility(val isVisible: Boolean? = null) : PrayersEvent()
     data class SetSnoozeDialogVisibility(val isVisible: Boolean? = null) : PrayersEvent()
 }

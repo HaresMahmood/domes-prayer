@@ -77,7 +77,6 @@ import com.example.domes.presentation.routes.prayers.composables.PercentageWidth
 import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
 import com.example.domes.presentation.routes.prayers.composables.SnoozePrayerDialog
-import com.example.domes.presentation.routes.settings.routes.location.LocationEvent
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -118,7 +117,6 @@ fun PrayersScreen(
     notificationsViewModel: NotificationsViewModel,
 ) {
     val prayersState = viewModel.prayersState.value
-    val locationState = viewModel.locationState.value
     val notificationsState = notificationsViewModel.state.value
 
     val prayerTimes =
@@ -287,7 +285,7 @@ fun PrayersScreen(
                             remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
                             notificationsGranted = notificationPermissionState.status.isGranted,
                             notificationsAllowed = isNotificationsAllowed,
-                            locale = locationState.locale,
+                            locale = prayersState.locale,
                             snoozedUntil = prayersState.snoozedUntil,
                             navController = navController,
                         ) {
@@ -301,13 +299,13 @@ fun PrayersScreen(
                     FloatingActionButton(
                         onClick = {
                             viewModel.onEvent(
-                                if (locationState.location?.latitude != 38.71667) {
-                                    LocationEvent.ChangeCoordinates(
+                                if (prayersState.location?.latitude != 38.71667) {
+                                    PrayersEvent.ChangeCoordinates(
                                         38.71667,
                                         -9.13333
                                     )
                                 } else {
-                                    LocationEvent.ChangeCoordinates(
+                                    PrayersEvent.ChangeCoordinates(
                                         55.3617609, -3.4433238
                                     )
                                 }

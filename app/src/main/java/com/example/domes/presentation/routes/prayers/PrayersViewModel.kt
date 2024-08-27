@@ -25,8 +25,6 @@ import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.domain.usecase.PrayerUseCases
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationEvent
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationState
-import com.example.domes.presentation.routes.settings.routes.location.LocationEvent
-import com.example.domes.presentation.routes.settings.routes.location.LocationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -42,11 +40,9 @@ class PrayersViewModel @Inject constructor(
     private val prayersUseCases: PrayerUseCases,
 ) : ViewModel() {
     private val _state = mutableStateOf(PrayersState())
-    private val _locationState = mutableStateOf(LocationState())
     private val _calculationState = mutableStateOf(CalculationState())
 
     val prayersState: State<PrayersState> = _state
-    val locationState: State<LocationState> = _locationState
     val calculationState: State<CalculationState> = _calculationState
 
     val workManager = WorkManager.getInstance(context)
@@ -155,7 +151,7 @@ class PrayersViewModel @Inject constructor(
 
                 getPrayerTimes(
                     _state.value.selectedDate,
-                    _locationState.value.location!!,
+                    _state.value.location!!,
                     _calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
                 )
             }
@@ -178,6 +174,17 @@ class PrayersViewModel @Inject constructor(
 //
 //                _state.value.isRefreshing = false
 //                _state.value.isLoading = false
+            }
+
+            is PrayersEvent.RefreshLocation -> {
+                viewModelScope.launch {
+                    fetchLocation { location ->
+                        updateCurrentPrayerTimes(
+                            location,
+                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                        )
+                    }
+                }
             }
 
             is PrayersEvent.ChangePrayerRecord -> {
@@ -228,27 +235,11 @@ class PrayersViewModel @Inject constructor(
                 )
             }
 
-        }
-    }
-
-    fun onEvent(event: LocationEvent) {
-        when (event) {
-            is LocationEvent.RefreshLocation -> {
-                viewModelScope.launch {
-                    fetchLocation { location ->
-                        updateCurrentPrayerTimes(
-                            location,
-                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
-                        )
-                    }
-                }
-            }
-
-            is LocationEvent.ChangeCoordinates -> {
+            is PrayersEvent.ChangeCoordinates -> {
                 val coordinates = Coordinates(event.latitude, event.longitude)
 
                 viewModelScope.launch {
-                    _locationState.value = _locationState.value.copy(
+                    _state.value = _state.value.copy(
                         location = coordinates,
                         locale = prayersUseCases.getLocale(coordinates)
                     )
@@ -269,22 +260,6 @@ class PrayersViewModel @Inject constructor(
                     prayersUseCases.setLocation(coordinates)
                 }
             }
-
-            is LocationEvent.ToggleAutoUpdate -> {
-                _locationState.value = _locationState.value.copy(
-                    isAutoUpdateEnabled = !_locationState.value.isAutoUpdateEnabled
-                )
-            }
-
-            // TODO: Broken?
-            is LocationEvent.SetCoordinatesDialogVisibility -> {
-                println("set coordinates dialog visibility: ${event.isVisible}")
-
-                _locationState.value = _locationState.value.copy(
-                    showCoordinatesDialog = event.isVisible
-                        ?: !_locationState.value.showCoordinatesDialog
-                )
-            }
         }
     }
 
@@ -300,7 +275,7 @@ class PrayersViewModel @Inject constructor(
                 }
 
                 updateCurrentPrayerTimes(
-                    _locationState.value.location!!,
+                    _state.value.location!!,
                     event.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
                 )
             }
@@ -315,7 +290,7 @@ class PrayersViewModel @Inject constructor(
                 }
 
                 updateCurrentPrayerTimes(
-                    _locationState.value.location!!,
+                    _state.value.location!!,
                     _calculationState.value.calculationMethod.parameters.copy(madhab = event.juristic)
                 )
             }
@@ -439,7 +414,7 @@ class PrayersViewModel @Inject constructor(
     private suspend fun getLocation(
         onDone: (Coordinates) -> Unit = {},
     ) = prayersUseCases.getLocation()?.let {
-        _locationState.value = _locationState.value.copy(
+        _state.value = _state.value.copy(
             location = it, locale = prayersUseCases.getLocale(it)
         )
 
@@ -458,7 +433,7 @@ class PrayersViewModel @Inject constructor(
     private suspend fun fetchLocation(
         onDone: (Coordinates) -> Unit,
     ) = prayersUseCases.fetchLocation()?.let {
-        _locationState.value = _locationState.value.copy(
+        _state.value = _state.value.copy(
             location = it, locale = prayersUseCases.getLocale(it)
         )
 
