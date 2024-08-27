@@ -62,7 +62,7 @@ import kotlin.math.abs
 @Composable
 fun QiblaScreen(
     navController: NavController,
-    viewModel: QiblaViewModel = hiltViewModel()
+    viewModel: QiblaViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.value
     val vibratorManager =
@@ -114,7 +114,12 @@ fun QiblaScreen(
             MediumTopAppBar(
                 titleText = state.locale.city ?: "Qibla",
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Screen.Prayers.route) }) {
+                    IconButton(onClick = {
+                        navController.popBackStack(
+                            route = Screen.Prayers.route,
+                            inclusive = false
+                        )
+                    }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 },
