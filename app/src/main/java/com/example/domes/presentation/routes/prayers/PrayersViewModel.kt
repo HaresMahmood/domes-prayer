@@ -157,6 +157,17 @@ class PrayersViewModel @Inject constructor(
             }
 
             is PrayersEvent.RefreshLocation -> {
+                viewModelScope.launch {
+                    fetchLocation { location ->
+                        updateCurrentPrayerTimes(
+                            location,
+                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
+                        )
+                    }
+                }
+            }
+
+            is PrayersEvent.RefreshLocation -> {
 //                _state.value.isRefreshing = true
 //                _state.value.isLoading = true
 //
@@ -174,17 +185,6 @@ class PrayersViewModel @Inject constructor(
 //
 //                _state.value.isRefreshing = false
 //                _state.value.isLoading = false
-            }
-
-            is PrayersEvent.RefreshLocation -> {
-                viewModelScope.launch {
-                    fetchLocation { location ->
-                        updateCurrentPrayerTimes(
-                            location,
-                            calculationState.value.calculationMethod.parameters.copy(madhab = _calculationState.value.juristic)
-                        )
-                    }
-                }
             }
 
             is PrayersEvent.ChangePrayerRecord -> {

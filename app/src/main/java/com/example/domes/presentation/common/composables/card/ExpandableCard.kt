@@ -88,9 +88,10 @@ fun ExpandableCard(
                     Box(
                         modifier = Modifier.clickable(
                             enabled = isEnabled,
-                        ) {
-                            expand(isExpanded)
-                        }
+                            onClick = {
+                                expand(isExpanded) // TODO: Should really invert boolean here...
+                            }
+                        )
                     ) {
                         content(isExpanded)
                     }

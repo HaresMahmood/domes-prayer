@@ -1,5 +1,6 @@
 package com.example.domes.presentation.routes.settings.routes.location
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Autorenew
@@ -34,9 +36,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -157,9 +161,6 @@ fun LocationScreen(
                                     "Coordinates",
                                     IconSource(Icons.Outlined.Language),
                                     "Manually enter latitude and logitude",
-                                    onClick = {
-                                        locationViewModel.onEvent(LocationEvent.ExpandCoordinatesSetting())
-                                    },
                                     trailingContent = {
                                         IndicativeTrailingContent {
                                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
@@ -169,20 +170,38 @@ fun LocationScreen(
                                 )
                             },
                             expandedContent = {
+                                val error =
+                                    uiState.showLatitudeTextError || uiState.showLongitudeTextError || uiState.editedLocale?.isUnknown() == true
+
+                                AnimatedVisibility(
+                                    uiState.editedLocale != null, modifier = Modifier
+                                        .align(Alignment.Start)
+                                        .padding(start = 16.dp)
+                                ) {
+                                    uiState.editedLocale?.let {
+                                        ActionSectionChip(
+                                            if (error) "Invalid coordinates" else "${it.city}, ${it.countryCode}",
+                                            if (error) Variant.ERROR else Variant.DEFAULT,
+                                            icon = IconSource(Icons.Outlined.PinDrop)
+                                        )
+                                    }
+                                }
                                 ListItemDivider()
                                 SettingsListItem(
                                     icon = IconSource(Icons.Outlined.SwapHoriz),
                                     trailingContent = {
                                         OutlinedTextField(
                                             modifier = Modifier.fillMaxWidth(),
-                                            value = state.location?.latitude.toString(),
+                                            value = uiState.latitudeText,
                                             label = { Text("Latitude") },
                                             onValueChange = {
                                                 locationViewModel.onEvent(
                                                     LocationEvent.OnLatitudeTextChange(it)
                                                 )
                                             },
-                                            textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+                                            isError = uiState.showLatitudeTextError,
+                                            textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
                                         )
                                     },
                                     isLastItem = true
@@ -192,26 +211,36 @@ fun LocationScreen(
                                     trailingContent = {
                                         OutlinedTextField(
                                             modifier = Modifier.fillMaxWidth(),
-                                            value = state.location?.latitude.toString(),
+                                            value = uiState.longitudeText,
                                             label = { Text("Latitude") },
                                             onValueChange = {
                                                 locationViewModel.onEvent(
                                                     LocationEvent.OnLongitudeTextChange(it)
                                                 )
                                             },
-                                            textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+                                            isError = uiState.showLongitudeTextError,
+                                            textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                                         )
                                     },
                                     isLastItem = true
                                 )
                                 ActionSection {
                                     FilledTonalButton(
+                                        enabled = !error && uiState.editedLocale != null,
                                         onClick = {
                                             locationViewModel.onEvent(
                                                 LocationEvent.ExpandCoordinatesSetting(
                                                     false
                                                 )
                                             )
+                                            prayersViewModel.onEvent(
+                                                PrayersEvent.ChangeCoordinates(
+                                                    uiState.latitudeText.toDouble(),
+                                                    uiState.longitudeText.toDouble()
+                                                )
+                                            )
+                                            locationViewModel.onEvent(LocationEvent.ResetCoordinatesText)
                                         }
                                     ) {
                                         Icon(Icons.Outlined.Done, "Done")
@@ -221,10 +250,18 @@ fun LocationScreen(
                                 }
                             },
                             isExpanded = uiState.expandCoordinatesSetting,
-                            expand = {
-                                locationViewModel.onEvent(LocationEvent.ExpandCoordinatesSetting(it))
-                            },
                             isLastItem = true,
+                            expand = { expanded ->
+                                if (uiState.latitudeText.isEmpty() && uiState.longitudeText.isEmpty() && state.location != null && !expanded) {
+                                    locationViewModel.onEvent(
+                                        LocationEvent.PrefillCoordinatesText(
+                                            state.location
+                                        )
+                                    )
+                                }
+
+                                locationViewModel.onEvent(LocationEvent.ExpandCoordinatesSetting())
+                            },
                         )
                     }
                 }
