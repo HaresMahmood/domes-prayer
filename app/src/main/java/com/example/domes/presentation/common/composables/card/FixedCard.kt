@@ -1,6 +1,7 @@
 package com.example.domes.presentation.common.composables.card
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,8 +58,12 @@ fun FixedCard(
         )
     }
 
-    val topCornerSize = if (isFirstItem) 35.dp else 12.dp
-    val bottomCornerSize = if (isLastItem) 35.dp else 12.dp
+    val topCornerSize by animateDpAsState(
+        targetValue = if (isFirstItem) 35.dp else 12.dp
+    )
+    val bottomCornerSize by animateDpAsState(
+        targetValue = if (isLastItem) 35.dp else 12.dp
+    )
 
     Column {
         Card(
@@ -199,7 +205,7 @@ fun FixedCardPreview() {
             },
             isFirstItem = false,
             isLastItem = true,
-            variant = Variant.ERROR
+            variant = Variant.VISUAL
         )
     }
 }

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.CallMissedOutgoing
 import androidx.compose.material.icons.automirrored.outlined.CallMissedOutgoing
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -25,12 +24,8 @@ import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +35,6 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +57,8 @@ import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.listitem.ListItemDivider
+import com.example.domes.presentation.common.composables.listitem.Option
+import com.example.domes.presentation.common.composables.listitem.OptionRow
 import com.example.domes.presentation.common.composables.shape.Circle
 import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
@@ -73,11 +69,6 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
 import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
-import com.maxkeppeler.sheets.option.OptionView
-import com.maxkeppeler.sheets.option.models.Option
-import com.maxkeppeler.sheets.option.models.OptionConfig
-import com.maxkeppeler.sheets.option.models.OptionSelection
 import java.time.LocalDateTime
 
 // TODO: Rewrite to be more compact
@@ -263,13 +254,6 @@ fun PrayerCard(
             }
         },
         expandedContent = {
-            Spacer(modifier = Modifier.size(8.dp))
-            ListItemDivider()
-            Spacer(modifier = Modifier.size(8.dp))
-
-            // TODO: Is this bad?
-            val isDropDownExpanded = remember { mutableStateOf(false) }
-
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
@@ -304,7 +288,6 @@ fun PrayerCard(
 
             Spacer(modifier = Modifier.size(8.dp))
             ListItemDivider()
-            Spacer(modifier = Modifier.size(8.dp))
 
             Column(
                 modifier = Modifier.padding(bottom = 16.dp),
@@ -313,32 +296,9 @@ fun PrayerCard(
                 if (hasPassed && prayerTime?.prayer?.displayable == true && prayerRecordDetail?.prayed == false) {
                     val options = MissedReason.ALL.map { missedReason ->
                         Option(
-                            missedReason?.iconResId?.let { IconSource(it) },
-                            titleText = missedReason?.name ?: "None",
+                            title = missedReason?.name ?: "None",
+                            icon = missedReason?.iconResId?.let { IconSource(it) },
                             selected = prayerRecordDetail.missedReason == missedReason,
-                            // TODO: make component
-                            customView = { selected ->
-                                Box(
-                                    modifier = Modifier
-                                        .size(84.dp)
-                                        .background(
-                                            if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
-                                        ),
-                                ) {
-                                    Column {
-                                        missedReason?.iconResId?.let {
-                                            Icon(
-                                                painterResource(it),
-                                                missedReason.name
-                                            )
-                                        }
-                                        Text(
-                                            text = missedReason?.name ?: "None",
-                                            style = MaterialTheme.typography.labelLarge
-                                        )
-                                    }
-                                }
-                            }
                         )
                     }
 
@@ -346,91 +306,12 @@ fun PrayerCard(
                         title = "Missed due to",
                         icon = IconSource(Icons.AutoMirrored.Outlined.CallMissedOutgoing),
                         extendedContent = {
-                            // TODO: create custom version of this
-                            OptionView(
-                                useCaseState = rememberUseCaseState(
-                                    visible = true,
-                                    embedded = true,
-                                    onCloseRequest = { }),
-                                selection = OptionSelection.Multiple(
-                                    options,
-                                    withButtonView = false
-                                ) { index, option ->
-                                    // Handle selection
-                                },
-                                config = OptionConfig(mode = com.maxkeppeler.sheets.option.models.DisplayMode.GRID_HORIZONTAL)
-                            )
+                            OptionRow(options) { index, _ ->
+                                onPrayerRecordDetailValueChange(null, null, MissedReason.ALL[index])
+                            }
                         },
                         isLastItem = true
                     )
-
-                    ExposedDropdownMenuBox(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.Transparent),
-                        expanded = isDropDownExpanded.value,
-                        onExpandedChange = {
-                            isDropDownExpanded.value = it
-                        }
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            value = prayerRecordDetail.missedReason?.name ?: "",
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = true,
-                            label = { Text("Missed due to") },
-                            leadingIcon = {
-                                prayerRecordDetail.missedReason?.iconResId?.let { id ->
-                                    Icon(
-                                        painterResource(id = id),
-                                        "Missed reason"
-                                    )
-                                } ?: Icon(
-                                    Icons.AutoMirrored.Filled.CallMissedOutgoing,
-                                    contentDescription = "Missed Reason"
-                                )
-                            },
-                            trailingIcon = {
-                                IconButton(onClick = {
-                                    isDropDownExpanded.value = !isDropDownExpanded.value
-                                }) {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropDownExpanded.value)
-                                }
-                            },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent
-                            ),
-                        )
-                        ExposedDropdownMenu(
-                            expanded = isDropDownExpanded.value,
-                            onDismissRequest = {
-                                isDropDownExpanded.value = !isDropDownExpanded.value
-                            },
-                        ) {
-                            MissedReason.ALL.forEach {
-                                DropdownMenuItem(
-                                    text = { Text(it?.name ?: "None") },
-                                    leadingIcon = {
-                                        it?.iconResId?.let { id ->
-                                            Icon(
-                                                painterResource(id),
-                                                it.name
-                                            )
-                                        }
-                                    },
-                                    onClick = {
-                                        onPrayerRecordDetailValueChange(null, null, it)
-                                        isDropDownExpanded.value = !isDropDownExpanded.value
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                )
-                            }
-                        }
-                    }
                 }
 
                 SettingsListItem(

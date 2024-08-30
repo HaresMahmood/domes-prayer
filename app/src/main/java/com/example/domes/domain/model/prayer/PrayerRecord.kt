@@ -17,7 +17,7 @@ data class MissedReason(
         val PREGNANCY = MissedReason("Pregnancy", R.drawable.routine_fill0_wght400_grad0_opsz24)
         val NONE = null
 
-        val ALL = listOf(TRAVEL, SICK, PERIOD, PREGNANCY, NONE)
+        val ALL = listOf(NONE, TRAVEL, SICK, PERIOD, PREGNANCY)
     }
 }
 
@@ -55,6 +55,5 @@ data class PrayerRecord(
     @PrimaryKey val date: LocalDate,
     val details: List<PrayerRecordDetail> = List(Prayer.ALL.size) { index ->
         PrayerRecordDetail(Prayer.ALL[index])
-    }
-) {
-}
+    },
+)
