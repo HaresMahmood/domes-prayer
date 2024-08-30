@@ -16,10 +16,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material.icons.outlined.EditLocation
+import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.PinDrop
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.ButtonDefaults
@@ -120,8 +121,8 @@ fun LocationScreen(
                 item {
                     FixedCard {
                         SettingsListItem(
-                            "Refresh device location",
-                            IconSource(Icons.Outlined.Refresh),
+                            "Device GPS",
+                            IconSource(Icons.Outlined.GpsFixed),
                             "Fetch up-to-date location via GPS",
                             onClick = {
                                 if (locationPermissionState.status.isGranted) {
@@ -165,7 +166,7 @@ fun LocationScreen(
                                 SettingsListItem(
                                     "Coordinates",
                                     IconSource(Icons.Outlined.Language),
-                                    "Manually enter latitude and logitude",
+                                    "Manually enter latitude and longitude",
                                     trailingContent = {
                                         IndicativeTrailingContent {
                                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
@@ -187,7 +188,7 @@ fun LocationScreen(
                                         ActionSectionChip(
                                             if (error) "Invalid coordinates" else "${it.city}, ${it.countryCode}",
                                             if (error) Variant.ERROR else Variant.DEFAULT,
-                                            icon = IconSource(Icons.Outlined.PinDrop)
+                                            icon = IconSource(Icons.Outlined.EditLocation)
                                         )
                                     }
                                 }
@@ -206,7 +207,7 @@ fun LocationScreen(
                                             },
                                             isError = uiState.showLatitudeTextError,
                                             textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize),
-                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                                         )
                                     },
                                     isLastItem = true
@@ -225,7 +226,7 @@ fun LocationScreen(
                                             },
                                             isError = uiState.showLongitudeTextError,
                                             textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize),
-                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                                         )
                                     },
                                     isLastItem = true

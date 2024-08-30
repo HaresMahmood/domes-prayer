@@ -82,7 +82,10 @@ class LocationViewModel @Inject constructor(
             is LocationEvent.PrefillCoordinatesText -> {
                 _state.value = _state.value.copy(
                     latitudeText = event.coordinates.latitude.toString(),
-                    longitudeText = event.coordinates.longitude.toString()
+                    longitudeText = event.coordinates.longitude.toString(),
+                    showLatitudeTextError = false,
+                    showLongitudeTextError = false,
+                    editedLocale = null
                 )
             }
 
