@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Autorenew
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.EditLocation
 import androidx.compose.material.icons.outlined.GpsFixed
@@ -201,13 +202,24 @@ fun LocationScreen(
                                             value = uiState.latitudeText,
                                             label = { Text("Latitude") },
                                             onValueChange = {
-                                                locationViewModel.onEvent(
-                                                    LocationEvent.OnLatitudeTextChange(it)
-                                                )
+                                                if (it.length <= 17)
+                                                    locationViewModel.onEvent(
+                                                        LocationEvent.OnLatitudeTextChange(it)
+                                                    )
+                                            },
+                                            trailingIcon = {
+                                                IconButton(onClick = {
+                                                    locationViewModel.onEvent(
+                                                        LocationEvent.OnLatitudeTextChange("")
+                                                    )
+                                                }) {
+                                                    Icon(Icons.Outlined.Cancel, "Cancel")
+                                                }
                                             },
                                             isError = uiState.showLatitudeTextError,
                                             textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize),
-                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                            singleLine = true
                                         )
                                     },
                                     isLastItem = true
@@ -220,13 +232,24 @@ fun LocationScreen(
                                             value = uiState.longitudeText,
                                             label = { Text("Latitude") },
                                             onValueChange = {
-                                                locationViewModel.onEvent(
-                                                    LocationEvent.OnLongitudeTextChange(it)
-                                                )
+                                                if (it.length <= 17)
+                                                    locationViewModel.onEvent(
+                                                        LocationEvent.OnLongitudeTextChange(it)
+                                                    )
+                                            },
+                                            trailingIcon = {
+                                                IconButton(onClick = {
+                                                    locationViewModel.onEvent(
+                                                        LocationEvent.OnLongitudeTextChange("")
+                                                    )
+                                                }) {
+                                                    Icon(Icons.Outlined.Cancel, "Cancel")
+                                                }
                                             },
                                             isError = uiState.showLongitudeTextError,
                                             textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize),
-                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                            singleLine = true
                                         )
                                     },
                                     isLastItem = true
