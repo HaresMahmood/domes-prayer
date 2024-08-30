@@ -153,14 +153,39 @@ fun LocationScreen(
                                     "Map",
                                     IconSource(Icons.Outlined.Map),
                                     "Manually search for a location",
-                                    onClick = { },
+                                    trailingContent = {
+                                        IndicativeTrailingContent {
+                                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = it)
+                                        }
+                                    },
                                     isLastItem = true,
                                 )
                             },
-                            expand = {},
-                            isEnabled = false,
+                            expandedContent = {
+                                ListItemDivider()
+
+                                ActionSection {
+                                    FilledTonalButton(
+                                        onClick = {
+                                            locationViewModel.onEvent(
+                                                LocationEvent.ExpandMapsSetting(
+                                                    false
+                                                )
+                                            )
+                                        }
+                                    ) {
+                                        Icon(Icons.Outlined.Done, "Done")
+                                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                        Text("Done")
+                                    }
+                                }
+                            },
+                            isExpanded = uiState.expandMapsSetting,
                             isFirstItem = true,
-                            isBeforeExpandedItem = uiState.expandCoordinatesSetting
+                            isBeforeExpandedItem = uiState.expandCoordinatesSetting,
+                            expand = {
+                                locationViewModel.onEvent(LocationEvent.ExpandMapsSetting())
+                            }
                         )
                         ExpandableCard(
                             content = {
@@ -280,6 +305,7 @@ fun LocationScreen(
                             },
                             isExpanded = uiState.expandCoordinatesSetting,
                             isLastItem = true,
+                            isAfterExpandedItem = uiState.expandMapsSetting,
                             expand = { expanded ->
                                 if (uiState.latitudeText.isEmpty() && uiState.longitudeText.isEmpty() && state.location != null && !expanded) {
                                     locationViewModel.onEvent(

@@ -94,6 +94,13 @@ class LocationViewModel @Inject constructor(
                     latitudeText = "", longitudeText = "", editedLocale = null
                 )
             }
+
+            is LocationEvent.ExpandMapsSetting -> {
+                _state.value = _state.value.copy(
+                    expandMapsSetting = event.expanded
+                        ?: !_state.value.expandMapsSetting
+                )
+            }
         }
     }
 

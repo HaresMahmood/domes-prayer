@@ -7,6 +7,7 @@ data class LocationState(
     val latitudeText: String = "",
     val longitudeText: String = "",
     val expandCoordinatesSetting: Boolean = false,
+    val expandMapsSetting: Boolean = false,
     val editedLocale: Locale? = null,
     val showLatitudeTextError: Boolean = false,
     val showLongitudeTextError: Boolean = false,
