@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMissedOutgoing
+import androidx.compose.material.icons.automirrored.outlined.CallMissedOutgoing
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Notifications
@@ -49,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
@@ -66,10 +68,10 @@ import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.option.OptionView
@@ -261,6 +263,10 @@ fun PrayerCard(
             }
         },
         expandedContent = {
+            Spacer(modifier = Modifier.size(8.dp))
+            ListItemDivider()
+            Spacer(modifier = Modifier.size(8.dp))
+
             // TODO: Is this bad?
             val isDropDownExpanded = remember { mutableStateOf(false) }
 
@@ -301,7 +307,7 @@ fun PrayerCard(
             Spacer(modifier = Modifier.size(8.dp))
 
             Column(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.padding(bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 if (hasPassed && prayerTime?.prayer?.displayable == true && prayerRecordDetail?.prayed == false) {
@@ -336,25 +342,26 @@ fun PrayerCard(
                         )
                     }
 
-                    // TODO: create custom version of this
-                    OptionView(
-                        header = Header.Custom {
-                            Text(
-                                "Missed due to",
-                                style = MaterialTheme.typography.labelLarge
+                    SettingsListItem(
+                        title = "Missed due to",
+                        icon = IconSource(Icons.AutoMirrored.Outlined.CallMissedOutgoing),
+                        extendedContent = {
+                            // TODO: create custom version of this
+                            OptionView(
+                                useCaseState = rememberUseCaseState(
+                                    visible = true,
+                                    embedded = true,
+                                    onCloseRequest = { }),
+                                selection = OptionSelection.Multiple(
+                                    options,
+                                    withButtonView = false
+                                ) { index, option ->
+                                    // Handle selection
+                                },
+                                config = OptionConfig(mode = com.maxkeppeler.sheets.option.models.DisplayMode.GRID_HORIZONTAL)
                             )
                         },
-                        useCaseState = rememberUseCaseState(
-                            visible = true,
-                            embedded = true,
-                            onCloseRequest = { }),
-                        selection = OptionSelection.Multiple(
-                            options,
-                            withButtonView = false
-                        ) { index, option ->
-                            // Handle selection
-                        },
-                        config = OptionConfig(mode = com.maxkeppeler.sheets.option.models.DisplayMode.GRID_HORIZONTAL)
+                        isLastItem = true
                     )
 
                     ExposedDropdownMenuBox(
@@ -426,21 +433,26 @@ fun PrayerCard(
                     }
                 }
 
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    value = prayerRecordDetail?.notes ?: "",
-                    onValueChange = {
-                        onPrayerRecordDetailValueChange(
-                            null,
-                            it,
-                            null
-                        ) // FIXME: Probably very inefficient!!! updating database on change
+                SettingsListItem(
+                    icon = IconSource(Icons.AutoMirrored.Outlined.TextSnippet),
+                    trailingContent = {
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = prayerRecordDetail?.notes ?: "",
+                            label = { Text("Notes") },
+                            placeholder = { Text("Reason missed • Raka'ats prayed • Du'as read") },
+                            onValueChange = {
+                                onPrayerRecordDetailValueChange(
+                                    null,
+                                    it,
+                                    null
+                                ) // FIXME: Probably very inefficient!!! updating database on change
+                            },
+                            textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize),
+                            maxLines = 2,
+                        )
                     },
-                    leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TextSnippet, null) },
-                    label = { Text("Notes") },
-                    placeholder = { Text("Reason missed • Raka'ats prayed • Du'as read") },
-                    maxLines = 2,
+                    isLastItem = true
                 )
             }
         },

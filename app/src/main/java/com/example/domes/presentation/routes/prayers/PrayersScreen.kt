@@ -421,7 +421,7 @@ fun PrayersScreen(
                                         }
                                     ) {
                                         val expandedPrayerIndex =
-                                            prayerTimes.indexOf(prayersState.expandedPrayer)
+                                            prayerTimes.indexOfFirst { it.prayer == prayersState.expandedPrayer?.prayer }
 
                                         Prayer.ALL.forEachIndexed { index, prayer ->
                                             val prayerTime =
