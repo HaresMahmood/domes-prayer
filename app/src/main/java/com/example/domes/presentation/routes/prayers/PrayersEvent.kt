@@ -2,7 +2,6 @@ package com.example.domes.presentation.routes.prayers
 
 import com.example.domes.domain.model.prayer.MissedReason
 import com.example.domes.domain.model.prayer.Prayer
-import com.example.domes.domain.model.prayer.PrayerTime
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,7 +16,7 @@ sealed class PrayersEvent {
         val missedReason: MissedReason? = null,
     ) : PrayersEvent()
 
-    data class ChangeExpandedPrayer(val prayerTime: PrayerTime?) : PrayersEvent()
+    data class ChangeExpandedPrayer(val prayer: Prayer?) : PrayersEvent()
     data class ChangeDate(val date: LocalDate) : PrayersEvent()
     data class SnoozePrayer(val duration: Duration) : PrayersEvent()
     data object RefreshLocation : PrayersEvent()

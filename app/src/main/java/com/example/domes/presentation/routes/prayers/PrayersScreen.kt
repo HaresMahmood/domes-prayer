@@ -421,7 +421,9 @@ fun PrayersScreen(
                                         }
                                     ) {
                                         val expandedPrayerIndex =
-                                            prayerTimes.indexOfFirst { it.prayer == prayersState.expandedPrayer?.prayer }
+                                            Prayer.ALL.indexOf(prayersState.expandedPrayer)
+
+                                        println("expandedPrayerIndex: $expandedPrayerIndex")
 
                                         Prayer.ALL.forEachIndexed { index, prayer ->
                                             val prayerTime =
@@ -431,7 +433,7 @@ fun PrayersScreen(
                                                 prayer = prayer,
                                                 prayerTime = prayerTime,
                                                 prayerRecordDetail = prayersState.selectedPrayerRecord.details.find { it.prayer == prayer },
-                                                isExpanded = prayerTime != null && prayersState.expandedPrayer === prayerTime,
+                                                isExpanded = prayerTime != null && prayersState.expandedPrayer === prayer,
                                                 isCurrent = prayerTime != null && prayerTime == prayersState.currentPrayer,
                                                 hasPassed = prayerTime?.timeWindow?.isBefore(
                                                     LocalDateTime.now()
@@ -447,7 +449,7 @@ fun PrayersScreen(
                                                 expand = {
                                                     viewModel.onEvent(
                                                         PrayersEvent.ChangeExpandedPrayer(
-                                                            if (it) null else prayerTime
+                                                            if (it) null else prayer
                                                         )
                                                     )
                                                 },

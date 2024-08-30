@@ -134,7 +134,7 @@ class PrayersViewModel @Inject constructor(
 
             is PrayersEvent.ChangeExpandedPrayer -> {
                 _state.value = _state.value.copy(
-                    expandedPrayer = event.prayerTime
+                    expandedPrayer = event.prayer
                 )
             }
 
