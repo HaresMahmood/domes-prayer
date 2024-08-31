@@ -5,10 +5,8 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,19 +18,25 @@ import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.CalendarViewDay
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domes.presentation.common.composables.button.SegmentedAction
 import com.example.domes.presentation.common.composables.button.SegmentedActionSection
+import com.example.domes.presentation.common.composables.listitem.ListItemDivider
 import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
 import com.example.domes.presentation.routes.prayers.UIConstants
@@ -70,9 +74,23 @@ fun SelectedDateSection(
         style = CalendarStyle.MONTH,
     )
 
+    val shapeParam = Shape(
+        sides = 4,
+        innerRadius = .352f,
+        roundness = .32f,
+        rotation = 45f,
+        shapeId = Shape.ShapeId.Star
+    )
+    val shape = remember {
+        shapeParam.genShape()
+    }
+    val clip = remember(shape) {
+        RoundedPolygonShape(polygon = shape)
+    }
+
     fun updateDate(date: LocalDate) {
         selectedDate.value = date
-        onDateChange(selectedDate.value)
+        onDateChange(date)
     }
 
     val pagerState = rememberPagerState(initialPage = 1) { 3 }
@@ -98,13 +116,13 @@ fun SelectedDateSection(
             },
         contentAlignment = Alignment.Center,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 26.dp, end = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(start = 26.dp, end = 10.dp),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
 //            HorizontalPager(
 //                pagerState,
 //                pageSpacing = 16.dp,
@@ -117,11 +135,50 @@ fun SelectedDateSection(
 //                }
 //            }
 
-            DateSection(gregorianDate, hijriDate)
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(3.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        ListItem(
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = ListItemDefaults.colors(
+                containerColor = Color.Transparent,
+            ),
+            headlineContent = {
+                Text(
+                    text = gregorianDate.format(getFormatter("MMMM yyyy")),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            },
+            leadingContent = {
+                Box(
+                    modifier = Modifier
+                        .clip(clip)
+                        .size(52.dp)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = gregorianDate.dayOfWeek.name.take(3),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontSize = (7).sp,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        )
+                        Text(
+                            text = "${gregorianDate.dayOfMonth}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        )
+                    }
+                }
+            },
+            supportingContent = {
+                Text(
+                    text = getFormatter("MMMM d yyyy").format(hijriDate),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            },
+            trailingContent = {
                 SegmentedActionSection(
                     children = listOf(
                         SegmentedAction(
@@ -136,14 +193,20 @@ fun SelectedDateSection(
                             ),
                             enabled = selectedDate.value != todayDate
                         ) { updateDate(todayDate) }, SegmentedAction(
-                            icon = IconSource(Icons.AutoMirrored.Outlined.NavigateNext, "Tomorrow"),
+                            icon = IconSource(
+                                Icons.AutoMirrored.Outlined.NavigateNext,
+                                "Tomorrow"
+                            ),
                             enabled = !isLoading
                         ) { updateDate(tomorrowDate) }
                     )
                 )
             }
-        }
+        )
     }
+
+    ListItemDivider()
+
     Box(
         Modifier
             .fillMaxWidth()
@@ -170,109 +233,17 @@ fun SelectedDateSection(
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-private fun DateSection(
-    gregorianDate: LocalDate, hijriDate: HijrahDate? = null,
-) {
-    val shapeParam = Shape(
-        sides = 4,
-        innerRadius = .352f,
-        roundness = .32f,
-        rotation = 45f,
-        shapeId = Shape.ShapeId.Star
-    )
-    val shape = remember {
-        shapeParam.genShape()
-    }
-    val clip = remember(shape) {
-        RoundedPolygonShape(polygon = shape)
-    }
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(7.dp),
-        verticalAlignment = Alignment.CenterVertically,
+fun SelectedDateSectionPreview() {
+    SelectedDateSection(
+        gregorianDate = LocalDate.now(),
+        hijriDate = HijrahDate.now(),
+        scope = rememberCoroutineScope(),
+        isLoading = false,
+        bottomSheetExpandAction = {},
+        collapseBottomSheet = {},
     ) {
-        Box(
-            modifier = Modifier
-                .clip(clip)
-                .size(52.dp)
-                .background(MaterialTheme.colorScheme.tertiaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-//                        verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                // TODO: Make hideable through setting under `Appearance`
-                Text(
-                    text = gregorianDate.dayOfWeek.name.take(3),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = (7).sp,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                )
-                Text(
-                    text = "${gregorianDate.dayOfMonth}",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                )
-            }
-        }
-
-        Column {
-            Text(
-                text = gregorianDate.format(getFormatter("MMMM yyyy")),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            hijriDate?.let {
-                Text(
-                    text = getFormatter("MMMM d yyyy").format(it),
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
+        println(it)
     }
 }
-
-//@Preview
-//@Composable
-//fun SelectedDateSectionPreview() {
-//    val shapeParam = Shape(
-//        sides = 4,
-//        innerRadius = .352f,
-//        roundness = .32f,
-//        rotation = 45f,
-//        shapeId = Shape.ShapeId.Star
-//    )
-//    val shape = remember {
-//        shapeParam.genShape()
-//    }
-//    val clip = remember(shape) {
-//        RoundedPolygonShape(polygon = shape)
-//    }
-//
-//    Box(
-//        modifier = Modifier
-//            .clip(clip)
-//            .size(52.dp)
-//            .background(MaterialTheme.colorScheme.tertiaryContainer),
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Column(
-//            horizontalAlignment = Alignment.CenterHorizontally,
-////                        verticalArrangement = Arrangement.spacedBy(2.dp)
-//        ) {
-//            Text(
-//                text = "M",
-//                style = MaterialTheme.typography.labelMedium,
-//                fontSize = 8.sp,
-//                color = MaterialTheme.colorScheme.onTertiaryContainer,
-//            )
-//            Text(
-//                text = "20",
-//                style = MaterialTheme.typography.labelLarge,
-//                color = MaterialTheme.colorScheme.onTertiaryContainer,
-//            )
-//        }
-//    }
-//}
-//}
