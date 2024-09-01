@@ -12,9 +12,18 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountTree
+import androidx.compose.material.icons.outlined.Calculate
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.QuestionAnswer
+import androidx.compose.material.icons.outlined.Security
+import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,6 +42,8 @@ import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.PrayersScreen
 import com.example.domes.presentation.routes.prayers.PrayersViewModel
 import com.example.domes.presentation.routes.qibla.QiblaScreen
+import com.example.domes.presentation.routes.settings.Category
+import com.example.domes.presentation.routes.settings.Setting
 import com.example.domes.presentation.routes.settings.SettingsScreen
 import com.example.domes.presentation.routes.settings.routes.appearance.AppearanceScreen
 import com.example.domes.presentation.routes.settings.routes.calculation.CalculationScreen
@@ -44,6 +55,7 @@ import com.example.domes.presentation.routes.settings.routes.notifications.route
 import com.example.domes.ui.theme.DomesTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.maxkeppeker.sheets.core.models.base.IconSource
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
@@ -71,12 +83,104 @@ class MainActivity : ComponentActivity() {
                     rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
                 val navController = rememberNavController()
 
-                val prayersViewModel =
-                    hiltViewModel<PrayersViewModel>(LocalContext.current as ComponentActivity)
+//                val backStackEntry = remember {
+//                    navController.getBackStackEntry("main")
+//                }
+//                val viewModel: PrayersViewModel = hiltViewModel(backStackEntry)
+                val viewModel: PrayersViewModel =
+                    hiltViewModel(LocalContext.current as ComponentActivity)
                 val notificationsViewModel: NotificationsViewModel =
                     hiltViewModel(LocalContext.current as ComponentActivity)
 
                 val isLocationKnown = true
+
+                val settings = listOf(
+                    Setting(
+                        "Location",
+                        IconSource(Icons.Outlined.LocationOn),
+                        "Auto-update • set manually",
+                        "location",
+                        {
+                            LocationScreen(
+                                navController,
+                                prayersViewModel = viewModel,
+                            )
+                        }
+                    ),
+                    Setting(
+                        "Calculation",
+                        IconSource(Icons.Outlined.Calculate),
+                        "Method • juristic",
+                        "calculation",
+                        {
+                            CalculationScreen(
+                                navController,
+                                viewModel = viewModel
+                            )
+                        }
+                    ),
+                    Setting(
+                        "Notifications",
+                        IconSource(Icons.Outlined.Notifications),
+                        "Adhan • prayers • corrections",
+                        "notifications",
+                        {
+                            NotificationsScreen(
+                                navController,
+                                viewModel = notificationsViewModel
+                            )
+                        }
+                    ),
+                    Setting(
+                        "Integrations",
+                        IconSource(Icons.Outlined.AccountTree),
+                        "Calendar • Google Nest",
+                        "integrations",
+                        {
+                            IntegrationsScreen(navController)
+                        }
+                    ),
+                    Setting(
+                        "Widgets",
+                        IconSource(Icons.Outlined.Widgets),
+                        "Home screen widgets",
+                        "widgets",
+                        enabled = false
+                    ),
+                    Setting(
+                        "Appearance",
+                        IconSource(Icons.Outlined.Palette),
+                        "Theme • language • format",
+                        "appearance",
+                        {
+                            AppearanceScreen(navController)
+                        }
+                    ),
+                    Setting(
+                        "About",
+                        IconSource(Icons.Outlined.Info),
+                        "App version • contact",
+                        "about",
+                        category = Category.ABOUT,
+                        enabled = false
+                    ),
+                    Setting(
+                        "Privacy",
+                        IconSource(Icons.Outlined.Security),
+                        "Policy • terms",
+                        "privacy",
+                        category = Category.ABOUT,
+                        enabled = false
+                    ),
+                    Setting(
+                        "Feedback",
+                        IconSource(Icons.Outlined.QuestionAnswer),
+                        "Report a bug • suggest a feature",
+                        "feedback",
+                        category = Category.ABOUT,
+                        enabled = false
+                    ),
+                )
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -127,11 +231,6 @@ class MainActivity : ComponentActivity() {
                             route = "main"
                         ) {
                             composable(route = Screen.Prayers.route) {
-                                val backStackEntry = remember {
-                                    navController.getBackStackEntry("main")
-                                }
-                                val viewModel: PrayersViewModel = hiltViewModel(backStackEntry)
-
                                 PrayersScreen(
                                     navController,
                                     viewModel = viewModel,
@@ -142,35 +241,16 @@ class MainActivity : ComponentActivity() {
                                 QiblaScreen(navController)
                             }
                             composable(route = Screen.Settings.route) {
-                                SettingsScreen(navController)
+                                SettingsScreen(navController, settings)
                             }
                             composable(route = Screen.Location.route) {
-                                val backStackEntry = remember {
-                                    navController.getBackStackEntry("main")
-                                }
-                                val viewModel: PrayersViewModel = hiltViewModel(backStackEntry)
-
-                                LocationScreen(
-                                    navController,
-                                    prayersViewModel = viewModel,
-                                )
+                                settings[0].screen()
                             }
                             composable(route = Screen.Calculation.route) {
-                                val backStackEntry = remember {
-                                    navController.getBackStackEntry("main")
-                                }
-                                val viewModel: PrayersViewModel = hiltViewModel(backStackEntry)
-
-                                CalculationScreen(
-                                    navController,
-                                    viewModel = viewModel
-                                )
+                                settings[1].screen()
                             }
                             composable(route = Screen.Notifications.route) {
-                                NotificationsScreen(
-                                    navController,
-                                    viewModel = notificationsViewModel
-                                )
+                                settings[2].screen()
                             }
                             composable(
                                 route = Screen.ManagePrayer.route + "?prayer={prayer}",
@@ -186,10 +266,10 @@ class MainActivity : ComponentActivity() {
                                 ManagePrayerScreen(navController, prayer)
                             }
                             composable(route = Screen.Integrations.route) {
-                                IntegrationsScreen(navController)
+                                settings[3].screen()
                             }
                             composable(route = Screen.Appearance.route) {
-                                AppearanceScreen(navController)
+                                settings[4].screen()
                             }
                         }
                     }
