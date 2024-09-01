@@ -104,6 +104,7 @@ class MainActivity : ComponentActivity() {
                             LocationScreen(
                                 navController,
                                 prayersViewModel = viewModel,
+                                expanded = it
                             )
                         }
                     ),
@@ -244,13 +245,13 @@ class MainActivity : ComponentActivity() {
                                 SettingsScreen(navController, settings)
                             }
                             composable(route = Screen.Location.route) {
-                                settings[0].screen()
+                                settings[0].screen(false)
                             }
                             composable(route = Screen.Calculation.route) {
-                                settings[1].screen()
+                                settings[1].screen(false)
                             }
                             composable(route = Screen.Notifications.route) {
-                                settings[2].screen()
+                                settings[2].screen(false)
                             }
                             composable(
                                 route = Screen.ManagePrayer.route + "?prayer={prayer}",
@@ -266,10 +267,10 @@ class MainActivity : ComponentActivity() {
                                 ManagePrayerScreen(navController, prayer)
                             }
                             composable(route = Screen.Integrations.route) {
-                                settings[3].screen()
+                                settings[3].screen(false)
                             }
                             composable(route = Screen.Appearance.route) {
-                                settings[4].screen()
+                                settings[4].screen(false)
                             }
                         }
                     }

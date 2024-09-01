@@ -74,6 +74,7 @@ fun LocationScreen(
     navController: NavController,
     prayersViewModel: PrayersViewModel,
     locationViewModel: LocationViewModel = hiltViewModel(),
+    expanded: Boolean = false,
 ) {
     val state = prayersViewModel.prayersState.value
     val uiState = locationViewModel.state.value
@@ -86,6 +87,8 @@ fun LocationScreen(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
+            if (expanded) return@Scaffold
+            
             LayeredTopAppBar("Location", navigationIcon = {
                 if (state.location != null && navController.previousBackStackEntry != null) {
                     IconButton(onClick = {
