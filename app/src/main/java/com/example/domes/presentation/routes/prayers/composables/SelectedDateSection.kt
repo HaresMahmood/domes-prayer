@@ -107,15 +107,18 @@ fun SelectedDateSection(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(UIConstants.SHEET_PEEK_HEIGHT)
-            .clickable {
-                bottomSheetExpandAction()
-            },
-        contentAlignment = Alignment.Center,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(UIConstants.SHEET_PEEK_HEIGHT)
+                .clickable {
+                    bottomSheetExpandAction()
+                },
+            contentAlignment = Alignment.Center,
+        ) {
 //        Row(
 //            modifier = Modifier
 //                .fillMaxWidth()
@@ -135,101 +138,102 @@ fun SelectedDateSection(
 //                }
 //            }
 
-        ListItem(
-            modifier = Modifier
-                .fillMaxWidth(),
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent,
-            ),
-            headlineContent = {
-                Text(
-                    text = gregorianDate.format(getFormatter("MMMM yyyy")),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            },
-            leadingContent = {
-                Box(
-                    modifier = Modifier
-                        .clip(clip)
-                        .size(52.dp)
-                        .background(MaterialTheme.colorScheme.tertiaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = gregorianDate.dayOfWeek.name.take(3),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontSize = (7).sp,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        )
-                        Text(
-                            text = "${gregorianDate.dayOfMonth}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        )
-                    }
-                }
-            },
-            supportingContent = {
-                Text(
-                    text = getFormatter("MMMM d yyyy").format(hijriDate),
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            },
-            trailingContent = {
-                SegmentedActionSection(
-                    children = listOf(
-                        SegmentedAction(
-                            icon = IconSource(
-                                Icons.AutoMirrored.Outlined.NavigateBefore, "Yesterday"
-                            ), enabled = !isLoading
-                        ) { updateDate(yesterdayDate) }, SegmentedAction(
-                            icon = IconSource(Icons.Outlined.CalendarViewDay, "Today"),
-                            colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            enabled = selectedDate.value != todayDate
-                        ) { updateDate(todayDate) }, SegmentedAction(
-                            icon = IconSource(
-                                Icons.AutoMirrored.Outlined.NavigateNext,
-                                "Tomorrow"
-                            ),
-                            enabled = !isLoading
-                        ) { updateDate(tomorrowDate) }
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = ListItemDefaults.colors(
+                    containerColor = Color.Transparent,
+                ),
+                headlineContent = {
+                    Text(
+                        text = gregorianDate.format(getFormatter("MMMM yyyy")),
+                        style = MaterialTheme.typography.titleMedium,
                     )
-                )
-            }
-        )
-    }
-
-    ListItemDivider()
-
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
-            .animateContentSize(),
-    ) {
-        CalendarView(
-            useCaseState = rememberUseCaseState(
-                visible = true,
-                embedded = true,
-                onCloseRequest = {
-                    collapseBottomSheet()
                 },
-            ),
-            config = calendarConfig,
-            selection = CalendarSelection.Date(
-                withButtonView = false,
-                selectedDate = selectedDate.value,
-            ) { newDate ->
-                selectedDate.value = newDate
-                onDateChange(selectedDate.value)
-            },
-        )
+                leadingContent = {
+                    Box(
+                        modifier = Modifier
+                            .clip(clip)
+                            .size(52.dp)
+                            .background(MaterialTheme.colorScheme.tertiaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                text = gregorianDate.dayOfWeek.name.take(3),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontSize = (7).sp,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            )
+                            Text(
+                                text = "${gregorianDate.dayOfMonth}",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            )
+                        }
+                    }
+                },
+                supportingContent = {
+                    Text(
+                        text = getFormatter("MMMM d yyyy").format(hijriDate),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                },
+                trailingContent = {
+                    SegmentedActionSection(
+                        children = listOf(
+                            SegmentedAction(
+                                icon = IconSource(
+                                    Icons.AutoMirrored.Outlined.NavigateBefore, "Yesterday"
+                                ), enabled = !isLoading
+                            ) { updateDate(yesterdayDate) }, SegmentedAction(
+                                icon = IconSource(Icons.Outlined.CalendarViewDay, "Today"),
+                                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                enabled = selectedDate.value != todayDate
+                            ) { updateDate(todayDate) }, SegmentedAction(
+                                icon = IconSource(
+                                    Icons.AutoMirrored.Outlined.NavigateNext,
+                                    "Tomorrow"
+                                ),
+                                enabled = !isLoading
+                            ) { updateDate(tomorrowDate) }
+                        )
+                    )
+                }
+            )
+        }
+
+        ListItemDivider()
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                .animateContentSize(),
+        ) {
+            CalendarView(
+                useCaseState = rememberUseCaseState(
+                    visible = true,
+                    embedded = true,
+                    onCloseRequest = {
+                        collapseBottomSheet()
+                    },
+                ),
+                config = calendarConfig,
+                selection = CalendarSelection.Date(
+                    withButtonView = false,
+                    selectedDate = selectedDate.value,
+                ) { newDate ->
+                    selectedDate.value = newDate
+                    onDateChange(selectedDate.value)
+                },
+            )
+        }
     }
 }
 
