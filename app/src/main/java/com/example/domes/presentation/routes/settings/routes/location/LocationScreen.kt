@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Done
@@ -47,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.domain.model.location.isUnknown
-import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.common.composables.card.ExpandableCard
@@ -55,7 +53,6 @@ import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.card.sections.ActionSection
 import com.example.domes.presentation.common.composables.listitem.IndicativeTrailingContent
 import com.example.domes.presentation.common.composables.listitem.ListItemDivider
-import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.PrayersEvent
 import com.example.domes.presentation.routes.prayers.PrayersViewModel
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
@@ -86,32 +83,7 @@ fun LocationScreen(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            if (expanded) return@Scaffold
-            
-            LayeredTopAppBar("Location", navigationIcon = {
-                if (state.location != null && navController.previousBackStackEntry != null) {
-                    IconButton(onClick = {
-                        navController.popBackStack(
-                            route = Screen.Settings.route,
-                            inclusive = false
-                        )
-                    }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            }, bottomActions = listOf {
-                ActionSectionChip(
-                    "${state.locale.city}, ${state.locale.countryCode}",
-                    Variant.VISUAL,
-                    placeholderText = if (state.locale.isUnknown()) "Loading..." else null,
-                    icon = IconSource(Icons.Outlined.PinDrop)
-                )
-            }, scrollBehavior = scrollBehavior
-            )
-        },
-
-        ) { innerPadding ->
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -122,6 +94,17 @@ fun LocationScreen(
                 contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
+                item {
+                    FixedCard(
+                        com.example.domes.presentation.common.composables.card.Variant.VISUAL
+                    ) {
+                        SettingsListItem(
+                            "${state.locale.city}, ${state.locale.countryCode}",
+                            IconSource(Icons.Outlined.PinDrop),
+                            isLastItem = true
+                        )
+                    }
+                }
                 item {
                     FixedCard {
                         SettingsListItem(

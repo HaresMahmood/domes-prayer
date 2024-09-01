@@ -68,12 +68,9 @@ class MainActivity : ComponentActivity() {
 //        deleteDatabase("prayer_records")
 
         val periodicWorkRequest =
-            PeriodicWorkRequestBuilder<PrayerTimesUpdateWorker>(1, TimeUnit.DAYS)
-                .build()
+            PeriodicWorkRequestBuilder<PrayerTimesUpdateWorker>(1, TimeUnit.DAYS).build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "periodicPrayerTimesUpdate",
-            ExistingPeriodicWorkPolicy.KEEP,
-            periodicWorkRequest
+            "periodicPrayerTimesUpdate", ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest
         )
 
         super.onCreate(savedInstanceState)
@@ -95,52 +92,42 @@ class MainActivity : ComponentActivity() {
                 val isLocationKnown = true
 
                 val settings = listOf(
-                    Setting(
-                        "Location",
+                    Setting("Location",
                         IconSource(Icons.Outlined.LocationOn),
                         "Auto-update • set manually",
                         "location",
                         {
                             LocationScreen(
-                                navController,
-                                prayersViewModel = viewModel,
-                                expanded = it
+                                navController, prayersViewModel = viewModel
                             )
-                        }
-                    ),
-                    Setting(
-                        "Calculation",
+                        }),
+                    Setting("Calculation",
                         IconSource(Icons.Outlined.Calculate),
                         "Method • juristic",
                         "calculation",
                         {
                             CalculationScreen(
-                                navController,
-                                viewModel = viewModel
+                                navController, viewModel = viewModel
                             )
-                        }
-                    ),
-                    Setting(
-                        "Notifications",
+                        }),
+                    Setting("Notifications",
                         IconSource(Icons.Outlined.Notifications),
                         "Adhan • prayers • corrections",
                         "notifications",
                         {
                             NotificationsScreen(
-                                navController,
-                                viewModel = notificationsViewModel
+                                navController, viewModel = notificationsViewModel
                             )
-                        }
-                    ),
-                    Setting(
-                        "Integrations",
+                        }),
+                    Setting("Integrations",
                         IconSource(Icons.Outlined.AccountTree),
                         "Calendar • Google Nest",
                         "integrations",
                         {
-                            IntegrationsScreen(navController)
-                        }
-                    ),
+                            IntegrationsScreen(
+                                navController
+                            )
+                        }),
                     Setting(
                         "Widgets",
                         IconSource(Icons.Outlined.Widgets),
@@ -148,15 +135,15 @@ class MainActivity : ComponentActivity() {
                         "widgets",
                         enabled = false
                     ),
-                    Setting(
-                        "Appearance",
+                    Setting("Appearance",
                         IconSource(Icons.Outlined.Palette),
                         "Theme • language • format",
                         "appearance",
                         {
-                            AppearanceScreen(navController)
-                        }
-                    ),
+                            AppearanceScreen(
+                                navController
+                            )
+                        }),
                     Setting(
                         "About",
                         IconSource(Icons.Outlined.Info),
@@ -184,49 +171,62 @@ class MainActivity : ComponentActivity() {
                 )
 
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHost(
-                        navController = navController,
+                    NavHost(navController = navController,
                         startDestination = "main",
                         enterTransition = {
-                            fadeIn(animationSpec = tween(750, easing = EaseOutQuint)) +
-                                    slideIntoContainer(
-                                        AnimatedContentTransitionScope.SlideDirection.Left,
-                                        animationSpec = tween(750, easing = EaseOutQuint)
-                                    ) { offsetForFullSlide ->
-                                        offsetForFullSlide / 8
-                                    }
+                            fadeIn(
+                                animationSpec = tween(
+                                    750,
+                                    easing = EaseOutQuint
+                                )
+                            ) + slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(750, easing = EaseOutQuint)
+                            ) { offsetForFullSlide ->
+                                offsetForFullSlide / 8
+                            }
                         },
                         exitTransition = {
-                            fadeOut(animationSpec = tween(750, easing = EaseOutQuint)) +
-                                    slideOutOfContainer(
-                                        AnimatedContentTransitionScope.SlideDirection.Left,
-                                        animationSpec = tween(750, easing = EaseOutQuint)
-                                    ) { offsetForFullSlide ->
-                                        offsetForFullSlide / 8
-                                    }
+                            fadeOut(
+                                animationSpec = tween(
+                                    750,
+                                    easing = EaseOutQuint
+                                )
+                            ) + slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(750, easing = EaseOutQuint)
+                            ) { offsetForFullSlide ->
+                                offsetForFullSlide / 8
+                            }
                         },
                         popEnterTransition = {
-                            fadeIn(animationSpec = tween(750, easing = EaseOutQuint)) +
-                                    slideIntoContainer(
-                                        AnimatedContentTransitionScope.SlideDirection.Right,
-                                        animationSpec = tween(750, easing = EaseOutQuint)
-                                    ) { offsetForFullSlide ->
-                                        offsetForFullSlide / 8
-                                    }
+                            fadeIn(
+                                animationSpec = tween(
+                                    750,
+                                    easing = EaseOutQuint
+                                )
+                            ) + slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(750, easing = EaseOutQuint)
+                            ) { offsetForFullSlide ->
+                                offsetForFullSlide / 8
+                            }
                         },
                         popExitTransition = {
-                            fadeOut(animationSpec = tween(750, easing = EaseOutQuint)) +
-                                    slideOutOfContainer(
-                                        AnimatedContentTransitionScope.SlideDirection.Right,
-                                        animationSpec = tween(750, easing = EaseOutQuint)
-                                    ) { offsetForFullSlide ->
-                                        offsetForFullSlide / 8
-                                    }
-                        }
-                    ) {
+                            fadeOut(
+                                animationSpec = tween(
+                                    750,
+                                    easing = EaseOutQuint
+                                )
+                            ) + slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(750, easing = EaseOutQuint)
+                            ) { offsetForFullSlide ->
+                                offsetForFullSlide / 8
+                            }
+                        }) {
                         navigation(
                             startDestination = if (isLocationKnown) Screen.Prayers.route else Screen.Location.route,
                             route = "main"
@@ -245,32 +245,18 @@ class MainActivity : ComponentActivity() {
                                 SettingsScreen(navController, settings)
                             }
                             composable(route = Screen.Location.route) {
-                                settings[0].screen(false)
-                            }
-                            composable(route = Screen.Calculation.route) {
-                                settings[1].screen(false)
-                            }
-                            composable(route = Screen.Notifications.route) {
-                                settings[2].screen(false)
+                                settings[0].screen()
                             }
                             composable(
                                 route = Screen.ManagePrayer.route + "?prayer={prayer}",
-                                arguments = listOf(
-                                    navArgument(name = "prayer") {
-                                        type = NavType.StringType
-                                        defaultValue = ""
-                                    }
-                                )
+                                arguments = listOf(navArgument(name = "prayer") {
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                })
                             ) {
                                 val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
 
                                 ManagePrayerScreen(navController, prayer)
-                            }
-                            composable(route = Screen.Integrations.route) {
-                                settings[3].screen(false)
-                            }
-                            composable(route = Screen.Appearance.route) {
-                                settings[4].screen(false)
                             }
                         }
                     }

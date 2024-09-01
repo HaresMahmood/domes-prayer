@@ -28,10 +28,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -65,7 +67,7 @@ data class Setting(
     val icon: @RawValue IconSource,
     val description: String? = null,
     val route: String,
-    val screen: @Composable (expanded: Boolean) -> Unit = {},
+    val screen: @Composable () -> Unit = {},
     val category: Category = Category.SYSTEM,
     val enabled: Boolean = true,
 ) : Parcelable
@@ -77,7 +79,9 @@ fun SettingsScreen(
     settings: List<Setting> = emptyList(),
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Setting>(
-
+        scaffoldDirective = calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth(
+            currentWindowAdaptiveInfo()
+        )
     )
 
     val scrollBehavior =
@@ -133,7 +137,7 @@ fun SettingsScreen(
                 detailPane = {
                     AnimatedPane {
                         if (navigator.currentDestination?.content != null) {
-                            navigator.currentDestination?.content?.screen?.invoke(true)
+                            navigator.currentDestination?.content?.screen?.invoke()
                         } else {
                             FixedCard(
                                 modifier = Modifier
