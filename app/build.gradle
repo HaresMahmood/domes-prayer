@@ -77,6 +77,11 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:21.2.0'
     implementation 'androidx.hilt:hilt-common:1.2.0'
     implementation 'androidx.navigation:navigation-testing:2.7.7'
+    implementation 'androidx.compose.material3.adaptive:adaptive:1.1.0-alpha01'
+    implementation 'androidx.compose.material3.adaptive:adaptive-layout:1.1.0-alpha01'
+    implementation 'androidx.compose.material3.adaptive:adaptive-navigation:1.1.0-alpha01'
+    implementation 'androidx.compose.material3.adaptive:adaptive-navigation-android:1.1.0-alpha01'
+
 //    implementation 'androidx.compose.material3:material3-android:1.2.1'
 
     testImplementation 'junit:junit:4.13.2'
