@@ -1,5 +1,6 @@
 package com.example.domes.presentation.common.composables.card
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
@@ -41,8 +42,11 @@ fun FixedCard(
     variant: Variant = Variant.DEFAULT,
     isFirstItem: Boolean = true,
     isLastItem: Boolean = true,
-    modifier: Modifier = Modifier,
-    content: @Composable (ColumnScope.() -> Unit)
+    hasGap: Boolean = true,
+    hasTopRounding: Boolean = true,
+    hasBottomRounding: Boolean = true,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+    content: @Composable (ColumnScope.() -> Unit),
 ) {
     val colors = when (variant) {
         Variant.DEFAULT, Variant.FADED -> CardDefaults.cardColors(
@@ -50,19 +54,21 @@ fun FixedCard(
                 1.dp
             ).copy(alpha = if (variant == Variant.FADED) 0.5f else 1f)
         )
+
         Variant.VISUAL -> CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
+
         Variant.ERROR -> CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
         )
     }
 
     val topCornerSize by animateDpAsState(
-        targetValue = if (isFirstItem) 35.dp else 12.dp
+        targetValue = if (isFirstItem && hasTopRounding) 35.dp else if (!isFirstItem && hasTopRounding) 12.dp else 0.dp
     )
     val bottomCornerSize by animateDpAsState(
-        targetValue = if (isLastItem) 35.dp else 12.dp
+        targetValue = if (isLastItem && hasBottomRounding) 35.dp else if (!isLastItem && hasBottomRounding) 12.dp else 0.dp
     )
 
     Column {
@@ -94,7 +100,7 @@ fun FixedCard(
             }
         }
 
-        if (!isLastItem) {
+        if (!isLastItem && hasGap) {
             Spacer(Modifier.size(10.dp))
         }
     }

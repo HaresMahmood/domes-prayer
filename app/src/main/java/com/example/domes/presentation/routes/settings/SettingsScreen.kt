@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -47,6 +48,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.card.FixedCard
+import com.example.domes.presentation.common.composables.card.Variant
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.example.domes.presentation.routes.settings.routes.appearance.AppearanceScreen
@@ -127,7 +129,8 @@ fun SettingsScreen(
                 listPane = {
                     AnimatedPane {
                         SettingsPane(
-                            settings,
+                            settings = settings,
+                            selectedSetting = navigator.currentDestination?.content,
                             onItemClick = { setting ->
                                 navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, setting)
                             }
@@ -137,7 +140,11 @@ fun SettingsScreen(
                 detailPane = {
                     AnimatedPane {
                         if (navigator.currentDestination?.content != null) {
+//                            LazyColumn {
+//                                item {
                             navigator.currentDestination?.content?.screen?.invoke()
+//                                }
+//                            }
                         } else {
                             FixedCard(
                                 modifier = Modifier
@@ -162,6 +169,7 @@ fun SettingsScreen(
 @Composable
 fun SettingsPane(
     settings: List<Setting> = emptyList(),
+    selectedSetting: Setting? = null,
     onItemClick: (Setting) -> Unit,
 ) {
     LazyColumn(
@@ -174,16 +182,25 @@ fun SettingsPane(
 
         groupedSettings.forEach { (_, settings) ->
             item {
-                FixedCard {
+                Column {
                     settings.forEachIndexed { index, setting ->
-                        SettingsListItem(
-                            setting.title,
-                            setting.icon,
-                            setting.description,
-                            isEnabled = setting.enabled,
+                        FixedCard(
+                            variant = if (setting == selectedSetting) Variant.FADED else Variant.DEFAULT,
+                            isFirstItem = index == 0,
                             isLastItem = index == settings.size - 1,
-                            onClick = { onItemClick(setting) },
-                        )
+                            hasGap = index == settings.size - 1,
+                            hasTopRounding = index == 0,
+                            hasBottomRounding = index == settings.size - 1
+                        ) {
+                            SettingsListItem(
+                                setting.title,
+                                setting.icon,
+                                setting.description,
+                                isEnabled = setting.enabled,
+                                isLastItem = index == settings.size - 1,
+                                onClick = { onItemClick(setting) },
+                            )
+                        }
                     }
                 }
             }
