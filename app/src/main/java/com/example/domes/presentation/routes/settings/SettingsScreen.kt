@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.QuestionAnswer
 import androidx.compose.material.icons.outlined.Security
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
+import com.example.domes.presentation.common.composables.button.ActionSectionChip
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.card.Variant
 import com.example.domes.presentation.routes.Screen
@@ -114,6 +116,19 @@ fun SettingsScreen(
                         )
                     }
                 },
+                bottomActions = listOf(
+                    {
+                        ActionSectionChip(
+                            icon = IconSource(Icons.Outlined.Settings)
+                        )
+                    },
+                    {
+                        ActionSectionChip(
+                            title = navigator.currentDestination?.content?.title,
+                            variant = com.example.domes.presentation.common.composables.button.Variant.VISUAL,
+                        )
+                    }
+                ),
                 scrollBehavior = scrollBehavior
             )
         },
