@@ -150,49 +150,41 @@ fun PrayersScreen(
                 navigator.navigateBack()
             }
 
-            MainPaneScaffold(
-                navController = navController,
-                viewModel = viewModel,
-                notificationsViewModel = notificationsViewModel,
-                bottomSheetScaffoldState = bottomSheetScaffoldState
-            ) {
-                SupportingPaneScaffold(
-                    directive = navigator.scaffoldDirective,
-                    value = navigator.scaffoldValue,
-                    mainPane = {
-                        MainPane(
-                            navController = navController,
-                            viewModel = viewModel,
-                            notificationsViewModel = notificationsViewModel,
-                            bottomSheetScaffoldState = bottomSheetScaffoldState
-                        )
-                    },
-                    supportingPane = {
-                        FixedCard(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(end = 6.dp, bottom = 6.dp)
-                        ) {
-                            SelectedDateSection(
-                                gregorianDate = prayersState.selectedDate,
-                                hijriDate = prayersState.selectedHijriDate,
-                                scope = scope,
-                                isLoading = prayersState.isLoading,
-                            ) { selectedDate ->
-                                viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
-                            }
+            SupportingPaneScaffold(
+                directive = navigator.scaffoldDirective,
+                value = navigator.scaffoldValue,
+                mainPane = {
+                    MainPane(
+                        navController = navController,
+                        viewModel = viewModel,
+                        notificationsViewModel = notificationsViewModel,
+                        bottomSheetScaffoldState = bottomSheetScaffoldState
+                    )
+                },
+                supportingPane = {
+                    FixedCard(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(end = 6.dp, bottom = 6.dp)
+                    ) {
+                        SelectedDateSection(
+                            gregorianDate = prayersState.selectedDate,
+                            hijriDate = prayersState.selectedHijriDate,
+                            scope = scope,
+                            isLoading = prayersState.isLoading,
+                        ) { selectedDate ->
+                            viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
                         }
-                    },
+                    }
+                },
 //                paneExpansionDragHandle = {
 //                    PaneExpansionDragHandle(
 //                        state = paneExpasionState,
 //                        color = MaterialTheme.colorScheme.onSurface
 //                    )
 //                },
-                    paneExpansionState = paneExpasionState
-                )
-            }
-
+                paneExpansionState = paneExpasionState
+            )
         } else {
             BottomSheetScaffold(
                 scaffoldState = bottomSheetScaffoldState,
@@ -220,19 +212,12 @@ fun PrayersScreen(
                         .pullRefresh(pullRefreshState),
                     contentAlignment = Alignment.Center
                 ) {
-                    MainPaneScaffold(
+                    MainPane(
                         navController = navController,
                         viewModel = viewModel,
                         notificationsViewModel = notificationsViewModel,
                         bottomSheetScaffoldState = bottomSheetScaffoldState
-                    ) {
-                        MainPane(
-                            navController = navController,
-                            viewModel = viewModel,
-                            notificationsViewModel = notificationsViewModel,
-                            bottomSheetScaffoldState = bottomSheetScaffoldState
-                        )
-                    }
+                    )
 
                     if (bottomSheetScaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
                         Box(
@@ -285,23 +270,34 @@ fun PrayersScreen(
     ExperimentalMaterialApi::class
 )
 @Composable
-fun MainPaneScaffold(
+fun MainPane(
     navController: NavController,
     viewModel: PrayersViewModel,
     notificationsViewModel: NotificationsViewModel,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
-    content: @Composable () -> Unit,
 ) {
     val prayersState = viewModel.prayersState.value
     val notificationsState = notificationsViewModel.state.value
+
+    val prayerTimes =
+        if (prayersState.selectedDate == LocalDate.now()) prayersState.currentPrayerTimes else prayersState.selectedPrayerTimes
+
+    val localDensity = LocalDensity.current
 
     val notificationPermissionState =
         rememberPermissionState(
             android.Manifest.permission.POST_NOTIFICATIONS
         )
-
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = prayersState.isRefreshing, onRefresh = {
+            viewModel.onEvent(
+                PrayersEvent.RefreshLocation
+            )
+        })
     val scrollBehaviourState =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    val prayerTimesSectionHeight = remember { mutableStateOf(0.dp) }
 
     val isNotificationsAllowed =
         notificationPermissionState.status.isGranted && notificationsState.isNotificationsAllowed
@@ -325,6 +321,9 @@ fun MainPaneScaffold(
     ) { state ->
         if (state == SheetValue.Expanded) 0.95f else 1f
     }
+    val dayFraction = animateFloatAsState(
+        targetValue = prayersState.dayFraction
+    )
 
     Scaffold(
         modifier = Modifier
@@ -467,158 +466,119 @@ fun MainPaneScaffold(
             modifier = Modifier
                 .padding(innerPadding)
         ) {
-            content()
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.S)
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
-    ExperimentalMaterialApi::class
-)
-@Composable
-fun MainPane(
-    navController: NavController,
-    viewModel: PrayersViewModel,
-    notificationsViewModel: NotificationsViewModel,
-    bottomSheetScaffoldState: BottomSheetScaffoldState,
-) {
-    val prayersState = viewModel.prayersState.value
-    val notificationsState = notificationsViewModel.state.value
-
-    val prayerTimes =
-        if (prayersState.selectedDate == LocalDate.now()) prayersState.currentPrayerTimes else prayersState.selectedPrayerTimes
-
-    val localDensity = LocalDensity.current
-
-    val notificationPermissionState =
-        rememberPermissionState(
-            android.Manifest.permission.POST_NOTIFICATIONS
-        )
-
-    val prayerTimesSectionHeight = remember { mutableStateOf(0.dp) }
-
-    val isNotificationsAllowed =
-        notificationPermissionState.status.isGranted && notificationsState.isNotificationsAllowed
-
-    // Animations
-
-    val dayFraction = animateFloatAsState(
-        targetValue = prayersState.dayFraction
-    )
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentPadding = PaddingValues(start = 12.dp, end = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        item {
-            val shapeParam = Shape(
-                roundness = .4f,
-                sides = 4,
-                rotation = 90f,
-                shapeId = Shape.ShapeId.Polygon
-            )
-            val shape = shapeParam.genShape().normalized()
-
-            FixedCard {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = 16.dp,
-                            start = 24.dp,
-                            end = 24.dp,
-                            bottom = 16.dp
-                        )
-                        .placeholder(
-                            visible = prayersState.isLoading,
-                            highlight = PlaceholderHighlight.fade(),
-                            shape = RoundedCornerShape(100),
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Slider(
-                        dayFraction.value,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-
-                    PercentageWidthBox(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp),
-                        children = prayerTimes.filter { it.prayer.displayable }
-                            .map { prayerTime ->
-                                PercentageWidthBoxChild(
-                                    composable = {
-                                        Box(modifier = Modifier.size(10.dp)) {
-                                            Polygon(
-                                                shape,
-                                                color = if (prayerTime == prayersState.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSecondary,
-                                                alpha = if (prayerTime == prayersState.currentPrayer) 1f else 0.75f
-                                            )
-                                        }
-                                    },
-                                    widthFraction = prayerTime.dayFraction?.toFloat()
-                                )
-                            }
-                    )
-                }
-            }
-        }
-        item {
-            Column(
-                modifier = Modifier.onGloballyPositioned { layoutCoordinates ->
-                    prayerTimesSectionHeight.value = with(localDensity) {
-                        layoutCoordinates.size.height.toDp()
-                    }
-                }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 90.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                val expandedPrayerIndex =
-                    Prayer.ALL.indexOf(prayersState.expandedPrayer)
+                item {
+                    val shapeParam = Shape(
+                        roundness = .4f,
+                        sides = 4,
+                        rotation = 90f,
+                        shapeId = Shape.ShapeId.Polygon
+                    )
+                    val shape = shapeParam.genShape().normalized()
 
-                println("expandedPrayerIndex: $expandedPrayerIndex")
-
-                Prayer.ALL.forEachIndexed { index, prayer ->
-                    val prayerTime =
-                        prayerTimes.find { it.prayer == prayer }
-
-                    PrayerCard(
-                        prayer = prayer,
-                        prayerTime = prayerTime,
-                        prayerRecordDetail = prayersState.selectedPrayerRecord.details.find { it.prayer == prayer },
-                        isExpanded = prayerTime != null && prayersState.expandedPrayer === prayer,
-                        isCurrent = prayerTime != null && prayerTime == prayersState.currentPrayer,
-                        hasPassed = prayerTime?.timeWindow?.isBefore(
-                            LocalDateTime.now()
-                        ) == true && prayerTime != prayersState.currentPrayer,
-                        isSilent = notificationsState.prayerNotifications.find { it.prayer == prayer }?.isNotificationAllowed === false,
-                        isNotificationsAllowed = isNotificationsAllowed,
-                        isFirstItem = index == 0,
-                        isLastItem = index == Prayer.ALL.lastIndex,
-                        isBeforeExpandedItem = index == expandedPrayerIndex - 1,
-                        isAfterExpandedItem = index == expandedPrayerIndex + 1,
-                        remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
-                        navController = navController,
-                        expand = {
-                            viewModel.onEvent(
-                                PrayersEvent.ChangeExpandedPrayer(
-                                    if (it) null else prayer
+                    FixedCard {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    top = 16.dp,
+                                    start = 24.dp,
+                                    end = 24.dp,
+                                    bottom = 16.dp
                                 )
+                                .placeholder(
+                                    visible = prayersState.isLoading,
+                                    highlight = PlaceholderHighlight.fade(),
+                                    shape = RoundedCornerShape(100),
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Slider(
+                                dayFraction.value,
+                                modifier = Modifier
+                                    .fillMaxWidth()
                             )
-                        },
-                        onPrayerRecordDetailValueChange = { prayed, notes, missedReason ->
-                            viewModel.onEvent(
-                                PrayersEvent.ChangePrayerRecord(
-                                    prayer,
-                                    prayed, notes, missedReason
-                                )
+
+                            PercentageWidthBox(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(20.dp),
+                                children = prayerTimes.filter { it.prayer.displayable }
+                                    .map { prayerTime ->
+                                        PercentageWidthBoxChild(
+                                            composable = {
+                                                Box(modifier = Modifier.size(10.dp)) {
+                                                    Polygon(
+                                                        shape,
+                                                        color = if (prayerTime == prayersState.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSecondary,
+                                                        alpha = if (prayerTime == prayersState.currentPrayer) 1f else 0.75f
+                                                    )
+                                                }
+                                            },
+                                            widthFraction = prayerTime.dayFraction?.toFloat()
+                                        )
+                                    }
                             )
                         }
-                    )
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier.onGloballyPositioned { layoutCoordinates ->
+                            prayerTimesSectionHeight.value = with(localDensity) {
+                                layoutCoordinates.size.height.toDp()
+                            }
+                        }
+                    ) {
+                        val expandedPrayerIndex =
+                            Prayer.ALL.indexOf(prayersState.expandedPrayer)
+
+                        println("expandedPrayerIndex: $expandedPrayerIndex")
+
+                        Prayer.ALL.forEachIndexed { index, prayer ->
+                            val prayerTime =
+                                prayerTimes.find { it.prayer == prayer }
+
+                            PrayerCard(
+                                prayer = prayer,
+                                prayerTime = prayerTime,
+                                prayerRecordDetail = prayersState.selectedPrayerRecord.details.find { it.prayer == prayer },
+                                isExpanded = prayerTime != null && prayersState.expandedPrayer === prayer,
+                                isCurrent = prayerTime != null && prayerTime == prayersState.currentPrayer,
+                                hasPassed = prayerTime?.timeWindow?.isBefore(
+                                    LocalDateTime.now()
+                                ) == true && prayerTime != prayersState.currentPrayer,
+                                isSilent = notificationsState.prayerNotifications.find { it.prayer == prayer }?.isNotificationAllowed === false,
+                                isNotificationsAllowed = isNotificationsAllowed,
+                                isFirstItem = index == 0,
+                                isLastItem = index == Prayer.ALL.lastIndex,
+                                isBeforeExpandedItem = index == expandedPrayerIndex - 1,
+                                isAfterExpandedItem = index == expandedPrayerIndex + 1,
+                                remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
+                                navController = navController,
+                                expand = {
+                                    viewModel.onEvent(
+                                        PrayersEvent.ChangeExpandedPrayer(
+                                            if (it) null else prayer
+                                        )
+                                    )
+                                },
+                                onPrayerRecordDetailValueChange = { prayed, notes, missedReason ->
+                                    viewModel.onEvent(
+                                        PrayersEvent.ChangePrayerRecord(
+                                            prayer,
+                                            prayed, notes, missedReason
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }

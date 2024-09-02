@@ -218,6 +218,7 @@ fun SelectedDateSection(
                 .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                 .animateContentSize(),
         ) {
+            // TODO: Replace with native jetpack calendar
             CalendarView(
                 useCaseState = rememberUseCaseState(
                     visible = true,
