@@ -149,7 +149,7 @@ fun PrayersScreen(
     )
 
     val blurRadius by transition.animateFloat(label = "BackgroundBlurRadius") { state ->
-        if (state == SheetValue.Expanded) 20f else 1f
+        if (state == SheetValue.Expanded) 20f else 0.0001f
     }
     val alpha by transition.animateFloat(label = "BackgroundAlpha") { state ->
         if (state == SheetValue.Expanded) 0.5f else 1f
