@@ -9,19 +9,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.CalendarViewDay
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -43,15 +44,14 @@ import com.example.domes.presentation.routes.prayers.UIConstants
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
 import com.maxkeppeker.sheets.core.icons.LibIcons
 import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
-import com.maxkeppeler.sheets.calendar.CalendarView
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
-import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.chrono.HijrahDate
+import java.util.Date
 
 @SuppressLint("RestrictedApi")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -76,6 +76,11 @@ fun SelectedDateSection(
         icons = LibIcons.Outlined,
     )
 
+    val datePickerState = rememberDatePickerState(
+//        initialSelectedDateMillis = gregorianDate.atTime(12, 0).atZone(ZoneId.systemDefault())
+//            .toInstant().toEpochMilli(),
+    )
+
     val shapeParam = Shape(
         sides = 4,
         innerRadius = .352f,
@@ -93,9 +98,28 @@ fun SelectedDateSection(
     fun updateDate(date: LocalDate) {
         selectedDate.value = date
         onDateChange(date)
+        collapseBottomSheet()
     }
 
     val pagerState = rememberPagerState(initialPage = 1) { 3 }
+
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        val date = datePickerState.selectedDateMillis?.let {
+            Date(it).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        }
+
+        date?.let {
+            if (it != gregorianDate) updateDate(it)
+        }
+    }
+
+    // TODO: state doesn't properly get saved when switching between orientations?
+//    LaunchedEffect(gregorianDate) {
+//        val date = gregorianDate.atTime(12, 0).atZone(ZoneId.systemDefault())
+//            .toInstant().toEpochMilli()
+//
+//        if (datePickerState.selectedDateMillis != date) datePickerState.setSelection(date)
+//    }
 
     LaunchedEffect(pagerState.settledPage) {
         if (pagerState.settledPage == 0) {
@@ -116,9 +140,10 @@ fun SelectedDateSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(UIConstants.SHEET_PEEK_HEIGHT)
-                .clickable {
-                    bottomSheetExpandAction()
-                },
+                .clickable(
+                    enabled = bottomSheetExpandAction != {},
+                    onClick = bottomSheetExpandAction
+                ),
             contentAlignment = Alignment.Center,
         ) {
 //        Row(
@@ -215,26 +240,32 @@ fun SelectedDateSection(
         Box(
             Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+//                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                 .animateContentSize(),
         ) {
-            // TODO: Replace with native jetpack calendar
-            CalendarView(
-                useCaseState = rememberUseCaseState(
-                    visible = true,
-                    embedded = true,
-                    onCloseRequest = {
-                        collapseBottomSheet()
-                    },
-                ),
-                config = calendarConfig,
-                selection = CalendarSelection.Date(
-                    withButtonView = false,
-                    selectedDate = selectedDate.value,
-                ) { newDate ->
-                    selectedDate.value = newDate
-                    onDateChange(selectedDate.value)
-                },
+//            CalendarView(
+//                useCaseState = rememberUseCaseState(
+//                    visible = true,
+//                    embedded = true,
+//                    onCloseRequest = {
+//                        collapseBottomSheet()
+//                    },
+//                ),
+//                config = calendarConfig,
+//                selection = CalendarSelection.Date(
+//                    withButtonView = false,
+//                    selectedDate = selectedDate.value,
+//                ) { newDate ->
+//                    selectedDate.value = newDate
+//                    onDateChange(selectedDate.value)
+//                },
+//            )
+
+            DatePicker(
+                state = datePickerState,
+                title = null,
+                headline = null,
+                showModeToggle = false
             )
         }
     }

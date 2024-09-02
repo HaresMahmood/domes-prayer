@@ -46,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
@@ -137,7 +138,7 @@ fun PrayersScreen(
     val adaptiveInfo = currentWindowAdaptiveInfo()
 
     with(adaptiveInfo) {
-        if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) {
+        if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT) {
             val navigator = rememberSupportingPaneScaffoldNavigator(
                 scaffoldDirective = calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth(
                     currentWindowAdaptiveInfo()
@@ -162,18 +163,22 @@ fun PrayersScreen(
                     )
                 },
                 supportingPane = {
-                    FixedCard(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(end = 6.dp, bottom = 6.dp)
+                    AnimatedPane(
+                        modifier = Modifier.preferredWidth(400.dp)
                     ) {
-                        SelectedDateSection(
-                            gregorianDate = prayersState.selectedDate,
-                            hijriDate = prayersState.selectedHijriDate,
-                            scope = scope,
-                            isLoading = prayersState.isLoading,
-                        ) { selectedDate ->
-                            viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
+                        FixedCard(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(end = 6.dp, bottom = 6.dp)
+                        ) {
+                            SelectedDateSection(
+                                gregorianDate = prayersState.selectedDate,
+                                hijriDate = prayersState.selectedHijriDate,
+                                scope = scope,
+                                isLoading = prayersState.isLoading,
+                            ) { selectedDate ->
+                                viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
+                            }
                         }
                     }
                 },
