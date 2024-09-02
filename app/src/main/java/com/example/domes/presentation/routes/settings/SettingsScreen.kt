@@ -143,7 +143,7 @@ fun SettingsScreen(
                 value = navigator.scaffoldValue,
                 listPane = {
                     AnimatedPane {
-                        SettingsPane(
+                        ListPane(
                             settings = settings,
                             selectedSetting = navigator.currentDestination?.content,
                             onItemClick = { setting ->
@@ -182,7 +182,7 @@ fun SettingsScreen(
 }
 
 @Composable
-fun SettingsPane(
+fun ListPane(
     settings: List<Setting> = emptyList(),
     selectedSetting: Setting? = null,
     onItemClick: (Setting) -> Unit,

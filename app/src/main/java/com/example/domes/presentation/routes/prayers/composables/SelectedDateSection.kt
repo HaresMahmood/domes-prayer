@@ -41,6 +41,7 @@ import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
 import com.example.domes.presentation.routes.prayers.UIConstants
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
+import com.maxkeppeker.sheets.core.icons.LibIcons
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarView
@@ -60,8 +61,8 @@ fun SelectedDateSection(
     hijriDate: HijrahDate,
     scope: CoroutineScope,
     isLoading: Boolean,
-    bottomSheetExpandAction: () -> Unit,
-    collapseBottomSheet: () -> Unit,
+    bottomSheetExpandAction: () -> Unit = {},
+    collapseBottomSheet: () -> Unit = {},
     onDateChange: (LocalDate) -> Unit,
 ) {
     val todayDate = remember { LocalDate.now() }
@@ -72,6 +73,7 @@ fun SelectedDateSection(
         yearSelection = true,
         monthSelection = true,
         style = CalendarStyle.MONTH,
+        icons = LibIcons.Outlined,
     )
 
     val shapeParam = Shape(
