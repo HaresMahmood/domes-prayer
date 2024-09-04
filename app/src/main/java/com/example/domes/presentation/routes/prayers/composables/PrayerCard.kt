@@ -279,7 +279,7 @@ fun PrayerCard(
                                 end = 16.dp
                             ),
                             onClick = {
-                                navController.navigate("${Screen.ManagePrayer.route}?prayer=${prayer.name}")
+                                navController.navigate("${Screen.Settings.Notifications.ManagePrayer.route}?prayer=${prayer.name}")
                             }
                         )
                     }

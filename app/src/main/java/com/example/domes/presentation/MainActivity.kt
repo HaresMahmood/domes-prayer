@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -64,7 +65,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnrememberedGetBackStackEntry")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    @OptIn(ExperimentalPermissionsApi::class)
+    @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3AdaptiveApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 //        deleteDatabase("prayer_records")
 
@@ -96,7 +97,7 @@ class MainActivity : ComponentActivity() {
                     Setting("Location",
                         IconSource(Icons.Outlined.LocationOn),
                         "Auto-update • set manually",
-                        "location",
+                        Screen.Settings.Location.route,
                         {
                             LocationScreen(
                                 navController, prayersViewModel = viewModel
@@ -105,41 +106,37 @@ class MainActivity : ComponentActivity() {
                     Setting("Calculation",
                         IconSource(Icons.Outlined.Calculate),
                         "Method • juristic",
-                        "calculation",
+                        Screen.Settings.Calculation.route,
                         {
                             CalculationScreen(
                                 navController, viewModel = viewModel
                             )
                         }),
-                    Setting("Notifications",
+                    Setting(
+                        "Notifications",
                         IconSource(Icons.Outlined.Notifications),
                         "Adhan • prayers • corrections",
-                        "notifications",
+                        Screen.Settings.Notifications.route,
                         {
                             NotificationsScreen(
-                                navController, viewModel = notificationsViewModel
+                                it,
+                                viewModel = notificationsViewModel
                             )
-                        }),
+                        },
+                    ),
                     Setting("Integrations",
                         IconSource(Icons.Outlined.AccountTree),
                         "Calendar • Google Nest",
-                        "integrations",
+                        Screen.Settings.Integrations.route,
                         {
                             IntegrationsScreen(
                                 navController
                             )
                         }),
-                    Setting(
-                        "Widgets",
-                        IconSource(Icons.Outlined.Widgets),
-                        "Home screen widgets",
-                        "widgets",
-                        enabled = false
-                    ),
                     Setting("Appearance",
                         IconSource(Icons.Outlined.Palette),
                         "Theme • language • format",
-                        "appearance",
+                        Screen.Settings.Appearance.route,
                         {
                             AppearanceScreen(
                                 navController
@@ -147,10 +144,17 @@ class MainActivity : ComponentActivity() {
                         }
                     ),
                     Setting(
+                        "Widgets",
+                        IconSource(Icons.Outlined.Widgets),
+                        "Home screen widgets",
+                        "widgets",
+                        enabled = false
+                    ),
+                    Setting(
                         "Data",
                         IconSource(Icons.Outlined.FilePresent),
                         "Import • export",
-                        "appearance",
+                        "data",
                         enabled = false
                     ),
                     Setting(
@@ -237,7 +241,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }) {
                         navigation(
-                            startDestination = if (isLocationKnown) Screen.Prayers.route else Screen.Location.route,
+                            startDestination = if (isLocationKnown) Screen.Prayers.route else Screen.Settings.Location.route,
                             route = "main"
                         ) {
                             composable(route = Screen.Prayers.route) {
@@ -253,11 +257,11 @@ class MainActivity : ComponentActivity() {
                             composable(route = Screen.Settings.route) {
                                 SettingsScreen(navController, settings)
                             }
-                            composable(route = Screen.Location.route) {
-                                settings[0].screen()
+                            composable(route = Screen.Settings.Location.route) {
+                                settings[0].screen(null)
                             }
                             composable(
-                                route = Screen.ManagePrayer.route + "?prayer={prayer}",
+                                route = Screen.Settings.Notifications.ManagePrayer.route + "?prayer={prayer}",
                                 arguments = listOf(navArgument(name = "prayer") {
                                     type = NavType.StringType
                                     defaultValue = ""

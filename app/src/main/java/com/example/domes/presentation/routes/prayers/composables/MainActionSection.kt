@@ -61,14 +61,14 @@ fun MainActionSection(
             if (!notificationsAllowed && !isLoading) ActionSectionChip(
                 if (!notificationsGranted) "Notifications disabled" else "Notifications off",
                 icon = IconSource(Icons.Outlined.NotificationsOff),
-                onClick = { navController.navigate(Screen.Notifications.route) })
+                onClick = { navController.navigate(Screen.Settings.Notifications.route) })
         },
         {
             ActionSectionChip(
                 "${locale.city}, ${locale.countryCode}",
                 icon = IconSource(Icons.Outlined.PinDrop),
                 placeholderText = if (locale.isUnknown()) "Loading..." else null,
-                onClick = { navController.navigate(Screen.Location.route) })
+                onClick = { navController.navigate(Screen.Settings.Location.route) })
         },
         {
             ActionSectionChip(

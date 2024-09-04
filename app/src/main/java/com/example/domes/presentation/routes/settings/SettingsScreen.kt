@@ -32,10 +32,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth
+import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
+import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
+import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -49,6 +51,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
+import com.example.domes.presentation.common.composables.button.Variant
 import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.routes.Screen
@@ -66,15 +69,21 @@ enum class Category {
 }
 
 @Parcelize
-data class Setting(
+data class Setting @OptIn(ExperimentalMaterial3AdaptiveApi::class) constructor(
     val title: String,
     val icon: @RawValue IconSource,
     val description: String? = null,
     val route: String,
-    val screen: @Composable () -> Unit = {},
+    val screen: @Composable (parentSetting: ParentSetting?) -> Unit = {},
     val category: Category = Category.SYSTEM,
     val enabled: Boolean = true,
+    val parent: Setting? = null,
 ) : Parcelable
+
+data class ParentSetting @OptIn(ExperimentalMaterial3AdaptiveApi::class) constructor(
+    val navigator: ThreePaneScaffoldNavigator<Setting>?,
+    val setting: Setting,
+)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -95,9 +104,31 @@ fun SettingsScreen(
         navigator.navigateBack()
     }
 
+    val selectedSetting = navigator.currentDestination?.content
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
+            val breadCrumbs = mutableListOf<@Composable () -> Unit>()
+
+            generateSequence(selectedSetting) { it.parent }
+                .forEach {
+                    breadCrumbs.add {
+                        ActionSectionChip(
+                            icon = it.icon,
+                            title = it.title,
+                            variant = if (it == selectedSetting) Variant.VISUAL else Variant.DEFAULT
+                        )
+                    }
+                }
+
+            breadCrumbs.add {
+                ActionSectionChip(
+                    icon = IconSource(Icons.Outlined.Settings),
+                    title = if (selectedSetting == null) "Select a setting" else null
+                )
+            }
+
             LayeredTopAppBar(
                 if (navigator.scaffoldValue.secondary == PaneAdaptedValue.Expanded) "Settings" else (navigator.currentDestination?.content?.title
                     ?: "Settings"),
@@ -105,7 +136,9 @@ fun SettingsScreen(
                     IconButton(
                         onClick = {
                             if (navigator.canNavigateBack()) {
-                                navigator.navigateBack()
+                                navigator.navigateBack(
+                                    backNavigationBehavior = BackNavigationBehavior.PopUntilCurrentDestinationChange
+                                )
                             } else {
                                 navController.popBackStack(
                                     route = Screen.Prayers.route,
@@ -120,25 +153,8 @@ fun SettingsScreen(
                         )
                     }
                 },
-                bottomActions = listOf(
-                    {
-                        ActionSectionChip(
-                            icon = IconSource(Icons.Outlined.Settings),
-                            title = if (navigator.currentDestination?.content == null) "Select a setting" else null
-                        )
-                    },
-                    {
+                bottomActions = breadCrumbs.reversed<@Composable () -> Unit>(
 
-                    },
-                    {
-                        navigator.currentDestination?.content?.let {
-                            ActionSectionChip(
-                                icon = it.icon,
-                                title = it.title,
-                                variant = com.example.domes.presentation.common.composables.button.Variant.VISUAL,
-                            )
-                        }
-                    }
                 ),
                 scrollBehavior = scrollBehavior
             )
@@ -149,24 +165,37 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            ListDetailPaneScaffold(
-                directive = navigator.scaffoldDirective,
-                value = navigator.scaffoldValue,
+            NavigableListDetailPaneScaffold(
+                navigator = navigator as ThreePaneScaffoldNavigator<Any>,
                 listPane = {
                     AnimatedPane {
-                        ListPane(
-                            settings = settings,
-                            selectedSetting = navigator.currentDestination?.content,
-                            onItemClick = { setting ->
-                                navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, setting)
-                            }
-                        )
+                        if (navigator.currentDestination?.content?.parent != null) {
+                            navigator.currentDestination?.content?.parent?.screen?.invoke(
+                                ParentSetting(
+                                    navigator,
+                                    navigator.currentDestination?.content?.parent!!
+                                )
+                            )
+                        } else {
+                            ListPane(
+                                settings = settings,
+                                selectedSetting = selectedSetting,
+                                onItemClick = { setting ->
+                                    navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, setting)
+                                }
+                            )
+                        }
                     }
                 },
                 detailPane = {
                     AnimatedPane {
                         if (navigator.currentDestination?.content != null) {
-                            navigator.currentDestination?.content?.screen?.invoke()
+                            navigator.currentDestination?.content?.screen?.invoke(
+                                ParentSetting(
+                                    navigator,
+                                    navigator.currentDestination?.content!!
+                                )
+                            )
                         } else {
                             FixedCard(
                                 modifier = Modifier
@@ -183,6 +212,11 @@ fun SettingsScreen(
                         }
                     }
                 },
+//                extraPane = {
+//                    AnimatedPane {
+//                        navigator.currentDestination?.content?.screen?.invoke(navigator)
+//                    }
+//                }
             )
         }
     }
@@ -232,6 +266,7 @@ fun ListPane(
     }
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Preview(
     showBackground = true,
     wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE,

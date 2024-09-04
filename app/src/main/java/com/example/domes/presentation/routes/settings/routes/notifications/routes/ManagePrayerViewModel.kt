@@ -2,11 +2,9 @@ package com.example.domes.presentation.routes.settings.routes.notifications.rout
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domes.domain.model.prayer.Notification
-import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerNotification
 import com.example.domes.domain.usecase.PrayerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,29 +22,29 @@ enum class OffsetPolarity(val index: Int) {
 @HiltViewModel
 class ManagePrayerViewModel @Inject constructor(
     private val prayersUseCases: PrayerUseCases,
-    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = mutableStateOf(ManagePrayerState())
     val state: State<ManagePrayerState> = _state
 
     // TODO: Should these be properties or something else?
-    private val prayer = Prayer.fromString(savedStateHandle.get<String>("prayer"))
-
-    init {
-        viewModelScope.launch {
-            (prayer.let {
-                prayersUseCases.getPrayerNotification(it)
-            } ?: PrayerNotification(prayer)).also {
-                _state.value = _state.value.copy(
-                    time = prayersUseCases.getPrayerTime(prayer)?.time ?: LocalDateTime.now(),
-                    notification = it
-                )
-            }
-        }
-    }
+//    private val prayer = Prayer.fromString(savedStateHandle.get<String>("prayer"))
 
     fun onEvent(event: ManagePrayerEvent) {
         when (event) {
+            is ManagePrayerEvent.FetchPrayerData -> {
+                viewModelScope.launch {
+                    (event.prayer.let {
+                        prayersUseCases.getPrayerNotification(it)
+                    } ?: PrayerNotification(event.prayer)).also {
+                        _state.value = _state.value.copy(
+                            time = prayersUseCases.getPrayerTime(event.prayer)?.time
+                                ?: LocalDateTime.now(),
+                            notification = it
+                        )
+                    }
+                }
+            }
+
             is ManagePrayerEvent.ChangeNotificationsAllowed -> {
                 val isAllowed = event.isNotificationAllowed
                     ?: (_state.value.notification?.isNotificationAllowed == false)

@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,19 +20,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.domain.model.prayer.Prayer
-import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.card.Variant
-import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.example.domes.presentation.routes.settings.routes.notifications.routes.composables.ManagePrayerCard
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -48,10 +41,12 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 )
 @Composable
 fun ManagePrayerScreen(
-    navController: NavController,
+    navController: NavController? = null,
     prayer: Prayer,
     viewModel: ManagePrayerViewModel = hiltViewModel(),
 ) {
+    viewModel.onEvent(ManagePrayerEvent.FetchPrayerData(prayer))
+
     val state = viewModel.state.value
 
     val notificationPermissionState =
@@ -61,31 +56,11 @@ fun ManagePrayerScreen(
                 viewModel.onEvent(ManagePrayerEvent.ChangeNotificationsAllowed(true))
             }
         )
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     val isNotificationsAllowed =
         notificationPermissionState.status.isGranted && state.notification?.isNotificationAllowed == true
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            LayeredTopAppBar(
-                prayer.name,
-                backgroundText = prayer.arabicName,
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack(
-                            route = Screen.Notifications.route,
-                            inclusive = false
-                        )
-                    }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
-        },
         floatingActionButton = {
             if (isNotificationsAllowed) {
                 FloatingActionButton(
