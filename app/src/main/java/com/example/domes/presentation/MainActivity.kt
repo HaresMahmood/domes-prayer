@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountTree
 import androidx.compose.material.icons.outlined.Calculate
+import androidx.compose.material.icons.outlined.FilePresent
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
@@ -143,7 +144,15 @@ class MainActivity : ComponentActivity() {
                             AppearanceScreen(
                                 navController
                             )
-                        }),
+                        }
+                    ),
+                    Setting(
+                        "Data",
+                        IconSource(Icons.Outlined.FilePresent),
+                        "Import • export",
+                        "appearance",
+                        enabled = false
+                    ),
                     Setting(
                         "About",
                         IconSource(Icons.Outlined.Info),

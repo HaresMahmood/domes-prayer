@@ -49,8 +49,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
+import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.card.FixedCard
-import com.example.domes.presentation.common.composables.card.Variant
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
 import com.example.domes.presentation.routes.settings.routes.appearance.AppearanceScreen
@@ -91,8 +91,6 @@ fun SettingsScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-    println("values: ${navigator.scaffoldValue.secondary == PaneAdaptedValue.Expanded}")
-
     BackHandler(navigator.canNavigateBack()) {
         navigator.navigateBack()
     }
@@ -101,15 +99,21 @@ fun SettingsScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LayeredTopAppBar(
-                if (navigator.scaffoldValue.secondary == PaneAdaptedValue.Expanded) "Settings ${navigator.currentDestination?.content?.title?.let { "• $it" } ?: ""}" else (navigator.currentDestination?.content?.title
+                if (navigator.scaffoldValue.secondary == PaneAdaptedValue.Expanded) "Settings" else (navigator.currentDestination?.content?.title
                     ?: "Settings"),
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack(
-                            route = Screen.Prayers.route,
-                            inclusive = false
-                        )
-                    }) {
+                    IconButton(
+                        onClick = {
+                            if (navigator.canNavigateBack()) {
+                                navigator.navigateBack()
+                            } else {
+                                navController.popBackStack(
+                                    route = Screen.Prayers.route,
+                                    inclusive = false
+                                )
+                            }
+                        }
+                    ) {
                         Icon(
                             Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = "Back"
@@ -119,14 +123,21 @@ fun SettingsScreen(
                 bottomActions = listOf(
                     {
                         ActionSectionChip(
-                            icon = IconSource(Icons.Outlined.Settings)
+                            icon = IconSource(Icons.Outlined.Settings),
+                            title = if (navigator.currentDestination?.content == null) "Select a setting" else null
                         )
                     },
                     {
-                        ActionSectionChip(
-                            title = navigator.currentDestination?.content?.title,
-                            variant = com.example.domes.presentation.common.composables.button.Variant.VISUAL,
-                        )
+
+                    },
+                    {
+                        navigator.currentDestination?.content?.let {
+                            ActionSectionChip(
+                                icon = it.icon,
+                                title = it.title,
+                                variant = com.example.domes.presentation.common.composables.button.Variant.VISUAL,
+                            )
+                        }
                     }
                 ),
                 scrollBehavior = scrollBehavior
@@ -155,11 +166,7 @@ fun SettingsScreen(
                 detailPane = {
                     AnimatedPane {
                         if (navigator.currentDestination?.content != null) {
-//                            LazyColumn {
-//                                item {
                             navigator.currentDestination?.content?.screen?.invoke()
-//                                }
-//                            }
                         } else {
                             FixedCard(
                                 modifier = Modifier
@@ -199,23 +206,25 @@ fun ListPane(
             item {
                 Column {
                     settings.forEachIndexed { index, setting ->
-                        FixedCard(
-                            variant = if (setting == selectedSetting) Variant.FADED else Variant.DEFAULT,
+                        val selectedSettingIndex = settings.indexOf(selectedSetting)
+                        ExpandableCard(
+                            content = {
+                                SettingsListItem(
+                                    setting.title,
+                                    setting.icon,
+                                    setting.description,
+                                    isEnabled = setting.enabled,
+                                    isLastItem = index == settings.size - 1 || setting == selectedSetting || index == selectedSettingIndex - 1,
+                                    onClick = { onItemClick(setting) },
+                                )
+                            },
+                            isExpanded = setting == selectedSetting,
+                            isBeforeExpandedItem = index == selectedSettingIndex - 1,
+                            isAfterExpandedItem = index == selectedSettingIndex + 1,
                             isFirstItem = index == 0,
                             isLastItem = index == settings.size - 1,
-                            hasGap = index == settings.size - 1,
-                            hasTopRounding = index == 0,
-                            hasBottomRounding = index == settings.size - 1
-                        ) {
-                            SettingsListItem(
-                                setting.title,
-                                setting.icon,
-                                setting.description,
-                                isEnabled = setting.enabled,
-                                isLastItem = index == settings.size - 1,
-                                onClick = { onItemClick(setting) },
-                            )
-                        }
+                            expand = {}
+                        )
                     }
                 }
             }

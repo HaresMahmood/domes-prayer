@@ -1,6 +1,8 @@
 package com.example.domes.presentation.common.composables.button
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -80,14 +82,21 @@ fun ActionSectionChip(
     }
 
     AssistChip(
-        modifier = modifier.then(
-            if (title == null) Modifier.width(AssistChipDefaults.Height) else Modifier
-        ),
+        modifier = modifier
+            .animateContentSize()
+            .then(
+                if (title == null) Modifier.width(AssistChipDefaults.Height) else Modifier
+            ),
         onClick = onClick,
         shape = cornerShapes,
-        border = null, // Use AssistChipDefaults.assistChipBorder() if needed based on variant
+        border = null, // TODO: Use AssistChipDefaults.assistChipBorder() if needed based on variant
         leadingIcon = {
-            icon?.let { if (title != null) IconComponent(modifier = Modifier, iconSource = it) }
+            icon?.let {
+                IconComponent(
+                    modifier = Modifier.requiredSize(AssistChipDefaults.IconSize),
+                    iconSource = it
+                )
+            }
         },
         label = {
             title?.let { text ->
@@ -118,8 +127,8 @@ fun ActionSectionChip(
 @Composable
 fun ActionSectionChipPreview() {
     ActionSectionChip(
-        title = "Test",
-        placeholderText = "Testing",
+//        title = "Test",
+//        placeholderText = "Testing",
         icon = IconSource(Icons.Outlined.PinDrop),
 //        variant = Variant.SELECTED,
     )
