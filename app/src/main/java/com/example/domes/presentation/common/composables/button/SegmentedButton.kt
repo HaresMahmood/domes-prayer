@@ -142,6 +142,7 @@ fun SegmentedButtonItem(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
     colors: SegmentedButtonColors = SegmentedButtonsDefaults.colors(),
@@ -179,6 +180,7 @@ fun SegmentedButtonItem(
             .selectable(
                 selected = selected,
                 onClick = onClick,
+                enabled = enabled,
                 role = Role.Tab,
             )
             .background(

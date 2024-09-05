@@ -148,7 +148,7 @@ fun NotificationsScreen(
                                     "",
                                     Screen.Settings.Notifications.ManagePrayer.route,
                                     {
-                                        ManagePrayerScreen(prayer = prayer)
+                                        ManagePrayerScreen(prayer)
                                     },
                                     parent = parentSetting.setting
                                 )

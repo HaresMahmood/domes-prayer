@@ -119,6 +119,7 @@ fun ManagePrayerCard(
                             val selected = offsetRelation.index == notification?.offset?.sign
                             SegmentedButtonItem(
                                 selected = selected,
+                                enabled = notification?.offset != 0,
                                 onClick = {
                                     if (!selected) {
                                         notification?.let { _ ->

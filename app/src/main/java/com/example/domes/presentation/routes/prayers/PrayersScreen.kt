@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -162,7 +163,8 @@ fun PrayersScreen(
                         navController = navController,
                         viewModel = viewModel,
                         notificationsViewModel = notificationsViewModel,
-                        bottomSheetScaffoldState = bottomSheetScaffoldState
+                        bottomSheetScaffoldState = bottomSheetScaffoldState,
+                        dualPane = true
                     )
                 },
                 supportingPane = {
@@ -185,7 +187,8 @@ fun PrayersScreen(
                                     viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
                                 }
                             } else {
-                                ManagePrayerScreen(prayer = prayersState.expandedPrayer)
+                                Spacer(Modifier.height(16.dp))
+                                ManagePrayerScreen(prayersState.expandedPrayer)
                             }
                         }
                     }
@@ -288,6 +291,7 @@ fun MainPane(
     viewModel: PrayersViewModel,
     notificationsViewModel: NotificationsViewModel,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
+    dualPane: Boolean = false,
 ) {
     val prayersState = viewModel.prayersState.value
     val notificationsState = notificationsViewModel.state.value
@@ -551,8 +555,6 @@ fun MainPane(
                         val expandedPrayerIndex =
                             Prayer.ALL.indexOf(prayersState.expandedPrayer)
 
-                        println("expandedPrayerIndex: $expandedPrayerIndex")
-
                         Prayer.ALL.forEachIndexed { index, prayer ->
                             val prayerTime =
                                 prayerTimes.find { it.prayer == prayer }
@@ -574,6 +576,7 @@ fun MainPane(
                                 isAfterExpandedItem = index == expandedPrayerIndex + 1,
                                 remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
                                 navController = navController,
+                                dualPane = dualPane,
                                 expand = {
                                     viewModel.onEvent(
                                         PrayersEvent.ChangeExpandedPrayer(

@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.card.Variant
@@ -42,7 +41,6 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 )
 @Composable
 fun ManagePrayerScreen(
-    navController: NavController? = null,
     prayer: Prayer,
     viewModel: ManagePrayerViewModel = hiltViewModel(),
 ) {

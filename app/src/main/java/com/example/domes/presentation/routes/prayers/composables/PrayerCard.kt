@@ -89,6 +89,7 @@ fun PrayerCard(
     isBeforeExpandedItem: Boolean = false,
     isAfterExpandedItem: Boolean = false,
     remainingTimePercentage: Float,
+    dualPane: Boolean = false,
     expand: (Boolean) -> Unit,
     onPrayerRecordDetailValueChange: (prayed: Boolean?, notes: String?, missedReasons: MissedReason?) -> Unit = { b: Boolean?, s: String?, mr: MissedReason? -> },
 ) {
@@ -269,7 +270,7 @@ fun PrayerCard(
                         )
                     }
                 }
-                if (isNotificationsAllowed) {
+                if (isNotificationsAllowed && !dualPane) {
                     item {
                         ActionSectionChip(
                             "Manage notifications",

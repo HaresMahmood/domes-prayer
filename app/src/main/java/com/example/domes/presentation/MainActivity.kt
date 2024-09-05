@@ -269,7 +269,7 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
 
-                                ManagePrayerScreen(navController, prayer)
+                                ManagePrayerScreen(prayer)
                             }
                         }
                     }
