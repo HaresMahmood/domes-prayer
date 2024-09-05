@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Event
+import androidx.compose.material.icons.outlined.HealthAndSafety
 import androidx.compose.material.icons.outlined.HomeMini
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -103,6 +104,28 @@ fun IntegrationsScreen(
                                 },
                             )
                         },
+                        expand = {}
+                    )
+                }
+                item {
+                    ExpandableCard(
+                        content = {
+                            SettingsListItem(
+                                "Health Connect",
+                                IconSource(Icons.Outlined.HealthAndSafety),
+                                description = "Fetch menstrual cycle status automatically",
+                                isLastItem = true,
+                                trailingContent = {
+                                    IndicativeTrailingContent {
+                                        Switch(
+                                            checked = false,
+                                            onCheckedChange = { }
+                                        )
+                                    }
+                                },
+                            )
+                        },
+                        isEnabled = false,
                         isLastItem = true,
                         expand = {}
                     )
