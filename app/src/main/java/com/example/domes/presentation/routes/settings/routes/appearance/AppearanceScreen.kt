@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.Brightness1
+import androidx.compose.material.icons.outlined.Brightness2
+import androidx.compose.material.icons.outlined.BrightnessAuto
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Vibration
@@ -26,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.domes.presentation.common.composables.button.SegmentedButtonItem
+import com.example.domes.presentation.common.composables.button.SegmentedButtonValues
 import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.routes.settings.composables.SettingsListItem
@@ -66,26 +69,28 @@ fun AppearanceScreen(
                             IconSource(Icons.Outlined.Opacity),
                             description = "Custom",
                             extendedContent = {
-                                SegmentedButtons {
-                                    SegmentedButtonItem(
-                                        selected = true,
-                                        onClick = {},
-//                                        icon = { Icons.Outlined.BrightnessAuto },
-                                        label = { Text("System") },
+                                SegmentedButtons(
+                                    content = listOf(
+                                        SegmentedButtonValues(
+                                            selected = true,
+                                            onClick = {},
+                                            icon = IconSource(Icons.Outlined.BrightnessAuto),
+                                            label = { Text("System") },
+                                        ),
+                                        SegmentedButtonValues(
+                                            selected = false,
+                                            onClick = {},
+                                            icon = IconSource(Icons.Outlined.Brightness1),
+                                            label = { Text("Light") },
+                                        ),
+                                        SegmentedButtonValues(
+                                            selected = false,
+                                            onClick = {},
+                                            icon = IconSource(Icons.Outlined.Brightness2),
+                                            label = { Text("Dark") },
+                                        )
                                     )
-                                    SegmentedButtonItem(
-                                        selected = false,
-                                        onClick = {},
-//                                        icon = { Icons.Outlined.Brightness1 },
-                                        label = { Text("Light") },
-                                    )
-                                    SegmentedButtonItem(
-                                        selected = false,
-                                        onClick = {},
-//                                        icon = { Icons.Outlined.Brightness2 },
-                                        label = { Text("Dark") },
-                                    )
-                                }
+                                )
                             },
                             isLastItem = true
                         )
@@ -144,23 +149,25 @@ fun AppearanceScreen(
                             IconSource(Icons.Outlined.AccessTime),
                             value = "18:20 pm",
                             extendedContent = {
-                                SegmentedButtons {
-                                    SegmentedButtonItem(
-                                        selected = true,
-                                        onClick = {},
-                                        label = { Text("System") },
+                                SegmentedButtons(
+                                    content = listOf(
+                                        SegmentedButtonValues(
+                                            selected = true,
+                                            onClick = {},
+                                            label = { Text("System") },
+                                        ),
+                                        SegmentedButtonValues(
+                                            selected = false,
+                                            onClick = {},
+                                            label = { Text("12-hour") },
+                                        ),
+                                        SegmentedButtonValues(
+                                            selected = false,
+                                            onClick = {},
+                                            label = { Text("24-hour") },
+                                        )
                                     )
-                                    SegmentedButtonItem(
-                                        selected = false,
-                                        onClick = {},
-                                        label = { Text("12-hour") },
-                                    )
-                                    SegmentedButtonItem(
-                                        selected = false,
-                                        onClick = {},
-                                        label = { Text("24-hour") },
-                                    )
-                                }
+                                )
                             },
                         )
                         SettingsListItem(
@@ -173,18 +180,20 @@ fun AppearanceScreen(
                             IconSource(Icons.Outlined.CalendarMonth),
                             description = "More prominent date format",
                             extendedContent = {
-                                SegmentedButtons {
-                                    SegmentedButtonItem(
-                                        selected = true,
-                                        onClick = {},
-                                        label = { Text("Gregorian") },
+                                SegmentedButtons(
+                                    content = listOf(
+                                        SegmentedButtonValues(
+                                            selected = true,
+                                            onClick = {},
+                                            label = { Text("Gregorian") },
+                                        ),
+                                        SegmentedButtonValues(
+                                            selected = false,
+                                            onClick = {},
+                                            label = { Text("Hijri") },
+                                        )
                                     )
-                                    SegmentedButtonItem(
-                                        selected = false,
-                                        onClick = {},
-                                        label = { Text("Hijri") },
-                                    )
-                                }
+                                )
                             },
                             isLastItem = true
                         )

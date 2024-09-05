@@ -55,10 +55,10 @@ import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.domain.model.prayer.PrayerRecordDetail
 import com.example.domes.domain.model.prayer.PrayerTime
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
+import com.example.domes.presentation.common.composables.button.SegmentedButtonValues
+import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.listitem.ListItemDivider
-import com.example.domes.presentation.common.composables.listitem.Option
-import com.example.domes.presentation.common.composables.listitem.OptionRow
 import com.example.domes.presentation.common.composables.shape.Circle
 import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
@@ -291,25 +291,46 @@ fun PrayerCard(
             ListItemDivider()
 
             Column(
-                modifier = Modifier.padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 if (hasPassed && prayerTime?.prayer?.displayable == true && prayerRecordDetail?.prayed == false) {
-                    val options = MissedReason.ALL.map { missedReason ->
-                        Option(
-                            title = missedReason?.name ?: "None",
-                            icon = missedReason?.iconResId?.let { IconSource(it) },
-                            selected = prayerRecordDetail.missedReason == missedReason,
-                        )
-                    }
-
                     SettingsListItem(
                         title = "Missed due to",
                         icon = IconSource(Icons.AutoMirrored.Outlined.CallMissedOutgoing),
                         extendedContent = {
-                            OptionRow(options) { index, _ ->
-                                onPrayerRecordDetailValueChange(null, null, MissedReason.ALL[index])
-                            }
+//                            OptionRow(options) { index, _ ->
+//                                onPrayerRecordDetailValueChange(null, null, MissedReason.ALL[index])
+//                            }
+
+                            SegmentedButtons(
+                                overflow = true,
+                                content = MissedReason.ALL.map { missedReason ->
+                                    val selected = prayerRecordDetail.missedReason == missedReason
+
+                                    SegmentedButtonValues(
+                                        selected = selected,
+                                        onClick = {
+                                            if (!selected) {
+                                                onPrayerRecordDetailValueChange(
+                                                    null,
+                                                    null,
+                                                    missedReason
+                                                )
+                                            }
+                                        },
+                                        icon = missedReason?.iconResId?.let { it1 ->
+                                            IconSource(
+                                                it1
+                                            )
+                                        },
+                                        label = {
+                                            Text(
+                                                missedReason?.name ?: "None",
+                                            )
+                                        },
+                                    )
+                                }
+                            )
                         },
                         isLastItem = true
                     )

@@ -1,200 +1,138 @@
 package com.example.domes.presentation.common.composables.button
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.domes.presentation.common.composables.button.SegmentedButtonsDefaults.ITEM_ANIMATION_MILLIS
-import com.example.domes.presentation.common.composables.button.SegmentedButtonsDefaults.minimumHeight
-import com.example.domes.presentation.common.composables.button.SegmentedButtonsDefaults.outlineThickness
+import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeker.sheets.core.views.IconComponent
 
-/**
- * Segmented buttons implemented similar to M3 spec. Use for simple choices between two to five items.
- * Each button contains a label and an icon.
- *
- * @param modifier The modifier to be applied to these SegmentedButtons.
- * @param shape The shape of the SegmentedButtons.
- * @param colors The colors to style these SegmentedButtons.
- * @param outlineThickness The thickness of the outline and divider for these Segmented Buttons.
- * @param border The border stroke for the outline of these Segmented Buttons.
- * @param content The content of the SegmentedButtons, usually 3-5 [SegmentedButtonItem].
- */
+
+// TODO: optimise
+
+data class SegmentedButtonValues(
+    val selected: Boolean,
+    val onClick: () -> Unit,
+    val modifier: Modifier = Modifier,
+    val enabled: Boolean = true,
+    val label: @Composable (() -> Unit)? = null,
+    val icon: IconSource? = null,
+)
+
 @Composable
-fun SegmentedButtons(
+fun SegmentedButton(
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(percent = 50),
-    colors: SegmentedButtonColors = SegmentedButtonsDefaults.colors(),
-    outlineThickness: Dp = SegmentedButtonsDefaults.outlineThickness,
-    border: BorderStroke = BorderStroke(outlineThickness, colors.outlineColor),
-    content: @Composable () -> Unit,
+    values: SegmentedButtonValues,
+    enabled: Boolean = true,
 ) {
-    Surface(
-        shape = shape,
-        border = border,
-        color = Color.Transparent,
-        modifier = modifier
-            .defaultMinSize(minHeight = minimumHeight)
-            .fillMaxWidth(),
-    ) {
-        SubcomposeLayout(Modifier.fillMaxWidth()) { constraints ->
-            val bottonRowWidth = constraints.maxWidth
-            val buttonMeasurables = subcompose(ButtonSlots.Buttons, content)
-            val buttonCount = buttonMeasurables.size
-            val dividerCount = buttonMeasurables.size - 1
+    val colors: SegmentedButtonColors = SegmentedButtonsDefaults.colors()
+    val textStyle: TextStyle = MaterialTheme.typography.labelLarge
 
-            val outlineThicknessPx = outlineThickness.roundToPx()
-
-            var buttonWidth = 0
-            if (buttonCount > 0) {
-                buttonWidth = (bottonRowWidth / buttonCount)
-            }
-            val buttonRowHeight =
-                buttonMeasurables.fold(initial = minimumHeight.roundToPx()) { max, curr ->
-                    maxOf(curr.maxIntrinsicHeight(buttonWidth), max)
-                }
-
-            val buttonPlaceables = buttonMeasurables.map {
-                it.measure(
-                    constraints.copy(
-                        minWidth = buttonWidth,
-                        maxWidth = buttonWidth,
-                        minHeight = buttonRowHeight,
-                        maxHeight = buttonRowHeight,
-                    )
-                )
-            }
-            val dividers = @Composable {
-                repeat(dividerCount) {
-                    colors.SegmentedDivider()
-                }
-            }
-            val dividerPlaceables =
-                subcompose(ButtonSlots.Divider, dividers).map {
-                    it.measure(
-                        constraints.copy(
-                            minWidth = outlineThicknessPx,
-                            maxWidth = outlineThicknessPx,
-                            minHeight = buttonRowHeight - outlineThicknessPx * 2,
-                            maxHeight = buttonRowHeight - outlineThicknessPx * 2,
-                        )
-                    )
-                }
-
-            layout(bottonRowWidth, buttonRowHeight) {
-                buttonPlaceables.forEachIndexed { index, button ->
-                    if (index < dividerPlaceables.size) {
-                        dividerPlaceables[index].placeRelative(
-                            index * buttonWidth + buttonWidth,
-                            outlineThicknessPx,
-                            1f
-                        )
-                    }
-                    button.placeRelative(index * buttonWidth, 0, 0f)
-                }
+    val styledLabel: @Composable (() -> Unit)? = values.label?.let {
+        @Composable {
+            val textColor by colors.textColor(selected = values.selected)
+            CompositionLocalProvider(LocalContentColor provides textColor) {
+                ProvideTextStyle(textStyle, content = values.label)
             }
         }
     }
-}
 
-/**
- * Material Design Segmented Button item. Use for simple choices between two to five items.
- *
- * @param selected Whether this item is selected.
- * @param onClick Called when this item is clicked.
- * @param modifier The modifier to apply to this item.
- * @param label Optional label for this item.
- * @param icon Optional icon for this item.
- * @param colors Colors to style this item.
- * @param textStyle Text style to be applied to the label of this item.
- */
-@Composable
-fun SegmentedButtonItem(
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    label: @Composable (() -> Unit)? = null,
-    icon: @Composable (() -> Unit)? = null,
-    colors: SegmentedButtonColors = SegmentedButtonsDefaults.colors(),
-    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
-) {
-    val styledLabel: @Composable (() -> Unit)? =
-        label?.let {
-            @Composable {
-                val textColor by colors.textColor(selected = selected)
-                CompositionLocalProvider(LocalContentColor provides textColor) {
-                    ProvideTextStyle(textStyle, content = label)
-                }
-            }
+    val styledIcon: @Composable (() -> Unit)? = values.icon?.let {
+        @Composable {
+            val iconColor by colors.iconColor(selected = values.selected)
+            val clearSemantics = values.label != null && values.selected
+
+            IconComponent(modifier = Modifier
+                .requiredSize(ButtonDefaults.IconSize)
+                .then(if (clearSemantics) Modifier.clearAndSetSemantics {} else Modifier),
+                tint = iconColor,
+                iconSource = it)
         }
+    }
 
-    val styledIcon: @Composable (() -> Unit)? =
-        icon?.let {
-            @Composable {
-                val iconColor by colors.iconColor(selected = selected)
-                val clearSemantics = label != null && selected
-                Box(modifier = if (clearSemantics) Modifier.clearAndSetSemantics {} else Modifier) {
-                    CompositionLocalProvider(LocalContentColor provides iconColor, content = icon)
-                }
-            }
-        }
-
-    val animationProgress: Float by animateFloatAsState(
-        targetValue = if (selected) colors.indicatorColor.alpha else 0f,
-        animationSpec = tween(ITEM_ANIMATION_MILLIS), label = "SegmentedButton"
+    val containerColor by animateColorAsState(
+        targetValue = if (values.selected) colors.selectedContainerColor else colors.unselectedContainerColor,
     )
 
-    Box(
-        modifier
-            .fillMaxWidth()
-            .selectable(
-                selected = selected,
-                onClick = onClick,
-                enabled = enabled,
-                role = Role.Tab,
-            )
-            .background(
-                color = colors.indicatorColor.copy(alpha = animationProgress),
-            )
-            .padding(12.dp),
-        contentAlignment = Alignment.Center
+    val cornerRadius by animateDpAsState(
+        targetValue = if (values.selected) 12.dp else 70.dp,
+    )
+
+    Button(
+        modifier = values.modifier.then(modifier),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor
+        ),
+        shape = RoundedCornerShape(cornerRadius.value),
+        enabled = enabled && values.enabled,
+        onClick = values.onClick,
     ) {
+        styledIcon?.let {
+            it.invoke()
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        }
+
+        styledLabel?.invoke()
+    }
+}
+
+@Composable
+fun SegmentedButtons(
+    modifier: Modifier = Modifier,
+    overflow: Boolean = false,
+    enabled: Boolean = true,
+    content: List<SegmentedButtonValues> = emptyList(),
+) {
+    if (!overflow) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            styledIcon?.invoke()
-            styledLabel?.invoke()
+            content.forEach {
+                SegmentedButton(
+                    values = it,
+                    enabled = enabled,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    } else {
+        LazyRow(
+            modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(content.size) {
+                SegmentedButton(
+                    values = content[it],
+                    enabled = enabled
+                )
+            }
         }
     }
 }
@@ -202,23 +140,21 @@ fun SegmentedButtonItem(
 object SegmentedButtonsDefaults {
     @Composable
     fun colors(
-        selectedTextColor: Color = MaterialTheme.colorScheme.secondary,
-        selectedIconColor: Color = MaterialTheme.colorScheme.secondary,
-        unselectedTextColor: Color = MaterialTheme.colorScheme.onSurface,
-        unselectedIconColor: Color = MaterialTheme.colorScheme.onSurface,
-        indicatorColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-        outlineColor: Color = MaterialTheme.colorScheme.outlineVariant,
+        selectedTextColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
+        selectedIconColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
+        unselectedTextColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+        unselectedIconColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+        selectedContainerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
+        unselectedContainerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     ): SegmentedButtonColors = SegmentedButtonColors(
         selectedTextColor = selectedTextColor,
         selectedIconColor = selectedIconColor,
-        indicatorColor = indicatorColor,
         unselectedTextColor = unselectedTextColor,
         unselectedIconColor = unselectedIconColor,
-        outlineColor = outlineColor
+        selectedContainerColor = selectedContainerColor,
+        unselectedContainerColor = unselectedContainerColor,
     )
 
-    internal val outlineThickness: Dp = 1.dp
-    internal val minimumHeight: Dp = 48.dp
     internal const val ITEM_ANIMATION_MILLIS: Int = 100
 }
 
@@ -228,8 +164,8 @@ data class SegmentedButtonColors internal constructor(
     val selectedIconColor: Color,
     val unselectedTextColor: Color,
     val unselectedIconColor: Color,
-    val indicatorColor: Color,
-    val outlineColor: Color,
+    val selectedContainerColor: Color,
+    val unselectedContainerColor: Color,
 ) {
     @Composable
     internal fun textColor(selected: Boolean): State<Color> {
@@ -239,7 +175,6 @@ data class SegmentedButtonColors internal constructor(
         }
         return animateColorAsState(
             targetValue = targetValue,
-            animationSpec = tween(ITEM_ANIMATION_MILLIS),
             label = "SegmentedButtonsTextColor"
         )
     }
@@ -252,27 +187,34 @@ data class SegmentedButtonColors internal constructor(
         }
         return animateColorAsState(
             targetValue = targetValue,
-            animationSpec = tween(ITEM_ANIMATION_MILLIS),
             label = "SegmentedButtonsIconColor"
-        )
-    }
-
-    @Composable
-    fun SegmentedDivider(
-        modifier: Modifier = Modifier,
-        thickness: Dp = outlineThickness,
-        color: Color = outlineColor,
-    ) {
-        Box(
-            modifier
-                .fillMaxHeight()
-                .width(thickness)
-                .background(color = color)
         )
     }
 }
 
-private enum class ButtonSlots {
-    Buttons,
-    Divider,
+@Preview(showBackground = true)
+@Composable
+fun SegmentedButtonsPreview() {
+    Box(modifier = Modifier.width(400.dp)) {
+        SegmentedButtons(
+            content = listOf(
+                SegmentedButtonValues(
+                    selected = true,
+                    onClick = {},
+                    icon = IconSource(Icons.Outlined.Timer),
+                    label = { Text("Selected") },
+                ),
+                SegmentedButtonValues(
+                    selected = false,
+                    onClick = {},
+                    label = { Text("Unselected") },
+                ),
+                SegmentedButtonValues(
+                    selected = false,
+                    onClick = {},
+                    label = { Text("Unselected") },
+                )
+            )
+        )
+    }
 }

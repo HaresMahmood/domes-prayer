@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.example.domes.domain.model.prayer.Notification
 import com.example.domes.presentation.common.composables.button.SegmentedAction
 import com.example.domes.presentation.common.composables.button.SegmentedActionSection
-import com.example.domes.presentation.common.composables.button.SegmentedButtonItem
+import com.example.domes.presentation.common.composables.button.SegmentedButtonValues
 import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.listitem.IndicativeTrailingContent
@@ -114,10 +114,11 @@ fun ManagePrayerCard(
             SettingsListItem(
                 icon = IconSource(Icons.AutoMirrored.Outlined.CompareArrows),
                 trailingContent = {
-                    SegmentedButtons {
-                        OffsetPolarity.entries.forEach { offsetRelation ->
-                            val selected = offsetRelation.index == notification?.offset?.sign
-                            SegmentedButtonItem(
+                    SegmentedButtons(content =
+                    OffsetPolarity.entries.map { offsetRelation ->
+                        val selected = offsetRelation.index == notification?.offset?.sign
+
+                            SegmentedButtonValues(
                                 selected = selected,
                                 enabled = notification?.offset != 0,
                                 onClick = {
@@ -134,7 +135,7 @@ fun ManagePrayerCard(
                                 },
                             )
                         }
-                    }
+                    )
                 },
                 isLastItem = true
             )

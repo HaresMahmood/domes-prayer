@@ -30,7 +30,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
-import com.example.domes.presentation.common.composables.button.SegmentedButtonItem
+import com.example.domes.presentation.common.composables.button.SegmentedButtonValues
 import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.listitem.ListItemDivider
 import com.example.domes.ui.theme.DomesTheme
@@ -38,8 +38,7 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.views.IconComponent
 
 enum class Variant {
-    DEFAULT,
-    ERROR
+    DEFAULT, ERROR
 }
 
 @Composable
@@ -57,8 +56,7 @@ fun SettingsListItem(
     onClick: (() -> Unit)? = null,
 ) {
     val supportingColor = (description?.let { ListItemDefaults.contentColor.copy(alpha = 0.5f) }
-        ?: value?.let { MaterialTheme.colorScheme.tertiary })
-        ?: ListItemDefaults.contentColor
+        ?: value?.let { MaterialTheme.colorScheme.tertiary }) ?: ListItemDefaults.contentColor
 
     val colors = when (variant) {
         Variant.DEFAULT -> ListItemDefaults.colors(
@@ -78,12 +76,11 @@ fun SettingsListItem(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ListItem(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp)
-                .alpha(if (isEnabled) 1f else 0.5f)
-                .then(if (onClick != null && isEnabled) Modifier.clickable { onClick() } else Modifier),
+        ListItem(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 5.dp)
+            .alpha(if (isEnabled) 1f else 0.5f)
+            .then(if (onClick != null && isEnabled) Modifier.clickable { onClick() } else Modifier),
             colors = colors,
             headlineContent = { if (title != null) Text(title) else if (trailingContent != null) trailingContent() },
             leadingContent = {
@@ -94,8 +91,7 @@ fun SettingsListItem(
                     Text(description ?: value ?: "")
                 }
             },
-            trailingContent = { if (title != null) trailingContent?.invoke() }
-        )
+            trailingContent = { if (title != null) trailingContent?.invoke() })
 
         if (extendedContent != null) {
             Box(
@@ -117,8 +113,7 @@ fun SettingsListItem(
                 item {
                     Box(
                         modifier = Modifier.padding(
-                            start = 60.dp,
-                            end = 21.dp
+                            start = 60.dp, end = 21.dp
                         )
                     ) {
                         extendedScrollingContent(isEnabled)
@@ -135,37 +130,29 @@ fun SettingsListItem(
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(
-    showBackground = true,
-    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
+    showBackground = true, wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
 )
 @Composable
 fun DomesPreview() {
     DomesTheme {
         Column {
-            SettingsListItem(
-                title = "Location",
+            SettingsListItem(title = "Location",
                 description = "Auto-update, set manually",
                 icon = IconSource(Icons.Outlined.LocationOn),
                 extendedContent = {
                     SegmentedButtons(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        SegmentedButtonItem(
-                            selected = true,
-                            onClick = {},
-                            label = { Text("System") }
+                        content = listOf(
+                            SegmentedButtonValues(selected = true,
+                                onClick = {},
+                                label = { Text("System") }),
+                            SegmentedButtonValues(selected = false,
+                                onClick = {},
+                                label = { Text("Light") }),
+                            SegmentedButtonValues(selected = false,
+                                onClick = {},
+                                label = { Text("Dark") })
                         )
-                        SegmentedButtonItem(
-                            selected = false,
-                            onClick = {},
-                            label = { Text("Light") }
-                        )
-                        SegmentedButtonItem(
-                            selected = false,
-                            onClick = {},
-                            label = { Text("Dark") }
-                        )
-                    }
+                    )
                 },
                 extendedScrollingContent = {
                     Row(
@@ -237,8 +224,7 @@ fun DomesPreview() {
                                 .background(Color.Red)
                         )
                     }
-                }
-            )
+                })
 
             SettingsListItem(
                 title = "Reset",
@@ -247,18 +233,15 @@ fun DomesPreview() {
                 isLastItem = true
             )
 
-            SettingsListItem(
-                icon = IconSource(Icons.Outlined.LockReset),
-                trailingContent = {
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = "00.00000000000000000000",
-                        onValueChange = {},
-                        label = { Text("Latitude") },
-                        textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
-                    )
-                }
-            )
+            SettingsListItem(icon = IconSource(Icons.Outlined.LockReset), trailingContent = {
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = "00.00000000000000000000",
+                    onValueChange = {},
+                    label = { Text("Latitude") },
+                    textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+                )
+            })
         }
     }
 }
