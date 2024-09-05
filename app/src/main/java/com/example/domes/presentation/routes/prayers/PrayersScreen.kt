@@ -73,6 +73,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.card.FixedCard
+import com.example.domes.presentation.common.composables.card.Variant
 import com.example.domes.presentation.common.composables.shape.Polygon
 import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.composables.slider.Slider
@@ -84,6 +85,7 @@ import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
 import com.example.domes.presentation.routes.prayers.composables.SnoozePrayerDialog
 import com.example.domes.presentation.routes.settings.routes.notifications.NotificationsViewModel
+import com.example.domes.presentation.routes.settings.routes.notifications.routes.ManagePrayerScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -110,12 +112,13 @@ class UIConstants {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class,
     ExperimentalFoundationApi::class, ExperimentalMaterial3AdaptiveApi::class
 )
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun PrayersScreen(
     navController: NavController,
@@ -167,17 +170,22 @@ fun PrayersScreen(
                         modifier = Modifier.preferredWidth(400.dp)
                     ) {
                         FixedCard(
+                            variant = Variant.FADED,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 6.dp, bottom = 6.dp)
                         ) {
-                            SelectedDateSection(
-                                gregorianDate = prayersState.selectedDate,
-                                hijriDate = prayersState.selectedHijriDate,
-                                scope = scope,
-                                isLoading = prayersState.isLoading,
-                            ) { selectedDate ->
-                                viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
+                            if (prayersState.expandedPrayer == null) {
+                                SelectedDateSection(
+                                    gregorianDate = prayersState.selectedDate,
+                                    hijriDate = prayersState.selectedHijriDate,
+                                    scope = scope,
+                                    isLoading = prayersState.isLoading,
+                                ) { selectedDate ->
+                                    viewModel.onEvent(PrayersEvent.ChangeDate(selectedDate))
+                                }
+                            } else {
+                                ManagePrayerScreen(prayer = prayersState.expandedPrayer)
                             }
                         }
                     }
