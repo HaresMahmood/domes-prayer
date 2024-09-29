@@ -107,7 +107,7 @@ fun SegmentedButton(
 fun SegmentedButtons(
     modifier: Modifier = Modifier,
     overflow: Boolean = false,
-    listItemChild: Boolean = false,
+    listItemChild: Boolean = true,
     enabled: Boolean = true,
     content: List<SegmentedButtonValues> = emptyList(),
 ) {

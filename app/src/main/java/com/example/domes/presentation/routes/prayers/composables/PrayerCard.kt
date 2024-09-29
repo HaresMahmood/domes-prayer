@@ -300,7 +300,6 @@ fun PrayerCard(
                         description = "Reason",
                         extendedContent = {
                             SegmentedButtons(
-                                listItemChild = true,
                                 overflow = true,
                                 content = MissedReason.ALL.map { missedReason ->
                                     val selected = prayerRecordDetail.missedReason == missedReason
