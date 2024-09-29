@@ -36,7 +36,6 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationItem
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth
-import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
@@ -91,7 +90,7 @@ data class ParentSetting @OptIn(ExperimentalMaterial3AdaptiveApi::class) constru
 fun SettingsScreen(
     navController: NavController,
     settings: List<Setting> = emptyList(),
-    history: List<Setting?> = emptyList(),
+    history: List<Setting?> = listOf(null),
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator(
         scaffoldDirective = calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth(
@@ -125,7 +124,13 @@ fun SettingsScreen(
                         ActionSectionChip(
                             icon = it.icon,
                             title = it.title,
-                            variant = if (it == selectedSetting) Variant.VISUAL else Variant.DEFAULT
+                            variant = if (it == selectedSetting) Variant.VISUAL else Variant.DEFAULT,
+                            onClick = {
+                                navigator.navigateTo(
+                                    ListDetailPaneScaffoldRole.Detail,
+                                    it
+                                )
+                            }
                         )
                     }
                 }
@@ -133,7 +138,13 @@ fun SettingsScreen(
             breadCrumbs.add {
                 ActionSectionChip(
                     icon = IconSource(Icons.Outlined.Settings),
-                    title = if (selectedSetting == null) "Select a setting" else null
+                    title = if (selectedSetting == null) "Select a setting" else null,
+                    onClick = {
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.List,
+                            null
+                        )
+                    }
                 )
             }
 
@@ -143,16 +154,10 @@ fun SettingsScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if (navigator.canNavigateBack()) {
-                                navigator.navigateBack(
-                                    backNavigationBehavior = BackNavigationBehavior.PopUntilCurrentDestinationChange
-                                )
-                            } else {
-                                navController.popBackStack(
-                                    route = Screen.Prayers.route,
-                                    inclusive = false
-                                )
-                            }
+                            navController.popBackStack(
+                                route = Screen.Prayers.route,
+                                inclusive = false
+                            )
                         }
                     ) {
                         Icon(
