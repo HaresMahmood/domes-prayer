@@ -153,8 +153,6 @@ fun NotificationsScreen(
                                     parent = parentSetting.setting
                                 )
                             )
-
-                            // ${Screen.Settings.Notifications.ManagePrayer.route}?prayer=${prayer.name}
                         }
                     )
                 }

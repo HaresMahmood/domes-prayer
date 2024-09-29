@@ -91,20 +91,15 @@ data class ParentSetting @OptIn(ExperimentalMaterial3AdaptiveApi::class) constru
 fun SettingsScreen(
     navController: NavController,
     settings: List<Setting> = emptyList(),
-    history: List<Setting> = emptyList(),
+    history: List<Setting?> = emptyList(),
 ) {
-    val navigator = rememberListDetailPaneScaffoldNavigator<Setting>(
+    val navigator = rememberListDetailPaneScaffoldNavigator(
         scaffoldDirective = calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth(
             currentWindowAdaptiveInfo()
         ),
-        initialDestinationHistory = listOf(
+        initialDestinationHistory = history.map {
             ThreePaneScaffoldDestinationItem(
-                pane = ListDetailPaneScaffoldRole.List,
-                content = null,
-            )
-        ) + history.map {
-            ThreePaneScaffoldDestinationItem(
-                pane = ListDetailPaneScaffoldRole.Detail,
+                pane = if (it == null) ListDetailPaneScaffoldRole.List else ListDetailPaneScaffoldRole.Detail,
                 content = it,
             )
         }

@@ -114,7 +114,9 @@ fun ManagePrayerCard(
             SettingsListItem(
                 icon = IconSource(Icons.AutoMirrored.Outlined.CompareArrows),
                 trailingContent = {
-                    SegmentedButtons(content =
+                    SegmentedButtons(
+                        listItemChild = false,
+                        content =
                     OffsetPolarity.entries.map { offsetRelation ->
                         val selected = offsetRelation.index == notification?.offset?.sign
 

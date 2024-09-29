@@ -119,8 +119,7 @@ class MainActivity : ComponentActivity() {
                         Screen.Settings.Notifications.route,
                         {
                             NotificationsScreen(
-                                it,
-                                viewModel = notificationsViewModel
+                                it, viewModel = notificationsViewModel
                             )
                         },
                     ),
@@ -141,8 +140,7 @@ class MainActivity : ComponentActivity() {
                             AppearanceScreen(
                                 navController
                             )
-                        }
-                    ),
+                        }),
                     Setting(
                         "Widgets",
                         IconSource(Icons.Outlined.Widgets),
@@ -191,8 +189,7 @@ class MainActivity : ComponentActivity() {
                         enterTransition = {
                             fadeIn(
                                 animationSpec = tween(
-                                    750,
-                                    easing = EaseOutQuint
+                                    750, easing = EaseOutQuint
                                 )
                             ) + slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Left,
@@ -204,8 +201,7 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {
                             fadeOut(
                                 animationSpec = tween(
-                                    750,
-                                    easing = EaseOutQuint
+                                    750, easing = EaseOutQuint
                                 )
                             ) + slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Left,
@@ -217,8 +213,7 @@ class MainActivity : ComponentActivity() {
                         popEnterTransition = {
                             fadeIn(
                                 animationSpec = tween(
-                                    750,
-                                    easing = EaseOutQuint
+                                    750, easing = EaseOutQuint
                                 )
                             ) + slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
@@ -230,8 +225,7 @@ class MainActivity : ComponentActivity() {
                         popExitTransition = {
                             fadeOut(
                                 animationSpec = tween(
-                                    750,
-                                    easing = EaseOutQuint
+                                    750, easing = EaseOutQuint
                                 )
                             ) + slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
@@ -254,11 +248,20 @@ class MainActivity : ComponentActivity() {
                             composable(route = Screen.Qibla.route) {
                                 QiblaScreen(navController)
                             }
-                            composable(route = Screen.Settings.route) {
+                            composable(
+                                route = Screen.Settings.route
+                            ) {
                                 SettingsScreen(navController, settings)
                             }
                             composable(route = Screen.Settings.Location.route) {
-                                settings[0].screen(null)
+                                val history = listOf(settings[0])
+
+                                SettingsScreen(navController, settings, history)
+                            }
+                            composable(route = Screen.Settings.Notifications.route) {
+                                val history = listOf(settings[2])
+
+                                SettingsScreen(navController, settings, history)
                             }
                             composable(
                                 route = Screen.Settings.Notifications.ManagePrayer.route + "?prayer={prayer}",
@@ -268,8 +271,24 @@ class MainActivity : ComponentActivity() {
                                 })
                             ) {
                                 val prayer = Prayer.fromString(it.arguments?.getString("prayer"))
+                                val history = listOf(
+                                    Setting(
+                                        prayer.name,
+                                        IconSource(prayer.iconResId),
+                                        "",
+                                        Screen.Settings.Notifications.ManagePrayer.route,
+                                        {
+                                            ManagePrayerScreen(prayer)
+                                        },
+                                        parent = settings[2]
+                                    )
+                                )
 
-                                ManagePrayerScreen(prayer)
+                                SettingsScreen(
+                                    navController,
+                                    settings = settings,
+                                    history = history
+                                )
                             }
                         }
                     }
