@@ -34,6 +34,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
+import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationItem
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
@@ -69,7 +70,7 @@ enum class Category {
 }
 
 @Parcelize
-data class Setting @OptIn(ExperimentalMaterial3AdaptiveApi::class) constructor(
+data class Setting(
     val title: String,
     val icon: @RawValue IconSource,
     val description: String? = null,
@@ -90,11 +91,23 @@ data class ParentSetting @OptIn(ExperimentalMaterial3AdaptiveApi::class) constru
 fun SettingsScreen(
     navController: NavController,
     settings: List<Setting> = emptyList(),
+    history: List<Setting> = emptyList(),
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Setting>(
         scaffoldDirective = calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth(
             currentWindowAdaptiveInfo()
-        )
+        ),
+        initialDestinationHistory = listOf(
+            ThreePaneScaffoldDestinationItem(
+                pane = ListDetailPaneScaffoldRole.List,
+                content = null,
+            )
+        ) + history.map {
+            ThreePaneScaffoldDestinationItem(
+                pane = ListDetailPaneScaffoldRole.Detail,
+                content = it,
+            )
+        }
     )
 
     val scrollBehavior =
@@ -211,12 +224,7 @@ fun SettingsScreen(
                             }
                         }
                     }
-                },
-//                extraPane = {
-//                    AnimatedPane {
-//                        navigator.currentDestination?.content?.screen?.invoke(navigator)
-//                    }
-//                }
+                }
             )
         }
     }
