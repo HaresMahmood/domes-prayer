@@ -2,17 +2,12 @@ package com.example.domes.presentation.routes.settings.composables
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.LockReset
@@ -94,32 +89,7 @@ fun SettingsListItem(
             trailingContent = { if (title != null) trailingContent?.invoke() })
 
         if (extendedContent != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 60.dp, end = 21.dp)
-                    .alpha(if (isEnabled) 1f else 0.5f)
-            ) {
-                extendedContent(isEnabled)
-            }
-
-            Spacer(Modifier.size(20.dp))
-        }
-
-        if (extendedScrollingContent != null) {
-            LazyRow(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                item {
-                    Box(
-                        modifier = Modifier.padding(
-                            start = 60.dp, end = 21.dp
-                        )
-                    ) {
-                        extendedScrollingContent(isEnabled)
-                    }
-                }
-            }
+            extendedContent(isEnabled)
 
             Spacer(Modifier.size(20.dp))
         }
@@ -141,6 +111,7 @@ fun DomesPreview() {
                 icon = IconSource(Icons.Outlined.LocationOn),
                 extendedContent = {
                     SegmentedButtons(
+                        listItemChild = true,
                         content = listOf(
                             SegmentedButtonValues(selected = true,
                                 onClick = {},
@@ -155,76 +126,9 @@ fun DomesPreview() {
                     )
                 },
                 extendedScrollingContent = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .background(Color.Red)
-                        )
-                    }
-                })
+
+                }
+            )
 
             SettingsListItem(
                 title = "Reset",

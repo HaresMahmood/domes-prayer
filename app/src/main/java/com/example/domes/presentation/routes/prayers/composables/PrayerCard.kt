@@ -297,12 +297,10 @@ fun PrayerCard(
                     SettingsListItem(
                         title = "Missed due to",
                         icon = IconSource(Icons.AutoMirrored.Outlined.CallMissedOutgoing),
+                        description = "Reason",
                         extendedContent = {
-//                            OptionRow(options) { index, _ ->
-//                                onPrayerRecordDetailValueChange(null, null, MissedReason.ALL[index])
-//                            }
-
                             SegmentedButtons(
+                                listItemChild = true,
                                 overflow = true,
                                 content = MissedReason.ALL.map { missedReason ->
                                     val selected = prayerRecordDetail.missedReason == missedReason
@@ -332,7 +330,6 @@ fun PrayerCard(
                                 }
                             )
                         },
-                        isLastItem = true
                     )
                 }
 

@@ -4,16 +4,16 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
@@ -107,30 +107,36 @@ fun SegmentedButton(
 fun SegmentedButtons(
     modifier: Modifier = Modifier,
     overflow: Boolean = false,
+    listItemChild: Boolean = false,
     enabled: Boolean = true,
     content: List<SegmentedButtonValues> = emptyList(),
 ) {
     if (!overflow) {
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .then(
+                    if (listItemChild) Modifier.padding(start = 60.dp, end = 25.dp) else Modifier
+                ),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             content.forEach {
                 SegmentedButton(
-                    values = it,
-                    enabled = enabled,
-                    modifier = Modifier.weight(1f)
+                    values = it, enabled = enabled, modifier = Modifier.weight(1f)
                 )
             }
         }
     } else {
         LazyRow(
-            modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = if (listItemChild) PaddingValues(
+                start = 60.dp, end = 25.dp
+            ) else PaddingValues(0.dp)
         ) {
             items(content.size) {
                 SegmentedButton(
-                    values = content[it],
-                    enabled = enabled
+                    values = content[it], enabled = enabled
                 )
             }
         }
@@ -174,8 +180,7 @@ data class SegmentedButtonColors internal constructor(
             else -> unselectedTextColor
         }
         return animateColorAsState(
-            targetValue = targetValue,
-            label = "SegmentedButtonsTextColor"
+            targetValue = targetValue, label = "SegmentedButtonsTextColor"
         )
     }
 
@@ -186,8 +191,7 @@ data class SegmentedButtonColors internal constructor(
             else -> unselectedIconColor
         }
         return animateColorAsState(
-            targetValue = targetValue,
-            label = "SegmentedButtonsIconColor"
+            targetValue = targetValue, label = "SegmentedButtonsIconColor"
         )
     }
 }
@@ -201,15 +205,12 @@ fun SegmentedButtonsPreview() {
                 SegmentedButtonValues(
                     selected = true,
                     onClick = {},
-                    icon = IconSource(Icons.Outlined.Timer),
                     label = { Text("Selected") },
-                ),
-                SegmentedButtonValues(
+                ), SegmentedButtonValues(
                     selected = false,
                     onClick = {},
                     label = { Text("Unselected") },
-                ),
-                SegmentedButtonValues(
+                ), SegmentedButtonValues(
                     selected = false,
                     onClick = {},
                     label = { Text("Unselected") },
