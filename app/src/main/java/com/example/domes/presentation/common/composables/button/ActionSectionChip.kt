@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.AssistChip
@@ -23,57 +22,59 @@ import com.google.accompanist.placeholder.material3.placeholder
 import com.maxkeppeker.sheets.core.models.base.IconSource
 import com.maxkeppeker.sheets.core.views.IconComponent
 
-enum class Variant {
-    DEFAULT,
-    VISUAL,
-    SELECTED,
+enum class Color {
+    SECONDARY,
+    TERTIARY,
+    PRIMARY,
     ERROR
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+enum class Shape {
+    BUBBLE,
+    ROUNDED,
+    SQUARE
+}
+
 @Composable
 fun ActionSectionChip(
     title: String? = null,
-    variant: Variant = Variant.DEFAULT,
+    color: Color = Color.SECONDARY,
+    shape: Shape = Shape.SQUARE,
     icon: IconSource? = null,
     trailingIcon: IconSource? = null,
     placeholderText: String? = null,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
-    val cornerShapes = when (variant) {
-        Variant.DEFAULT, Variant.ERROR -> AssistChipDefaults.shape
-        Variant.VISUAL -> RoundedCornerShape(
+    val cornerShapes = when (shape) {
+        Shape.SQUARE -> AssistChipDefaults.shape
+        Shape.BUBBLE -> RoundedCornerShape(
             topStartPercent = 12,
             topEndPercent = 45,
             bottomStartPercent = 45,
             bottomEndPercent = 45
         )
-
-        Variant.SELECTED -> RoundedCornerShape(100)
+        Shape.ROUNDED -> RoundedCornerShape(100)
     }
 
-    val colors = when (variant) {
-        Variant.DEFAULT -> AssistChipDefaults.assistChipColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            leadingIconContentColor = MaterialTheme.colorScheme.secondary
-        )
-
-        Variant.VISUAL -> AssistChipDefaults.assistChipColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
-            leadingIconContentColor = MaterialTheme.colorScheme.tertiary
-        )
-
-        Variant.SELECTED -> AssistChipDefaults.assistChipColors(
+    val colors = when (color) {
+        Color.PRIMARY -> AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.primary,
             labelColor = MaterialTheme.colorScheme.onPrimary,
             leadingIconContentColor = MaterialTheme.colorScheme.inversePrimary,
             trailingIconContentColor = MaterialTheme.colorScheme.inversePrimary
         )
-
-        Variant.ERROR -> AssistChipDefaults.assistChipColors(
+        Color.SECONDARY -> AssistChipDefaults.assistChipColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            leadingIconContentColor = MaterialTheme.colorScheme.secondary
+        )
+        Color.TERTIARY -> AssistChipDefaults.assistChipColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            leadingIconContentColor = MaterialTheme.colorScheme.tertiary
+        )
+        Color.ERROR -> AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.errorContainer,
             labelColor = MaterialTheme.colorScheme.onErrorContainer,
             leadingIconContentColor = MaterialTheme.colorScheme.error,

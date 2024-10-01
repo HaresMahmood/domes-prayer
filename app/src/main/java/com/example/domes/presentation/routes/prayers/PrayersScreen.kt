@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -117,8 +116,6 @@ class UIConstants {
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalMaterialApi::class,
-    ExperimentalPermissionsApi::class,
-    ExperimentalFoundationApi::class,
     ExperimentalMaterial3AdaptiveApi::class
 )
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -274,6 +271,8 @@ fun MainPane(
     val prayersState = viewModel.prayersState.value
     val notificationsState = notificationsViewModel.state.value
 
+    val todayDate = LocalDate.now()
+
     val prayerTimes =
         if (prayersState.selectedDate == LocalDate.now()) prayersState.currentPrayerTimes else prayersState.selectedPrayerTimes
 
@@ -373,6 +372,7 @@ fun MainPane(
                     }
                 }, bottomActions = MainActionSection(
                     isLoading = prayersState.isLoading,
+                    isToday = prayersState.selectedDate == todayDate,
                     prayerTimeLeft = prayersState.timeLeft,
                     remainingTimePercentage = viewModel.calculateRemainingPrayerTime(),
                     notificationsGranted = notificationPermissionState.status.isGranted,

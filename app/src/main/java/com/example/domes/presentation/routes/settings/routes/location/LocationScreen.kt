@@ -42,7 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domes.domain.model.location.isUnknown
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
-import com.example.domes.presentation.common.composables.button.Variant
+import com.example.domes.presentation.common.composables.button.Color
 import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.card.sections.ActionSection
@@ -179,7 +179,7 @@ fun LocationScreen(
                             uiState.editedLocale?.let {
                                 ActionSectionChip(
                                     if (error) "Invalid coordinates" else "${it.city}, ${it.countryCode}",
-                                    if (error) Variant.ERROR else Variant.DEFAULT,
+                                    if (error) Color.ERROR else Color.SECONDARY,
                                     icon = IconSource(Icons.Outlined.EditLocation)
                                 )
                             }
