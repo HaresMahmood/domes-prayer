@@ -11,6 +11,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
@@ -67,6 +68,10 @@ fun SegmentedActionSection(
                     child.icon?.let {
                         IconComponent(modifier = Modifier.size(22.dp), iconSource = it)
                     }
+
+                    child.label?.let {
+                        Text(text = it, style = MaterialTheme.typography.labelLarge)
+                    }
                 }
             }
         }
@@ -89,10 +94,7 @@ fun SegmentedButtonPreview() {
             ),
             SegmentedAction(
                 onClick = {},
-                icon = IconSource(
-                    Icons.AutoMirrored.Outlined.NavigateNext,
-                    contentDescription = "Tomorrow"
-                )
+                label = "1"
             ),
             SegmentedAction(
                 onClick = {},

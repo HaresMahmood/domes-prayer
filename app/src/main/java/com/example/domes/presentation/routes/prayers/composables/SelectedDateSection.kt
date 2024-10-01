@@ -14,7 +14,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
-import androidx.compose.material.icons.outlined.CalendarViewDay
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonDefaults
@@ -42,10 +41,7 @@ import com.example.domes.presentation.common.composables.shape.Shape
 import com.example.domes.presentation.common.utility.RoundedPolygonShape
 import com.example.domes.presentation.routes.prayers.UIConstants
 import com.example.domes.presentation.routes.prayers.UIConstants.Companion.getFormatter
-import com.maxkeppeker.sheets.core.icons.LibIcons
 import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeler.sheets.calendar.models.CalendarConfig
-import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -69,12 +65,6 @@ fun SelectedDateSection(
     val selectedDate = remember { mutableStateOf<LocalDate>(todayDate) }
     val yesterdayDate = selectedDate.value.minusDays(1)
     val tomorrowDate = selectedDate.value.plusDays(1)
-    val calendarConfig = CalendarConfig(
-        yearSelection = true,
-        monthSelection = true,
-        style = CalendarStyle.MONTH,
-        icons = LibIcons.Outlined,
-    )
 
     val datePickerState = rememberDatePickerState(
 //        initialSelectedDateMillis = gregorianDate.atTime(12, 0).atZone(ZoneId.systemDefault())
@@ -216,7 +206,8 @@ fun SelectedDateSection(
                                     Icons.AutoMirrored.Outlined.NavigateBefore, "Yesterday"
                                 ), enabled = !isLoading
                             ) { updateDate(yesterdayDate) }, SegmentedAction(
-                                icon = IconSource(Icons.Outlined.CalendarViewDay, "Today"),
+                                //icon = IconSource(Icons.Outlined.Today, "Today"),
+                                label = todayDate.dayOfMonth.toString(),
                                 colors = IconButtonDefaults.filledTonalIconButtonColors(
                                     containerColor = MaterialTheme.colorScheme.primary,
                                     contentColor = MaterialTheme.colorScheme.onPrimary
