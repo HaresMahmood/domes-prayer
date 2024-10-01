@@ -6,12 +6,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Brightness1
 import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Brightness1
-import androidx.compose.material.icons.outlined.Brightness2
-import androidx.compose.material.icons.outlined.BrightnessAuto
+import androidx.compose.material.icons.outlined.BrowseGallery
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.HistoryToggleOff
 import androidx.compose.material.icons.outlined.Opacity
+import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +59,7 @@ fun AppearanceScreen(
                                 SegmentedButtonValues(
                                     selected = true,
                                     onClick = {},
-                                    icon = IconSource(Icons.Outlined.BrightnessAuto),
+                                    icon = IconSource(Icons.Outlined.AutoAwesome),
                                     label = { Text("System") },
                                 ),
                                 SegmentedButtonValues(
@@ -67,7 +71,7 @@ fun AppearanceScreen(
                                 SegmentedButtonValues(
                                     selected = false,
                                     onClick = {},
-                                    icon = IconSource(Icons.Outlined.Brightness2),
+                                    icon = IconSource(Icons.Filled.Brightness1),
                                     label = { Text("Dark") },
                                 )
                             )
@@ -136,16 +140,19 @@ fun AppearanceScreen(
                                 SegmentedButtonValues(
                                     selected = true,
                                     onClick = {},
+                                    icon = IconSource(Icons.Outlined.AutoAwesome),
                                     label = { Text("System") },
                                 ),
                                 SegmentedButtonValues(
                                     selected = false,
                                     onClick = {},
+                                    icon = IconSource(Icons.Outlined.HistoryToggleOff),
                                     label = { Text("12-hour") },
                                 ),
                                 SegmentedButtonValues(
                                     selected = false,
                                     onClick = {},
+                                    icon = IconSource(Icons.Outlined.BrowseGallery),
                                     label = { Text("24-hour") },
                                 )
                             )
@@ -163,15 +170,18 @@ fun AppearanceScreen(
                     description = "More prominent date format",
                     extendedContent = {
                         SegmentedButtons(
+                            overflow = true,
                             content = listOf(
                                 SegmentedButtonValues(
                                     selected = true,
                                     onClick = {},
+                                    icon = IconSource(Icons.Outlined.Public),
                                     label = { Text("Gregorian") },
                                 ),
                                 SegmentedButtonValues(
                                     selected = false,
                                     onClick = {},
+                                    icon = IconSource(Icons.Outlined.DarkMode),
                                     label = { Text("Hijri") },
                                 )
                             )
