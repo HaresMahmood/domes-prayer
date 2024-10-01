@@ -1,24 +1,17 @@
 package com.example.domes.presentation.routes.settings.routes.calculation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.Madhab
 import com.example.domes.presentation.common.composables.card.FixedCard
@@ -35,13 +28,9 @@ import com.maxkeppeler.sheets.option.models.Option
 )
 @Composable
 fun CalculationScreen(
-    navController: NavController,
     viewModel: PrayersViewModel,
 ) {
     val state = viewModel.calculationState.value
-
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     val calculationMethodOptions = listOf(
         Pair(
@@ -221,88 +210,79 @@ fun CalculationScreen(
         ),
     )
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        item {
+            FixedCard {
+                SettingsListItem(
+                    "Calculation method",
+                    IconSource(Icons.Outlined.Calculate),
+                    value = calculationMethodOptions[state.calculationMethod.ordinal].first.titleText,
+                    onClick = {
+                        viewModel.onEvent(CalculationEvent.SetCalculationMethodDialogVisibility())
+                    },
+                )
+                SettingsListItem(
+                    "Juristic",
+                    IconSource(Icons.Outlined.AccountBalance),
+                    value = juristicOptions[state.juristic.ordinal].first.titleText,
+                    isLastItem = true,
+                    onClick = {
+                        viewModel.onEvent(CalculationEvent.SetJuristicDialogVisibility())
+                    }
+                )
+            }
+        }
+        item {
+            FixedCard(
+                com.example.domes.presentation.common.composables.card.Variant.ERROR
             ) {
-                item {
-                    FixedCard {
-                        SettingsListItem(
-                            "Calculation method",
-                            IconSource(Icons.Outlined.Calculate),
-                            value = calculationMethodOptions[state.calculationMethod.ordinal].first.titleText,
-                            onClick = {
-                                viewModel.onEvent(CalculationEvent.SetCalculationMethodDialogVisibility())
-                            },
-                        )
-                        SettingsListItem(
-                            "Juristic",
-                            IconSource(Icons.Outlined.AccountBalance),
-                            value = juristicOptions[state.juristic.ordinal].first.titleText,
-                            isLastItem = true,
-                            onClick = {
-                                viewModel.onEvent(CalculationEvent.SetJuristicDialogVisibility())
-                            }
-                        )
+                // TODO: Add confirmation dialog
+                SettingsListItem(
+                    "Reset to default",
+                    IconSource(Icons.Outlined.RestartAlt),
+                    variant = Variant.ERROR,
+                    isLastItem = true,
+                    onClick = {
+                        viewModel.onEvent(CalculationEvent.ResetSettings)
                     }
-                }
-                item {
-                    FixedCard(
-                        com.example.domes.presentation.common.composables.card.Variant.ERROR
-                    ) {
-                        // TODO: Add confirmation dialog
-                        SettingsListItem(
-                            "Reset to default",
-                            IconSource(Icons.Outlined.RestartAlt),
-                            variant = Variant.ERROR,
-                            isLastItem = true,
-                            onClick = {
-                                viewModel.onEvent(CalculationEvent.ResetSettings)
-                            }
-                        )
-                    }
-                }
+                )
             }
         }
+    }
 
-        if (state.showJuristicDialog) {
-            OptionDialog(
-                title = "Juristic",
-                icon = IconSource(Icons.Outlined.AccountBalance),
-                options = juristicOptions.map { it.first },
-                setDialogVisibility = { isVisible ->
-                    viewModel.onEvent(CalculationEvent.SetJuristicDialogVisibility(isVisible))
-                }
-            ) { index, _ ->
-                viewModel.onEvent(CalculationEvent.ChangeJuristic(juristicOptions[index].second))
+    if (state.showJuristicDialog) {
+        OptionDialog(
+            title = "Juristic",
+            icon = IconSource(Icons.Outlined.AccountBalance),
+            options = juristicOptions.map { it.first },
+            setDialogVisibility = { isVisible ->
+                viewModel.onEvent(CalculationEvent.SetJuristicDialogVisibility(isVisible))
             }
+        ) { index, _ ->
+            viewModel.onEvent(CalculationEvent.ChangeJuristic(juristicOptions[index].second))
         }
+    }
 
-        if (state.showCalculationMethodDialog) {
-            OptionDialog(
-                title = "Calculation method",
-                icon = IconSource(Icons.Outlined.Calculate),
-                options = calculationMethodOptions.map { it.first },
-                setDialogVisibility = { isVisible ->
-                    viewModel.onEvent(
-                        CalculationEvent.SetCalculationMethodDialogVisibility(
-                            isVisible
-                        )
+    if (state.showCalculationMethodDialog) {
+        OptionDialog(
+            title = "Calculation method",
+            icon = IconSource(Icons.Outlined.Calculate),
+            options = calculationMethodOptions.map { it.first },
+            setDialogVisibility = { isVisible ->
+                viewModel.onEvent(
+                    CalculationEvent.SetCalculationMethodDialogVisibility(
+                        isVisible
                     )
-                }
-            ) { index, _ ->
-                viewModel.onEvent(CalculationEvent.ChangeCalculationMethod(calculationMethodOptions[index].second))
+                )
             }
+        ) { index, _ ->
+            viewModel.onEvent(CalculationEvent.ChangeCalculationMethod(calculationMethodOptions[index].second))
         }
     }
 }

@@ -109,7 +109,7 @@ class MainActivity : ComponentActivity() {
                         Screen.Settings.Calculation.route,
                         {
                             CalculationScreen(
-                                navController, viewModel = viewModel
+                                viewModel = viewModel
                             )
                         }),
                     Setting(
@@ -128,18 +128,14 @@ class MainActivity : ComponentActivity() {
                         "Calendar • Google Nest",
                         Screen.Settings.Integrations.route,
                         {
-                            IntegrationsScreen(
-                                navController
-                            )
+                            IntegrationsScreen()
                         }),
                     Setting("Appearance",
                         IconSource(Icons.Outlined.Palette),
                         "Theme • language • format",
                         Screen.Settings.Appearance.route,
                         {
-                            AppearanceScreen(
-                                navController
-                            )
+                            AppearanceScreen()
                         }),
                     Setting(
                         "Widgets",

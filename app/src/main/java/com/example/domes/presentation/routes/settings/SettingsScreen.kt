@@ -311,7 +311,7 @@ fun SettingsPreview() {
             "Calendar • Google Nest",
             "integrations",
             {
-                IntegrationsScreen(navController)
+                IntegrationsScreen()
             }
         ),
         Setting(
@@ -327,7 +327,7 @@ fun SettingsPreview() {
             "Theme • language • format",
             "appearance",
             {
-                AppearanceScreen(navController)
+                AppearanceScreen()
             }
         ),
         Setting(

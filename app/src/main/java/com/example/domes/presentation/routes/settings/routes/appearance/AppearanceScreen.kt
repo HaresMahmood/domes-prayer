@@ -1,7 +1,6 @@
 package com.example.domes.presentation.routes.settings.routes.appearance
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,19 +15,13 @@ import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.composables.button.SegmentedButtonValues
 import com.example.domes.presentation.common.composables.button.SegmentedButtons
 import com.example.domes.presentation.common.composables.card.FixedCard
@@ -39,178 +32,165 @@ import com.maxkeppeker.sheets.core.models.base.IconSource
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AppearanceScreen(
-    navController: NavController,
 //    viewModel: AppearanceViewModel = hiltViewModel()
-    expanded: Boolean = false,
 ) {
 //    val state = viewModel.state.value
 
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
-                item {
-                    FixedCard {
-                        SettingsListItem(
-                            "Theme",
-                            IconSource(Icons.Outlined.Opacity),
-                            description = "Custom",
-                            extendedContent = {
-                                SegmentedButtons(
-                                    content = listOf(
-                                        SegmentedButtonValues(
-                                            selected = true,
-                                            onClick = {},
-                                            icon = IconSource(Icons.Outlined.BrightnessAuto),
-                                            label = { Text("System") },
-                                        ),
-                                        SegmentedButtonValues(
-                                            selected = false,
-                                            onClick = {},
-                                            icon = IconSource(Icons.Outlined.Brightness1),
-                                            label = { Text("Light") },
-                                        ),
-                                        SegmentedButtonValues(
-                                            selected = false,
-                                            onClick = {},
-                                            icon = IconSource(Icons.Outlined.Brightness2),
-                                            label = { Text("Dark") },
-                                        )
-                                    )
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        item {
+            FixedCard {
+                SettingsListItem(
+                    "Theme",
+                    IconSource(Icons.Outlined.Opacity),
+                    description = "Custom",
+                    extendedContent = {
+                        SegmentedButtons(
+                            overflow = true,
+                            content = listOf(
+                                SegmentedButtonValues(
+                                    selected = true,
+                                    onClick = {},
+                                    icon = IconSource(Icons.Outlined.BrightnessAuto),
+                                    label = { Text("System") },
+                                ),
+                                SegmentedButtonValues(
+                                    selected = false,
+                                    onClick = {},
+                                    icon = IconSource(Icons.Outlined.Brightness1),
+                                    label = { Text("Light") },
+                                ),
+                                SegmentedButtonValues(
+                                    selected = false,
+                                    onClick = {},
+                                    icon = IconSource(Icons.Outlined.Brightness2),
+                                    label = { Text("Dark") },
                                 )
-                            },
-                            isLastItem = true
+                            )
                         )
-                    }
-                }
-                item {
-                    Text(
-                        "General",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(
-                            start = 20.dp,
-                            end = 20.dp
+                    },
+                    isLastItem = true
+                )
+            }
+        }
+        item {
+            Text(
+                "General",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(
+                    start = 20.dp,
+                    end = 20.dp
+                )
+            )
+        }
+        item {
+            FixedCard {
+                SettingsListItem(
+                    "Language",
+                    IconSource(Icons.Outlined.CalendarMonth),
+                    value = "System default • English",
+                    isLastItem = true
+                )
+            }
+        }
+        item {
+            FixedCard {
+                SettingsListItem(
+                    "Haptic feedback",
+                    IconSource(Icons.Outlined.Vibration),
+                    description = "Pair interactions with haptic feedback when in vibration mode",
+                    isLastItem = true,
+                    trailingContent = {
+                        Switch(
+                            checked = false,
+                            onCheckedChange = { }
                         )
-                    )
-                }
-                item {
-                    FixedCard {
-                        SettingsListItem(
-                            "Language",
-                            IconSource(Icons.Outlined.CalendarMonth),
-                            value = "System default • English",
-                            isLastItem = true
-                        )
-                    }
-                }
-                item {
-                    FixedCard {
-                        SettingsListItem(
-                            "Haptic feedback",
-                            IconSource(Icons.Outlined.Vibration),
-                            description = "Pair interactions with haptic feedback when in vibration mode",
-                            isLastItem = true,
-                            trailingContent = {
-                                Switch(
-                                    checked = false,
-                                    onCheckedChange = { }
+                    },
+                )
+            }
+        }
+        item {
+            Text(
+                "Prayers screen",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(
+                    top = 0.dp,
+                    bottom = 20.dp,
+                    start = 20.dp,
+                    end = 20.dp
+                )
+            )
+            FixedCard {
+                SettingsListItem(
+                    "Time format",
+                    IconSource(Icons.Outlined.AccessTime),
+                    value = "18:20 pm",
+                    extendedContent = {
+                        SegmentedButtons(
+                            overflow = true,
+                            content = listOf(
+                                SegmentedButtonValues(
+                                    selected = true,
+                                    onClick = {},
+                                    label = { Text("System") },
+                                ),
+                                SegmentedButtonValues(
+                                    selected = false,
+                                    onClick = {},
+                                    label = { Text("12-hour") },
+                                ),
+                                SegmentedButtonValues(
+                                    selected = false,
+                                    onClick = {},
+                                    label = { Text("24-hour") },
                                 )
-                            },
+                            )
                         )
-                    }
-                }
-                item {
-                    Text(
-                        "Prayers screen",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(
-                            top = 0.dp,
-                            bottom = 20.dp,
-                            start = 20.dp,
-                            end = 20.dp
-                        )
-                    )
-                    FixedCard {
-                        SettingsListItem(
-                            "Time format",
-                            IconSource(Icons.Outlined.AccessTime),
-                            value = "18:20 pm",
-                            extendedContent = {
-                                SegmentedButtons(
-                                    content = listOf(
-                                        SegmentedButtonValues(
-                                            selected = true,
-                                            onClick = {},
-                                            label = { Text("System") },
-                                        ),
-                                        SegmentedButtonValues(
-                                            selected = false,
-                                            onClick = {},
-                                            label = { Text("12-hour") },
-                                        ),
-                                        SegmentedButtonValues(
-                                            selected = false,
-                                            onClick = {},
-                                            label = { Text("24-hour") },
-                                        )
-                                    )
+                    },
+                )
+                SettingsListItem(
+                    "Date format",
+                    IconSource(Icons.Outlined.CalendarMonth),
+                    value = "Month and day",
+                )
+                SettingsListItem(
+                    "Main date format",
+                    IconSource(Icons.Outlined.CalendarMonth),
+                    description = "More prominent date format",
+                    extendedContent = {
+                        SegmentedButtons(
+                            content = listOf(
+                                SegmentedButtonValues(
+                                    selected = true,
+                                    onClick = {},
+                                    label = { Text("Gregorian") },
+                                ),
+                                SegmentedButtonValues(
+                                    selected = false,
+                                    onClick = {},
+                                    label = { Text("Hijri") },
                                 )
-                            },
+                            )
                         )
-                        SettingsListItem(
-                            "Date format",
-                            IconSource(Icons.Outlined.CalendarMonth),
-                            value = "Month and day",
+                    },
+                    isLastItem = true
+                )
+                SettingsListItem(
+                    "Quick date switching",
+                    IconSource(Icons.Outlined.CalendarMonth),
+                    description = "Allow going forward and backward by swiping left and right",
+                    isLastItem = true,
+                    trailingContent = {
+                        Switch(
+                            checked = false,
+                            onCheckedChange = { }
                         )
-                        SettingsListItem(
-                            "Main date format",
-                            IconSource(Icons.Outlined.CalendarMonth),
-                            description = "More prominent date format",
-                            extendedContent = {
-                                SegmentedButtons(
-                                    content = listOf(
-                                        SegmentedButtonValues(
-                                            selected = true,
-                                            onClick = {},
-                                            label = { Text("Gregorian") },
-                                        ),
-                                        SegmentedButtonValues(
-                                            selected = false,
-                                            onClick = {},
-                                            label = { Text("Hijri") },
-                                        )
-                                    )
-                                )
-                            },
-                            isLastItem = true
-                        )
-                        SettingsListItem(
-                            "Quick date switching",
-                            IconSource(Icons.Outlined.CalendarMonth),
-                            description = "Allow going forward and backward by swiping left and right",
-                            isLastItem = true,
-                            trailingContent = {
-                                Switch(
-                                    checked = false,
-                                    onCheckedChange = { }
-                                )
-                            },
-                        )
-                    }
-                }
+                    },
+                )
             }
         }
     }
@@ -222,7 +202,5 @@ fun AppearanceScreen(
 )
 @Composable
 fun AppearancePreview() {
-    val navController = rememberNavController()
-
-    AppearanceScreen(navController)
+    AppearanceScreen()
 }
