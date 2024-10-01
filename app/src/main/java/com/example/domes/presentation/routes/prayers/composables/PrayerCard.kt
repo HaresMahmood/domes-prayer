@@ -297,7 +297,7 @@ fun PrayerCard(
                     SettingsListItem(
                         title = "Missed due to",
                         icon = IconSource(Icons.AutoMirrored.Outlined.CallMissedOutgoing),
-                        description = "Reason",
+                        description = "Select a reason",
                         extendedContent = {
                             SegmentedButtons(
                                 overflow = true,

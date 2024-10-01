@@ -206,7 +206,7 @@ fun SelectedDateSection(
                                     Icons.AutoMirrored.Outlined.NavigateBefore, "Yesterday"
                                 ), enabled = !isLoading
                             ) { updateDate(yesterdayDate) }, SegmentedAction(
-                                //icon = IconSource(Icons.Outlined.Today, "Today"),
+                                //icon = IconSource(Icons.Outlined.Today, "Today"), `flip_to_front`
                                 label = todayDate.dayOfMonth.toString(),
                                 colors = IconButtonDefaults.filledTonalIconButtonColors(
                                     containerColor = MaterialTheme.colorScheme.primary,

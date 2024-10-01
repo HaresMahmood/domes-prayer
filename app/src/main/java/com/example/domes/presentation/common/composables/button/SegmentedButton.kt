@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -127,9 +128,12 @@ fun SegmentedButtons(
             }
         }
     } else {
+        val listState = rememberLazyListState(content.indexOfFirst { it.selected })
+
         LazyRow(
             modifier = modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
+            state = listState,
             contentPadding = if (listItemChild) PaddingValues(
                 start = 60.dp, end = 25.dp
             ) else PaddingValues(0.dp)
