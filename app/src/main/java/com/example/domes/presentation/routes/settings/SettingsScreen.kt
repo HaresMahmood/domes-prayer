@@ -51,7 +51,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.button.ActionSectionChip
-import com.example.domes.presentation.common.composables.button.Variant
+import com.example.domes.presentation.common.composables.button.Color
+import com.example.domes.presentation.common.composables.button.Shape
 import com.example.domes.presentation.common.composables.card.ExpandableCard
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.routes.Screen
@@ -124,7 +125,8 @@ fun SettingsScreen(
                         ActionSectionChip(
                             icon = it.icon,
                             title = it.title,
-                            variant = if (it == selectedSetting) Variant.VISUAL else Variant.DEFAULT,
+                            color = if (it == selectedSetting) Color.TERTIARY else Color.SECONDARY,
+                            shape = if (it == selectedSetting) Shape.BUBBLE else Shape.SQUARE,
                             onClick = {
                                 navigator.navigateTo(
                                     ListDetailPaneScaffoldRole.Detail,
