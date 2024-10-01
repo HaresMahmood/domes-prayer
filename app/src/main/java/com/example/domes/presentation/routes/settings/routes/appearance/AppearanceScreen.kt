@@ -12,10 +12,9 @@ import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Brightness1
 import androidx.compose.material.icons.outlined.BrowseGallery
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.HistoryToggleOff
 import androidx.compose.material.icons.outlined.Opacity
-import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +45,16 @@ fun AppearanceScreen(
         contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
+        item {
+            Text(
+                "General",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(
+                    start = 20.dp,
+                    end = 20.dp
+                )
+            )
+        }
         item {
             FixedCard {
                 SettingsListItem(
@@ -82,21 +91,34 @@ fun AppearanceScreen(
             }
         }
         item {
-            Text(
-                "General",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(
-                    start = 20.dp,
-                    end = 20.dp
-                )
-            )
-        }
-        item {
             FixedCard {
                 SettingsListItem(
                     "Language",
-                    IconSource(Icons.Outlined.CalendarMonth),
-                    value = "System default • English",
+                    IconSource(Icons.Outlined.Translate),
+                    value = "English",
+                    extendedContent = {
+                        SegmentedButtons(
+                            overflow = true,
+                            content = listOf(
+                                SegmentedButtonValues(
+                                    selected = true,
+                                    onClick = {},
+                                    icon = IconSource(Icons.Outlined.AutoAwesome),
+                                    label = { Text("System") },
+                                ),
+                                SegmentedButtonValues(
+                                    selected = false,
+                                    onClick = {},
+                                    label = { Text("English") },
+                                ),
+                                SegmentedButtonValues(
+                                    selected = false,
+                                    onClick = {},
+                                    label = { Text("Arabic") },
+                                )
+                            )
+                        )
+                    },
                     isLastItem = true
                 )
             }
@@ -106,7 +128,7 @@ fun AppearanceScreen(
                 SettingsListItem(
                     "Haptic feedback",
                     IconSource(Icons.Outlined.Vibration),
-                    description = "Pair interactions with haptic feedback when in vibration mode",
+                    description = "Pair interactions with haptics",
                     isLastItem = true,
                     trailingContent = {
                         Switch(
@@ -138,13 +160,13 @@ fun AppearanceScreen(
                             overflow = true,
                             content = listOf(
                                 SegmentedButtonValues(
-                                    selected = true,
+                                    selected = false,
                                     onClick = {},
                                     icon = IconSource(Icons.Outlined.AutoAwesome),
                                     label = { Text("System") },
                                 ),
                                 SegmentedButtonValues(
-                                    selected = false,
+                                    selected = true,
                                     onClick = {},
                                     icon = IconSource(Icons.Outlined.HistoryToggleOff),
                                     label = { Text("12-hour") },
@@ -160,46 +182,39 @@ fun AppearanceScreen(
                     },
                 )
                 SettingsListItem(
-                    "Date format",
+                    "Main calendar system",
                     IconSource(Icons.Outlined.CalendarMonth),
-                    value = "Month and day",
-                )
-                SettingsListItem(
-                    "Main date format",
-                    IconSource(Icons.Outlined.CalendarMonth),
-                    description = "More prominent date format",
+                    description = "Calendar system more commonly shown in date selection",
                     extendedContent = {
                         SegmentedButtons(
-                            overflow = true,
                             content = listOf(
                                 SegmentedButtonValues(
                                     selected = true,
                                     onClick = {},
-                                    icon = IconSource(Icons.Outlined.Public),
+//                                    icon = IconSource(Icons.Outlined.Public),
                                     label = { Text("Gregorian") },
                                 ),
                                 SegmentedButtonValues(
                                     selected = false,
                                     onClick = {},
-                                    icon = IconSource(Icons.Outlined.DarkMode),
+//                                    icon = IconSource(Icons.Outlined.DarkMode),
                                     label = { Text("Hijri") },
                                 )
                             )
                         )
-                    },
-                    isLastItem = true
+                    }
                 )
                 SettingsListItem(
                     "Quick date switching",
                     IconSource(Icons.Outlined.CalendarMonth),
                     description = "Allow going forward and backward by swiping left and right",
-                    isLastItem = true,
                     trailingContent = {
                         Switch(
                             checked = false,
                             onCheckedChange = { }
                         )
                     },
+                    isLastItem = true
                 )
             }
         }
