@@ -140,7 +140,9 @@ class PrayersViewModel @Inject constructor(
 
             is PrayersEvent.ChangeDate -> {
                 val isTodaySelected = event.date == currentTime.toLocalDate()
-                _state.value = _state.value.copy(selectedDate = event.date,
+                _state.value = _state.value.copy(
+                    expandedPrayer = null,
+                    selectedDate = event.date,
                     selectedHijriDate = prayersUseCases.getHijriDate(event.date),
                     isTodaySelected = isTodaySelected,
                     dayFraction = _state.value.currentRawPrayerTimes?.let { prayers ->

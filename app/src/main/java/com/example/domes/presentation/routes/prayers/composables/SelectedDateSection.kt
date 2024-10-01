@@ -240,27 +240,8 @@ fun SelectedDateSection(
         Box(
             Modifier
                 .fillMaxWidth()
-//                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                 .animateContentSize(),
         ) {
-//            CalendarView(
-//                useCaseState = rememberUseCaseState(
-//                    visible = true,
-//                    embedded = true,
-//                    onCloseRequest = {
-//                        collapseBottomSheet()
-//                    },
-//                ),
-//                config = calendarConfig,
-//                selection = CalendarSelection.Date(
-//                    withButtonView = false,
-//                    selectedDate = selectedDate.value,
-//                ) { newDate ->
-//                    selectedDate.value = newDate
-//                    onDateChange(selectedDate.value)
-//                },
-//            )
-
             DatePicker(
                 state = datePickerState,
                 title = null,

@@ -16,7 +16,7 @@ sealed class PrayersEvent {
         val missedReason: MissedReason? = null,
     ) : PrayersEvent()
 
-    data class ChangeExpandedPrayer(val prayer: Prayer?) : PrayersEvent()
+    data class ChangeExpandedPrayer(val prayer: Prayer? = null) : PrayersEvent()
     data class ChangeDate(val date: LocalDate) : PrayersEvent()
     data class SnoozePrayer(val duration: Duration) : PrayersEvent()
     data object RefreshLocation : PrayersEvent()
