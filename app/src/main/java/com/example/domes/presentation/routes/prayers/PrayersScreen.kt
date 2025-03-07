@@ -449,7 +449,8 @@ fun MainPane(
                                     visible = prayersState.isLoading,
                                     highlight = PlaceholderHighlight.fade(),
                                     shape = RoundedCornerShape(100),
-                                ), contentAlignment = Alignment.Center
+                                ),
+                            contentAlignment = Alignment.Center
                         ) {
                             Slider(
                                 modifier = Modifier.fillMaxWidth(),

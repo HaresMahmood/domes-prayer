@@ -50,7 +50,9 @@ fun Slider(
 //        )
 //    )
 
-    Box {
+    Box(
+        contentAlignment = Alignment.Center
+    ) {
         Box(
             modifier = modifier,
             contentAlignment = Alignment.Center
