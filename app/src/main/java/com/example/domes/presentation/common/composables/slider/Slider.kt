@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Slider(
     value: Float,
@@ -24,6 +26,18 @@ fun Slider(
     if (value !in range) {
         throw IllegalArgumentException("Value must be within the range $range")
     }
+
+//    val sliderState = SliderState(value = value, valueRange = range, steps = 5)
+//
+//    androidx.compose.material3.Slider(
+//        state = sliderState,
+//        enabled = false,
+//        colors = SliderDefaults.colors(
+//            disabledThumbColor = MaterialTheme.colorScheme.primary,
+//            disabledActiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+//            disabledInactiveTrackColor = MaterialTheme.colorScheme.primary
+//        )
+//    )
 
     Box(
         modifier = modifier,
@@ -65,7 +79,7 @@ fun Slider(
             if (value < 1f) {
                 Box(
                     modifier = Modifier
-                        .weight((1f - value).toFloat())
+                        .weight((1f - value))
                         .height(20.dp)
                         .background(
                             MaterialTheme.colorScheme.primary,

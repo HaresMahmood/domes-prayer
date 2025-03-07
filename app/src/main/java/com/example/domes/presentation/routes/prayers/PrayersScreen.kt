@@ -1,7 +1,6 @@
 package com.example.domes.presentation.routes.prayers
 
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.EaseOutQuint
@@ -277,8 +276,6 @@ fun MainPane(
     val prayerTimes =
         (if (prayersState.selectedDate == todayDate) prayersState.currentPrayerTimes else prayersState.selectedPrayerTimes).filter { it.time.toLocalDate() == prayersState.selectedDate }
 
-    Log.d("prayer times", prayerTimes.toString())
-
     val localDensity = LocalDensity.current
 
     val notificationPermissionState = rememberPermissionState(
@@ -482,7 +479,8 @@ fun MainPane(
                                                 }
                                             }, widthFraction = prayerTime.dayFraction?.toFloat()
                                         )
-                                    })
+                                    }
+                            )
                         }
                     }
                 }
