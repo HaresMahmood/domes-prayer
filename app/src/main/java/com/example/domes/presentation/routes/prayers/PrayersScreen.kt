@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -74,13 +73,9 @@ import com.example.domes.domain.model.prayer.Prayer
 import com.example.domes.presentation.common.composables.appbar.LayeredTopAppBar
 import com.example.domes.presentation.common.composables.card.FixedCard
 import com.example.domes.presentation.common.composables.card.Variant
-import com.example.domes.presentation.common.composables.shape.Polygon
-import com.example.domes.presentation.common.composables.shape.Shape
-import com.example.domes.presentation.common.composables.slider.Slider
+import com.example.domes.presentation.routes.prayers.composables.Slider
 import com.example.domes.presentation.routes.Screen
 import com.example.domes.presentation.routes.prayers.composables.MainActionSection
-import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBox
-import com.example.domes.presentation.routes.prayers.composables.PercentageWidthBoxChild
 import com.example.domes.presentation.routes.prayers.composables.PrayerCard
 import com.example.domes.presentation.routes.prayers.composables.SelectedDateSection
 import com.example.domes.presentation.routes.prayers.composables.SnoozePrayerDialog
@@ -441,10 +436,7 @@ fun MainPane(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 item {
-                    val shapeParam = Shape(
-                        roundness = .4f, sides = 4, rotation = 90f, shapeId = Shape.ShapeId.Polygon
-                    )
-                    val shape = shapeParam.genShape().normalized()
+
 
                     FixedCard {
                         Box(
@@ -460,26 +452,10 @@ fun MainPane(
                                 ), contentAlignment = Alignment.Center
                         ) {
                             Slider(
-                                dayFraction.value, modifier = Modifier.fillMaxWidth()
-                            )
-
-                            PercentageWidthBox(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(20.dp),
-                                children = prayerTimes.filter { it.prayer.displayable }
-                                    .map { prayerTime ->
-                                        PercentageWidthBoxChild(
-                                            composable = {
-                                                Box(modifier = Modifier.size(10.dp)) {
-                                                    Polygon(
-                                                        shape,
-                                                        color = if (prayerTime == prayersState.currentPrayer) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSecondary,
-                                                        alpha = if (prayerTime == prayersState.currentPrayer) 1f else 0.75f
-                                                    )
-                                                }
-                                            }, widthFraction = prayerTime.dayFraction?.toFloat()
-                                        )
-                                    }
+                                modifier = Modifier.fillMaxWidth(),
+                                value = dayFraction.value,
+                                prayerTimes = prayerTimes,
+                                currentPrayer = prayersState.currentPrayer
                             )
                         }
                     }
