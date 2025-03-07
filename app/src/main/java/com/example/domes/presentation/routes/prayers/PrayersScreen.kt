@@ -1,6 +1,7 @@
 package com.example.domes.presentation.routes.prayers
 
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.EaseOutQuint
@@ -151,7 +152,7 @@ fun PrayersScreen(
                     rememberPaneExpansionState(navigator.scaffoldValue.paneExpansionStateKey)
 
                 BackHandler(navigator.canNavigateBack()) {
-                    // navigator.navigateBack()
+                    navigator.navigateBack()
                 }
 
                 SupportingPaneScaffold(
@@ -274,7 +275,9 @@ fun MainPane(
     val todayDate = LocalDate.now()
 
     val prayerTimes =
-        if (prayersState.selectedDate == LocalDate.now()) prayersState.currentPrayerTimes else prayersState.selectedPrayerTimes
+        (if (prayersState.selectedDate == todayDate) prayersState.currentPrayerTimes else prayersState.selectedPrayerTimes).filter { it.time.toLocalDate() == prayersState.selectedDate }
+
+    Log.d("prayer times", prayerTimes.toString())
 
     val localDensity = LocalDensity.current
 
