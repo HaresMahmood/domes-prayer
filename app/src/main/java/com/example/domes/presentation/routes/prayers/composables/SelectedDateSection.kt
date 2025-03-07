@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.NavigateBefore
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
@@ -22,6 +23,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -176,18 +178,20 @@ fun SelectedDateSection(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
                                 text = gregorianDate.dayOfWeek.name.take(3),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontSize = (7).sp,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                lineHeight = 1.sp
                             )
                             Text(
                                 text = "${gregorianDate.dayOfMonth}",
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                lineHeight = 1.sp
                             )
                         }
                     }
@@ -237,7 +241,10 @@ fun SelectedDateSection(
                 state = datePickerState,
                 title = null,
                 headline = null,
-                showModeToggle = false
+                showModeToggle = false,
+                colors = DatePickerDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp)
+                )
             )
         }
     }
