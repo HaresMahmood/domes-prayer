@@ -347,7 +347,7 @@ class PrayersViewModel @Inject constructor(
         )
 
         workManager.getWorkInfoByIdLiveData(oneTimeWorkRequest.id).observeForever { info ->
-            if (info.state == WorkInfo.State.SUCCEEDED) {
+            if (info?.state == WorkInfo.State.SUCCEEDED) {
                 viewModelScope.launch {
                     val currentTime = LocalDateTime.now()
                     val currentDate = currentTime.toLocalDate()

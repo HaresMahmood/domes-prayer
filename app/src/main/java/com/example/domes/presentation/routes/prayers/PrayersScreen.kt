@@ -151,7 +151,7 @@ fun PrayersScreen(
                     rememberPaneExpansionState(navigator.scaffoldValue.paneExpansionStateKey)
 
                 BackHandler(navigator.canNavigateBack()) {
-                    navigator.navigateBack()
+                    // navigator.navigateBack()
                 }
 
                 SupportingPaneScaffold(
